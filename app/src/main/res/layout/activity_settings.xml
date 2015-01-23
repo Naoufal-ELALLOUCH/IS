@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/stepLEngthExplainView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="歩幅を入力してください。."
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/stepLengthText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="StepLength"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <EditText
+            android:id="@+id/stepLengthValueText"
+            android:layout_width="64dp"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="numberDecimal"
+            android:text="75.0" />
+
+        <TextView
+            android:id="@+id/cmText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="cm"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/stepCaibrationExplainText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\nStep Calibrationボタンをタップし、20歩前進してください。."
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/stepCalibrationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Step Calibration" />
+   <TextView
+        android:id="@+id/explainTextView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\n端末を平坦な場所に置き、Gyro Calibrationボタンをタップし、5秒間放置してください。"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/gyroCalibrateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gyro Calibration" />
+
+    <TextView
+        android:id="@+id/explainTextView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\n設定が完了したらタップしてください。"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/applyChangesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Apply Changes" />
+
+</LinearLayout>

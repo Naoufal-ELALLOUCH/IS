@@ -1,0 +1,72 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.google.android.gms:play-services:+'
+}
+
+apply plugin: 'maven'
+
+version = '1.0.2-SNAPSHOT' // バージョンをいい感じに書いてください
+group   = 'jp.ac.ritsumei.cs.ubi'
+archivesBaseName = 'ubilab-map-matching-library' // 書かなかったらプロジェクト名が使われるらしい
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: 'http://sub-www.ubi.cs.ritsumei.ac.jp/archiva/repository/internal/') {
+                authentication(userName: laboratoryMavenUser, password: laboratoryMavenPassword)
+            }
+            snapshotRepository(url: 'http://sub-www.ubi.cs.ritsumei.ac.jp/archiva/repository/snapshots/') {
+                authentication(userName: laboratoryMavenUser, password: laboratoryMavenPassword)
+            }
+        }
+    }
+}
+
+android.libraryVariants.all { variant ->
+    if (variant.name == 'release') {
+        def javadocTaskName = "javadoc${variant.name.capitalize()}";
+        task(javadocTaskName, type: Javadoc) {
+            description "Generates Javadoc for ${variant.name}."
+            source = variant.javaCompile.source
+            destinationDir = reporting.file("${variant.name}-docs")
+            ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+            classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+        }
+        task("javadocsJar${variant.name.capitalize()}", type: Jar) {
+            classifier = "javadoc"
+            from tasks[javadocTaskName].destinationDir
+        }
+        task("sourcesJar${variant.name.capitalize()}", type: Jar) {
+            classifier = "sources"
+            from variant.javaCompile.source
+        }
+
+        /* artifacts management.
+         * See: http://www.gradle.org/docs/current/userguide/artifact_management.html */
+        artifacts {
+            archives tasks["javadocsJar${variant.name.capitalize()}"]
+            archives tasks["sourcesJar${variant.name.capitalize()}"]
+        }
+    }
+}

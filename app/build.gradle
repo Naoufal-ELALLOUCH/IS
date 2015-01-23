@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.1"
+
+    defaultConfig {
+        applicationId "ritsumei.cs.ubi.shun.pdr3methodstest"
+        minSdkVersion 15
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://sub-www.ubi.cs.ritsumei.ac.jp/archiva/repository/internal/"
+        credentials {
+            username laboratoryMavenUser
+            password laboratoryMavenPassword
+        }
+    }
+    maven {
+        url "http://sub-www.ubi.cs.ritsumei.ac.jp/archiva/repository/snapshots/"
+        credentials {
+            username laboratoryMavenUser
+            password laboratoryMavenPassword
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile 'com.google.android.gms:play-services:+'
+    compile 'jp.ac.ritsumei.cs.ubi:ubilab-map-matching-library:1.0.1'
+    compile 'jp.ac.ritsumei.cs.ubi:ubilab-pdr-library:1.0.4'
+}
