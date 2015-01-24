@@ -5,7 +5,6 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 import ubilabmapmatchinglibrary.calculate.Calculator2D;
-import ubilabmapmatchinglibrary.pedestrianspacenetwork.Point;
 
 /**
  * Created by shun on 2014/12/10.

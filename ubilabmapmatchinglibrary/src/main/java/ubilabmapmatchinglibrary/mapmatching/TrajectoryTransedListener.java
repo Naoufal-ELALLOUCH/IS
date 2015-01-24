@@ -1,6 +1,5 @@
 package ubilabmapmatchinglibrary.mapmatching;
 
-import ubilabmapmatchinglibrary.pedestrianspacenetwork.Point;
 
 /**
  * Created by shun on 2014/12/17.

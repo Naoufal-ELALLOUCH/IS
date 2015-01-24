@@ -1,4 +1,4 @@
-package ubilabmapmatchinglibrary.pedestrianspacenetwork;
+package ubilabmapmatchinglibrary.mapmatching;
 
 public class Point {
 	

@@ -10,8 +10,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import ubilabmapmatchinglibrary.mapmatching.WallPoint;
-
 /**
  * SQLiteのデータベースを生成したり、クエリにより必要データを取得するクラス
  */
@@ -74,13 +72,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             //スキーマの定義
             String NODE_DATABASE_CREATE_STATES =
-                    "create table if not exists" + NODE_TABLE + "("
+                    "create table if not exists " + NODE_TABLE + "("
                             + " id integer primary key"
-                            + ", lat double not null" //TODO:latitude
-                            + ", lng double not null" //TODO:longitude
-                            + ", level integer not null"
+                            + ", latitude double not null"
+                            + ", longitude double not null"
+                            + ", level real not null"
                             + ", type integer not null"
-                            + ", grid_id integer not null" //TODO:String(text?)に変更
+                            + ", grid_id text not null"
+                            + ", area_id integer not null"
                             + ");";
             db.execSQL(NODE_DATABASE_CREATE_STATES);
 
@@ -91,9 +90,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + ", node_id integer"
                             + ", group_number integer not null"
                             + ", point_order integer not null"
-                            + ", lat double not null" //TODO:latitude
-                            + ", lng double not null" //TODO:longitude
-                            + ", grid_id integer not null" //TODO:String(text?)に変更
+                            + ", latitude real not null"
+                            + ", longitude real not null"
+                            + ", grid_id integer not null"
+                            + ", area_id integer not null"
                             + ")";
             db.execSQL(POINT_DATABASE_CREATE_STATES);
 
@@ -105,21 +105,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             + " id integer primary key"
                             + ", node1_id integer not null"
                             + ", node2_id integer not null"
-                            + ", distance double not null"
-                            + ", bearing double not null"
-                            + ", constant_a double not null" //TODO:消す
-                            + ", constant_b double not null" //TODO:消す
-                            + ", type integer not null" //TODO:String(text?)に変更
-                            //+ ", pressure double not null" TODO;気圧の追加
+                            + ", distance real not null"
+                            + ", bearing real not null"
+                            + ", type integer not null"
+                            + ", pressure real not null"
+                            + ", area_id integer not null"
                             + ")";
-
-
             db.execSQL(LINK_DATABASE_CREATE_STATES);
 
             String LINK_GRID_DATABASE_CREATE_STATES =
                     "create table if not exists " + LINK_GRID_TABLE + " ("
                             + " link_id integer not null"
-                            + ", grid_id integer not null" //TODO:String(text?)に変更
+                            + ", grid_id text not null"
+                            + ", area_id integer not null"
                             + ")";
 
             db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
@@ -135,6 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
+        Log.v("DB","onUpgrade");
         onCreate(db);
     }
 
@@ -170,7 +169,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteCursor c = (SQLiteCursor) db.rawQuery(query, null);
         c.moveToFirst();
-        Node node = new Node(c.getInt(0), c.getDouble(1), c.getDouble(2), c.getInt(3), c.getInt(4), c.getString(5));
+        Node node = new Node(c.getInt(0), c.getDouble(1), c.getDouble(2), (int)c.getDouble(3), c.getInt(4), c.getString(5));
         c.close();
 
         return node;
@@ -210,7 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<WallPoint> pointsList = new ArrayList<WallPoint>();
         boolean next = c.moveToFirst();
         while(next) {
-            pointsList.add(new WallPoint(c.getInt(0), c.getInt(1), c.getInt(2), c.getInt(3), c.getDouble(4), c.getDouble(5), c.getInt(6)));
+            pointsList.add(new WallPoint(c.getInt(0), c.getInt(1), c.getInt(2), c.getInt(3), c.getDouble(4), c.getDouble(5), c.getString(6)));
             next = c.moveToNext();
         }
         c.close();
@@ -276,7 +275,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteCursor c = (SQLiteCursor) db.rawQuery(query, null);
         c.moveToFirst();
-        Link link = new Link(c.getInt(0), c.getInt(1), c.getInt(2), c.getDouble(3), c.getDouble(4), c.getDouble(5), c.getDouble(6), c.getInt(7));
+
+        Link link = new Link(c.getInt(0), c.getInt(1), c.getInt(2), c.getDouble(3), c.getDouble(4),  c.getInt(5), c.getDouble(6));
         c.close();
 
         return link;
@@ -341,28 +341,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return linksIdList;
     }
 
-//    /**
-//     * LinkGridTableから指定したidのGridを通るようなLinkのidのリストを取得する
-//     * @param gridId
-//     * @return
-//     */
-//    public List<Integer> getLinkIdListByGridId(int gridId) {
-//            SQLiteDatabase db = getReadableDatabase();
-//
-//        String GET_LINKS_ID_BY_GRID_ID =
-//                "select link_id from " + LINK_GRID_TABLE + " where grid_id = " + gridId;
-//
-//        try{
-//            List<Integer> linksIdList = getLinkIdListByQuery(db, GET_LINKS_ID_BY_GRID_ID);
-//            db.close();
-//            return linksIdList;
-//
-//        } catch (SQLException e) {
-//            db.close();
-//            return null;
-//        }
-//    }
-
     /**
      * LinkGridTableから指定したidのGridを通るようなLinkのidのリストを取得する
      * @param gridId
@@ -372,7 +350,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_LINKS_ID_BY_GRID_ID =
-                "select link_id from " + LINK_GRID_TABLE + " where grid_id = " +gridId;
+                "select link_id from " + LINK_GRID_TABLE + " where grid_id like " + gridId;
 
         try{
             List<Integer> linksIdList = getLinkIdListByQuery(db, GET_LINKS_ID_BY_GRID_ID);
@@ -392,13 +370,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param level
      * @return
      */
-    public List<Integer> getLinkIdListByGridIdAndLevel(int gridId, int level) {
+    public List<Integer> getLinkIdListByGridIdAndLevel(String gridId, int level) {
         SQLiteDatabase db = getReadableDatabase();
 
         //指定したgrid_idかつ、リンクを構成するノードが指定したlevelにあるlinkIdを取得するクエリ
         //要検証
         String GET_LINKS_BY_GRID_ID_AND_LEVEL =
-                "select link_id from "+ LINK_GRID_TABLE + " where grid_id = " + gridId + "and link_id in (select id from "
+                "select link_id from "+ LINK_GRID_TABLE + " where grid_id like " + gridId + "and link_id in (select id from "
                         +LINK_TABLE + " where (node1_id or node2_id) in (select id from " + NODE_TABLE + "where level = " + level +"))";
 
         try{
@@ -419,13 +397,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param level
      * @return
      */
-    public List<Integer> getLinkIdListByGridIdAndLevelAndType(int gridId, int level) {
+    public List<Integer> getLinkIdListByGridIdAndLevelAndType(String gridId, int level) {
         SQLiteDatabase db = getReadableDatabase();
 
         //指定したgrid_idかつ、リンクを構成するノードが指定したlevelにある、LinkTypeが0か1のlinkIdを取得するクエリ
         //要検証
         String GET_LINKS_BY_GRID_ID_AND_LEVEL_AND_TYPE =
-                "select link_id from "+ LINK_GRID_TABLE + " where grid_id = " + gridId + "and link_id in (select id from " +
+                "select link_id from "+ LINK_GRID_TABLE + " where grid_id like " + gridId + "and link_id in (select id from " +
                         LINK_TABLE + " where ((node1_id or node2_id) in (select id from " + NODE_TABLE + "where level = " + level + ")) " +
                         "and type = (" + Link.LinkType.PASSAGE.ordinal() + " or " + Link.LinkType.OPEN_SPACE.ordinal() + "))";
 

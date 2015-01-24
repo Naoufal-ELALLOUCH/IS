@@ -1,4 +1,4 @@
-package ubilabmapmatchinglibrary.mapmatching;
+package ubilabmapmatchinglibrary.pedestrianspacenetwork;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -12,9 +12,9 @@ public class WallPoint {
     int pointOrder;
     double lat;
     double lng;
-    int grid;
+    String grid;
 
-    public WallPoint(int id, int nodeId, int groupNumber, int pointOrder, double lat, double lng, int grid) {
+    public WallPoint(int id, int nodeId, int groupNumber, int pointOrder, double lat, double lng, String grid) {
         this.id = id;
         this.nodeId = nodeId;
         this.groupNumber = groupNumber;
@@ -81,11 +81,11 @@ public class WallPoint {
         this.lng = point.longitude;
     }
 
-    public int getGrid() {
+    public String getGrid() {
         return grid;
     }
 
-    public void setGrid(int grid) {
+    public void setGrid(String grid) {
         this.grid = grid;
     }
 

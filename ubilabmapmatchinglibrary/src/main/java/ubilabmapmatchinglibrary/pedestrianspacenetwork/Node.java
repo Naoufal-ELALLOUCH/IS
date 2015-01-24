@@ -9,7 +9,7 @@ public class Node {
     private int id;
     private double lat;
     private double lng;
-    private int level;
+    private int level; //TOD:今後踊り場とか追加するならdoubleに
     /*
         0:交差点
         1:広場

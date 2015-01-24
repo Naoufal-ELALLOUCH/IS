@@ -10,7 +10,6 @@ import java.util.List;
 
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
-import ubilabmapmatchinglibrary.pedestrianspacenetwork.Point;
 import ubilabmapmatchinglibrary.calculate.Calculator2D;
 
 /**

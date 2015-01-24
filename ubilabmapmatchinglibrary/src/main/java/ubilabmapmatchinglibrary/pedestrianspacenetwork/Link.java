@@ -10,13 +10,6 @@ public class Link {
     private double distance;
     private double bearing;
     /*
-     * リンクを表す線分の方程式の定数
-     * (y = ax + b)
-     */
-    private double constantA;
-    private double constantB;
-
-    /*
      *  0:通路
      *  1:広場
      *   2:EV内同士(階層移動有)
@@ -26,29 +19,28 @@ public class Link {
      *  6:スロープ
      */
     private LinkType type;
+    private double pressureDiff;
 
 //    private List<Long> grids;
 
-    public Link(int id, int node1Id , int node2Id, double distance, double bearing, double constantA, double constantB, LinkType type) {
+    public Link(int id, int node1Id , int node2Id, double distance, double bearing, LinkType type, double pressureDiff) {
         this.id = id;
         this.node1Id = node1Id;
         this.node2Id = node2Id;
         this.distance = distance;
         this.bearing = bearing;
-        this.constantA = constantA;
-        this.constantB = constantB;
         this.type = type;
+        this.pressureDiff = pressureDiff;
     }
 
-    public Link(int id, int node1Id , int node2Id, double distance, double bearing, double constantA, double constantB, int type) {
+    public Link(int id, int node1Id , int node2Id, double distance, double bearing, int type, double pressureDiff) {
         this.id = id;
         this.node1Id = node1Id;
         this.node2Id = node2Id;
         this.distance = distance;
         this.bearing = bearing;
-        this.constantA = constantA;
-        this.constantB = constantB;
         this.type = castToLinkType(type);
+        this.pressureDiff = pressureDiff;
     }
 
     public void setLink(Link link){
@@ -57,9 +49,8 @@ public class Link {
         this.node2Id = link.node2Id;
         this.distance = link.distance;
         this.bearing = link.bearing;
-        this.constantA = link.constantA;
-        this.constantB = link.constantB;
         this.type = link.type;
+        this.pressureDiff = link.pressureDiff;
     }
 
     public int getId() {
@@ -102,26 +93,6 @@ public class Link {
         this.bearing = bearing;
     }
 
-    public double getConstantA() {
-        return constantA;
-    }
-
-    public void setConstantA(double constant) {
-        this.constantA = constant;
-    }
-    public double getConstantB() {
-        return constantB;
-    }
-
-    public void setConstantB(double constant) {
-        this.constantB = constant;
-    }
-
-    public double[] getconstants() {
-        double[] constants = {constantA, constantB};
-        return constants;
-    }
-
     public LinkType getType() {
         return type;
     }
@@ -134,6 +105,12 @@ public class Link {
         this.type = castToLinkType(type);
     }
 
+    public double getPressureDiff() {
+        return  this.pressureDiff;
+    }
+    public void setPressureDiff(double pressureDiff) {
+        this.pressureDiff = pressureDiff;
+    }
     /**
      * リンクのタイプ(経路の区別をするためのもの)
      */

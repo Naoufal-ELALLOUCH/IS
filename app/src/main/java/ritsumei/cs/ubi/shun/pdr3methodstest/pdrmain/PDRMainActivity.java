@@ -46,12 +46,13 @@ import ubilabmapmatchinglibrary.mapmatching.TrackPoint;
 import ubilabmapmatchinglibrary.mapmatching.Trajectory;
 import ubilabmapmatchinglibrary.mapmatching.TrajectoryTransedListener;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
-import ubilabmapmatchinglibrary.pedestrianspacenetwork.Point;
+import ubilabmapmatchinglibrary.mapmatching.Point;
 
 
 
 public class PDRMainActivity extends FloorMapActivity implements StepListener, TrajectoryTransedListener, SensorEventListener, OnClickListener , GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
-    public static final String DB_QUERY_FILE = "cc5f_network_sql.txt";
+//    public static final String DB_QUERY_FILE = "cc5f_network_sql.txt";
+    public static final String DB_QUERY_FILE = "cc_psn.txt";
 
     private SensorManager manager;
     private SharedPreferences pref;

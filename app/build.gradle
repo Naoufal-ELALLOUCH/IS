@@ -40,6 +40,6 @@ repositories {
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.google.android.gms:play-services:+'
-    compile 'jp.ac.ritsumei.cs.ubi:ubilab-map-matching-library:1.0.2-SNAPSHOT'
+    compile 'jp.ac.ritsumei.cs.ubi:ubilab-map-matching-library:1.0.4-SNAPSHOT'
     compile 'jp.ac.ritsumei.cs.ubi:ubilab-pdr-library:1.0.4'
 }

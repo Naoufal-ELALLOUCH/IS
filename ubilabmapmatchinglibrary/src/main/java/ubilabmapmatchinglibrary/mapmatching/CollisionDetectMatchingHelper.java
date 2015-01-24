@@ -12,6 +12,7 @@ import ubilabmapmatchinglibrary.calculate.Calculator2D;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Node;
+import ubilabmapmatchinglibrary.pedestrianspacenetwork.WallPoint;
 
 /**
  * Created by shun on 2015/01/09.
