@@ -50,7 +50,7 @@ public class FloorMapActivity extends FragmentActivity {
         MapsInitializer.initialize(this);
 
         moveToCreationCore();
-		floorMapOverlay();
+        floorMapOverlay();
 	}
 
 	protected void moveToCreationCore() {

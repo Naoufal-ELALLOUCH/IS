@@ -26,38 +26,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Context context;
     private static DatabaseHelper sSingleton = null;
 
-    /**
-     * クエリによってデータベースを作成するときのコンストラクタ
-     * @param context
-     * @param queryList
-     */
-    public DatabaseHelper(Context context, List<String> queryList) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
-        this.queryList = queryList;
-    }
+//    /**
+//     * クエリによってデータベースを作成するときのコンストラクタ
+//     * @param context
+//     * @param queryList
+//     */
+//    public DatabaseHelper(Context context, List<String> queryList) {
+//        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+//        this.context = context;
+//        this.queryList = queryList;
+//    }
 
     /**
      * 既に用意されているデータベースを利用するときのコンストラクタ
      * @param context
-     * @param databaseName
      * @param databaseVersion
      */
-    public DatabaseHelper(Context context, String databaseName, int databaseVersion) {
-        super(context, databaseName, null, databaseVersion);
+    public DatabaseHelper(Context context, int databaseVersion) {
+        super(context, DATABASE_NAME, null, databaseVersion);
         this.context = context;
     }
 
-    public static synchronized DatabaseHelper getInstance(Context context, List<String> queryList) {
-        if (sSingleton == null) {
-            sSingleton = new DatabaseHelper(context, queryList);
-        }
-        return sSingleton;
-    }
+//    public static synchronized DatabaseHelper getInstance(Context context, List<String> queryList) {
+//        if (sSingleton == null) {
+//            sSingleton = new DatabaseHelper(context, queryList);
+//        }
+//        return sSingleton;
+//    }
 
-    public static synchronized DatabaseHelper getInstance(Context context, String databaseName , int databaseVersion) {
+    public static synchronized DatabaseHelper getInstance(Context context, int databaseVersion) {
         if (sSingleton == null) {
-            sSingleton = new DatabaseHelper(context, databaseName, databaseVersion);
+            sSingleton = new DatabaseHelper(context, databaseVersion);
         }
         return sSingleton;
     }
@@ -66,64 +65,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        if(queryList != null) {
-            //UbiNaviで出力した、DB生成クエリを読み込む
-            //execQueryFromFile(DB_QUERY_FILE, db);
+        //UbiNaviで出力した、DB生成クエリを読み込む
+        //execQueryFromFile(DB_QUERY_FILE, db);
 
-            //スキーマの定義
-            String NODE_DATABASE_CREATE_STATES =
-                    "create table if not exists " + NODE_TABLE + "("
-                            + " id integer primary key"
-                            + ", latitude double not null"
-                            + ", longitude double not null"
-                            + ", level real not null"
-                            + ", type integer not null"
-                            + ", grid_id text not null"
-                            + ", area_id integer not null"
-                            + ");";
-            db.execSQL(NODE_DATABASE_CREATE_STATES);
+        //スキーマの定義
+        String NODE_DATABASE_CREATE_STATES =
+                "create table if not exists " + NODE_TABLE + "("
+                        + " id integer primary key"
+                        + ", latitude double not null"
+                        + ", longitude double not null"
+                        + ", level real not null"
+                        + ", type integer not null"
+                        + ", grid_id text not null"
+                        + ", area_id integer not null"
+                        + ");";
+        db.execSQL(NODE_DATABASE_CREATE_STATES);
 
 
-            String POINT_DATABASE_CREATE_STATES =
-                    "create table if not exists " + WALL_POINT_TABLE + " ("
-                            + " id integer primary key"
-                            + ", node_id integer"
-                            + ", group_number integer not null"
-                            + ", point_order integer not null"
-                            + ", latitude real not null"
-                            + ", longitude real not null"
-                            + ", grid_id integer not null"
-                            + ", area_id integer not null"
-                            + ")";
-            db.execSQL(POINT_DATABASE_CREATE_STATES);
+        String POINT_DATABASE_CREATE_STATES =
+                "create table if not exists " + WALL_POINT_TABLE + " ("
+                        + " id integer primary key"
+                        + ", node_id integer"
+                        + ", group_number integer not null"
+                        + ", point_order integer not null"
+                        + ", latitude real not null"
+                        + ", longitude real not null"
+                        + ", grid_id integer not null"
+                        + ", area_id integer not null"
+                        + ")";
+        db.execSQL(POINT_DATABASE_CREATE_STATES);
 
-            /**
-             * bearingはラジアン形式
-             */
-            String LINK_DATABASE_CREATE_STATES =
-                    "create table if not exists " + LINK_TABLE + " ("
-                            + " id integer primary key"
-                            + ", node1_id integer not null"
-                            + ", node2_id integer not null"
-                            + ", distance real not null"
-                            + ", bearing real not null"
-                            + ", type integer not null"
-                            + ", pressure real not null"
-                            + ", area_id integer not null"
-                            + ")";
-            db.execSQL(LINK_DATABASE_CREATE_STATES);
+        /**
+         * bearingはラジアン形式
+         */
+        String LINK_DATABASE_CREATE_STATES =
+                "create table if not exists " + LINK_TABLE + " ("
+                        + " id integer primary key"
+                        + ", node1_id integer not null"
+                        + ", node2_id integer not null"
+                        + ", distance real not null"
+                        + ", bearing real not null"
+                        + ", type integer not null"
+                        + ", pressure real not null"
+                        + ", area_id integer not null"
+                        + ")";
+        db.execSQL(LINK_DATABASE_CREATE_STATES);
 
-            String LINK_GRID_DATABASE_CREATE_STATES =
-                    "create table if not exists " + LINK_GRID_TABLE + " ("
-                            + " link_id integer not null"
-                            + ", grid_id text not null"
-                            + ", area_id integer not null"
-                            + ")";
+        String LINK_GRID_DATABASE_CREATE_STATES =
+                "create table if not exists " + LINK_GRID_TABLE + " ("
+                        + " link_id integer not null"
+                        + ", grid_id text not null"
+                        + ", area_id integer not null"
+                        + ")";
 
-            db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
+        db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
 
-            execQuery(queryList, db);
-        }
+
     }
 
     //データベースの更新
@@ -140,10 +137,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * queryを実行する
      * @param queryList
-     * @param db
      */
-    private void execQuery(List<String> queryList, SQLiteDatabase db) {
-
+    public void execQueryList(List<String> queryList) {
+        SQLiteDatabase db = getWritableDatabase();
         try {
             db.beginTransaction();
             for(String query : queryList) {

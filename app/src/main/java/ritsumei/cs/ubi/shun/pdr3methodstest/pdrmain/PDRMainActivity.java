@@ -145,7 +145,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         double offset[] = {pref.getFloat(SettingsActivity.GYRO_OFFSET_X, 0.0f), pref.getFloat(SettingsActivity.GYRO_OFFSET_Y, 0.0f), pref.getFloat(SettingsActivity.GYRO_OFFSET_Z, 0.0f)};
 
-        db = new DatabaseHelper(this, getQueryFromFile(DB_QUERY_FILE));
+        db = new DatabaseHelper(this, DatabaseHelper.DATABASE_VERSION);
+        db.execQueryList(getQueryFromFile(DB_QUERY_FILE));
 
         /**
          * PDRの初期化
@@ -363,7 +364,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                     if(pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
                         TrackPoint collisionDetectMatchingTrackPoint = mCollisionDetectMatching.calculateCollisionDetectMatchingPosition(rawTrackPoint);
                         LatLng collisionDetectMatchingPoint = collisionDetectMatchingTrackPoint.getLocation();
-                        collisionDetectMatchingPdrPositionCalculator.setPoint(rawPoint.latitude, rawPoint.longitude, startDirection);
+                        collisionDetectMatchingPdrPositionCalculator.setPoint(startLat, startLng, -3);
+                        // collisionDetectMatchingPdrPositionCalculator.setPoint(rawPoint.latitude, rawPoint.longitude, startDirection);
                         collisionDetectMatchingDirectionCalculator.setDegreesDirection(startDirection);
                         createMarker(collisionDetectMatchingMarkerId, collisionDetectMatchingPoint, MarkerInfoObject.ROSE);
                     }

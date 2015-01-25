@@ -2,7 +2,6 @@ package ubilabmapmatchinglibrary.mapmatching;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -89,7 +88,7 @@ public class SkeletonMatchingHelper {
      */
     public static double calculateMatchingScore(LatLng point, LatLng lastPoint, Link link) {
         double pointsDirection = Calculator2D.calculateDirection(lastPoint, point);
-        Log.v("SCORE", "pointsDirection:" + pointsDirection);
+        //Log.v("SCORE", "pointsDirection:" + pointsDirection);
         return calculateMatchingScore(point, pointsDirection, link);
     }
 
@@ -105,8 +104,8 @@ public class SkeletonMatchingHelper {
 //        Log.v("SCORE", "Direction:" +  direction + ", LinkBearing:" + link.getBearing() + ", directionDiff:" + (direction - link.getBearing()));
         double directionScore = calculateDirectionScore((Math.toRadians(direction - link.getBearing())));
         double totalScore = distanceScore + directionScore;
-        Log.v("SCORE", "LinkID:" + link.getId() + ", TotalScore" + totalScore);
-        Log.v("SCORE", "--------------------------------------------------------------------");
+//        Log.v("SCORE", "LinkID:" + link.getId() + ", TotalScore" + totalScore);
+//        Log.v("SCORE", "--------------------------------------------------------------------");
         return totalScore;
     }
 
@@ -117,7 +116,7 @@ public class SkeletonMatchingHelper {
      */
     public static double calculateDistanceScore(double distance) {
         double score = MU_D - A * Math.pow(distance, N_D);
-        Log.v("SCORE", "Distance:" + distance + ", DistanceScore:" + score);
+//        Log.v("SCORE", "Distance:" + distance + ", DistanceScore:" + score);
         return score;
     }
 
