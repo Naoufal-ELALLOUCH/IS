@@ -137,10 +137,16 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
             boolean isCollision = false;
             if(trackPoint.getIsStraight()) {
+
                 if(!lastTransedTrackPoint.getIsStraight()) {
                     if(!(isCollision = isCollisionDetectLinkWall(turningTrajectory, matchingLink))) {
                         if (linkList.size() > 1) {
-                            isCollision = isCollisionDetectLinkWall(turningTrajectory, linkList.get(linkList.size() - 2));
+ //                           isCollision = isCollisionDetectLinkWall(turningTrajectory, linkList.get(linkList.size() - 2));
+                            List<Link> turningLinkList = new ArrayList<>();
+                            turningLinkList.add(linkList.get(linkList.size() - 2));
+                            turningLinkList.add(linkList.get(linkList.size() - 1));
+                            List<List<LatLng>> wallinfo = mCollisionDetectMatchingHelper.getLinksWallInfo(turningLinkList);
+                            isCollision = mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(rawTrajectory, wallinfo);
                         }
                     }
                 } else {

@@ -20,6 +20,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import ritsumei.cs.ubi.shun.pdr3methodstest.R;
 import ubilabmapmatchinglibrary.mapmatching.Trajectory;
@@ -28,6 +30,8 @@ import ubilabmapmatchinglibrary.mapmatching.Trajectory;
 public class FloorMapActivity extends FragmentActivity {
 	public GoogleMap map;
 	public List<MarkerInfoObject> markerList;
+
+    public Map<String, LatLng> trajectoryMap = new TreeMap<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -191,6 +195,22 @@ public class FloorMapActivity extends FragmentActivity {
 
 		markerList.get(i).setPolyline(map.addPolyline(po));
 	}
+
+    public void drawPolylineAllPoints2(int id, int color) {
+//		Log.v("map","polyline:"+ id + ","+ lastPoint +"," + point + "," + color);
+        int i = searchIndex(id);
+
+        markerList.get(i).getPoints().clear();
+        for(Map.Entry<String, LatLng> e : trajectoryMap.entrySet()) {
+            markerList.get(i).addPoint(e.getValue());
+        }
+        PolylineOptions po = new PolylineOptions()
+                .addAll(markerList.get(i).getPoints())
+                .color(color)
+                .width(3.0f);
+
+        markerList.get(i).setPolyline(map.addPolyline(po));
+    }
 
 	/*
 	 * 2点間のPolylineを書く

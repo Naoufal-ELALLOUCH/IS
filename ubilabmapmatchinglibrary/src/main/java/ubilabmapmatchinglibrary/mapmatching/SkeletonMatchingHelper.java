@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ubilabmapmatchinglibrary.calculate.Calculator2D;
+import ubilabmapmatchinglibrary.calculate.PointInfoMeshcode;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Node;
@@ -307,35 +308,6 @@ public class SkeletonMatchingHelper {
        return getLinkListByGridIdList(getSurroundGridList(point));
     }
 
-//    /**
-//     * 指定したGridIdのリストを通るLinkのリストを取得する
-//     * @param surroundGridList
-//     * @return
-//     */
-//    public static List<Link> getLinkListByGridIdList(List<Integer> surroundGridList) {
-//        List<Link> firstCandidateMatchingLinkList = new ArrayList<Link>();
-//        for (int gridId : surroundGridList) {
-//            List<Integer> firstCandidateMatchingLinkIdList = db.getLinkIdListByGridId(gridId);
-//            for (int linkId : firstCandidateMatchingLinkIdList) {
-//                firstCandidateMatchingLinkList.add(db.getLinkById(linkId));
-//            }
-//        }
-//        return firstCandidateMatchingLinkList;
-//    }
-
-//    /**
-//     * 指定したLatLngの周囲9ます分のGridIdのリストを取得する
-//     * @param point
-//     * @return
-//     */
-//    public static List<Integer> getSurroundGridList(LatLng point) {
-//        //ひとまずgridは全部0のてい
-//        List<Integer> surroundGridList = new ArrayList<Integer>();
-//        surroundGridList.add(0);
-//
-//        return surroundGridList;
-//    }
-
     /**
      * 指定したGridIdのリストを通るLinkのリストを取得する
      * @param surroundGridList
@@ -343,10 +315,14 @@ public class SkeletonMatchingHelper {
      */
     public static List<Link> getLinkListByGridIdList(List<String> surroundGridList) {
         List<Link> firstCandidateMatchingLinkList = new ArrayList<Link>();
+        List<Integer> firstCandidateMatchingLinkIdList = new ArrayList<>();
         for (String gridId : surroundGridList) {
-            List<Integer> firstCandidateMatchingLinkIdList = db.getLinkIdListByGridId(gridId);
-            for (int linkId : firstCandidateMatchingLinkIdList) {
-                firstCandidateMatchingLinkList.add(db.getLinkById(linkId));
+            List<Integer> firstCandidateMatchingLinkIdListInGrid = db.getLinkIdListByGridId(gridId);
+            for (int linkId : firstCandidateMatchingLinkIdListInGrid) {
+                if(!firstCandidateMatchingLinkIdList.contains(linkId)) {
+                    firstCandidateMatchingLinkIdList.add(linkId);
+                    firstCandidateMatchingLinkList.add(db.getLinkById(linkId));
+                }
             }
         }
         return firstCandidateMatchingLinkList;
@@ -361,25 +337,25 @@ public class SkeletonMatchingHelper {
     public static List<String> getSurroundGridList(LatLng point) {
         List<String> surroundGridList = new ArrayList<>();
 
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(point.latitude, point.longitude, 9));
-//        LatLng movedPoint = calculateMovedPoint(point, 15, 0);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
-//        movedPoint = calculateMovedPoint(point, 15, 15);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
-//        movedPoint = calculateMovedPoint(point, 0, 15);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
-//        movedPoint = calculateMovedPoint(point, -15, 15);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
-//        movedPoint = calculateMovedPoint(point, -15, 0);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
-//        movedPoint = calculateMovedPoint(point, -15, -15);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
-//        movedPoint = calculateMovedPoint(point, 0, -15);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
-//        movedPoint = calculateMovedPoint(point, 15, -15);
-//        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(point.latitude, point.longitude, 9));
+        LatLng movedPoint = calculateMovedPoint(point, 15, 0);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        movedPoint = calculateMovedPoint(point, 15, 15);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        movedPoint = calculateMovedPoint(point, 0, 15);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        movedPoint = calculateMovedPoint(point, -15, 15);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        movedPoint = calculateMovedPoint(point, -15, 0);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        movedPoint = calculateMovedPoint(point, -15, -15);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        movedPoint = calculateMovedPoint(point, 0, -15);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
+        movedPoint = calculateMovedPoint(point, 15, -15);
+        surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
 
-        surroundGridList.add("0");//TODO:link_grid_infoが完成したら上のものに戻す
+        //surroundGridList.add("0");//TODO:link_grid_infoが完成したら上のものに戻す
 
         return surroundGridList;
     }

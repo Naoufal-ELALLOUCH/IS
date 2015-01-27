@@ -229,6 +229,25 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             leftWallInfo.addAll(intersectionLeftWall);
             leftWallInfo.add(nextLinkGoalPoints[0].getLatng());
 
+//            List<List<LatLng>> intersectionWallList = new ArrayList<>();
+//            for(int i = 0; i < commonPointList.size() ; i++) {
+//                intersectionWallList.get(i).add(commonPointList.get(i).getLatng());
+//                int j = i+1;
+//                if(j == commonPointList.size()) {
+//                    j = 0;
+//                }
+//                intersectionWallList.get(i).add(commonPointList.get(j).getLatng());
+//            }
+//
+//            List<Integer> connectingLinkIdList = db.getConnectingLinkIdListByLinkId(firstLink.getId());
+//            List<Link> connectingLinkList = db.getLinkListByIdList(connectingLinkIdList);
+//
+//            List<Integer> removeindexList;
+//            for(int i = 0; i < intersectionWallList.size() ; i++) {
+//                List<LatLng> wall = intersectionWallList.get(i);
+//                for(Link link : )
+//
+//            }
             wallInfo.add(rightWallInfo);
             wallInfo.add(leftWallInfo);
         }

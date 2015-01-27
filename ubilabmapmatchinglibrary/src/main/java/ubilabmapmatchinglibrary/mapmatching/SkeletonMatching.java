@@ -69,6 +69,9 @@ public class SkeletonMatching {
                 }
 
                 matchingLink = mSkeletonMatchingHelper.getMatchingLink(correctedTrackPoint.getLocation(), baseTrackPoint.getLocation(), candidateMatchingLinkList);
+                if(matchingLink == null) {
+                    return null;
+                }
                 matchedPoint = mSkeletonMatchingHelper.getProjectedPoint(correctedTrackPoint.getLocation(), matchingLink);
                 LatLng baseMatchedPoint = mSkeletonMatchingHelper.getProjectedPoint(baseTrackPoint.getLocation(), matchingLink);
 
@@ -92,6 +95,7 @@ public class SkeletonMatching {
 
         } else { //過去の位置情報がない時のスケルトンマッチング
             List<Link> firstCandidateMatchingLinkList = mSkeletonMatchingHelper.getFirstCandidateLinkList(point);
+            Log.v("SM", "firstCandidateMatchingLinkList.size():" + firstCandidateMatchingLinkList.size());
             if(firstCandidateMatchingLinkList.size() == 0) {
                 return null;
             }
