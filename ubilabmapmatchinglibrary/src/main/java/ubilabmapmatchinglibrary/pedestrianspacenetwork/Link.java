@@ -1,5 +1,7 @@
 package ubilabmapmatchinglibrary.pedestrianspacenetwork;
 
+import android.util.Log;
+
 /**
  * Link(Node同士を結ぶ線)を表すクラス
  */
@@ -127,9 +129,11 @@ public class Link {
     public static LinkType castToLinkType(int num) {
         LinkType[] enumArray = LinkType.values();
 
+        Log.v("WALL_TEST", "typeNum:" + num);
         for(LinkType enumInt : enumArray) {
             // 引数intとenum型の文字列部分を比較します。
             if (num == enumInt.ordinal()){
+                Log.v("WALL_TEST", "type:" + enumInt.toString());
                 return enumInt;
             }
         }
