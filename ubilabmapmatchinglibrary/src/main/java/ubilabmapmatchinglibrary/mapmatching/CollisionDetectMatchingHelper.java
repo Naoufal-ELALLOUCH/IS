@@ -28,6 +28,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
         List<LatLng> oneSideWall = new ArrayList<LatLng>();
         List<LatLng> anotherSideWall = new ArrayList<LatLng>();
 
+        Log.v("WallTest", "link.getType" + link.getType() + ", " + link.getType().ordinal());
         if(link.getType() == Link.LinkType.OPEN_SPACE) {
             List<WallPoint> openSpacePointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode1Id()).get(0).getGroupNumber());
 
@@ -37,7 +38,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             List<WallPoint> wallPointListB = new ArrayList<>();
 
             for(WallPoint wallPoint :openSpacePointList) {
-                Log.v("CM", "wallPoint.getNodeId:" + wallPoint.getNodeId());
+                Log.v("CM", "wallPoint.getId:" + wallPoint.getId() + "wallPoint.getNodeId:" + wallPoint.getNodeId());
                 if(wallPoint.getNodeId() != -1) {
                     if (!openSpaceNodeList.contains(wallPoint.getNodeId())) {
                         wallPointListA.add(wallPoint);
@@ -52,6 +53,14 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                 wallPointListA.add(wallPointListA.get(0));
                 wallPointListA.remove(0);
 
+
+                for(WallPoint wallPointA : wallPointListA) {
+                    Log.v("WALL_TEST", "wallPointA:" + wallPointA.getId());
+                }
+                for(WallPoint wallPointB : wallPointListB) {
+                    Log.v("WALL_TEST", "wallPointB:" + wallPointB.getId());
+                }
+
                 for(int i = 0; i < wallPointListA.size(); i++) {
                     List<LatLng> wall = getOneSideIntersectionWall(openSpacePointList, wallPointListB.get(i).getPointOrder(), wallPointListA.get(i).getPointOrder(), true);
                     linkWall.add(wall);
@@ -63,55 +72,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                 }
             }
 
-//            List<WallPoint> openSpacePointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode1Id()).get(0).getGroupNumber());
-//
-//            List<WallPoint> linkStartPoints = db.getPointsByNodeId(link.getNode1Id());
-//            List<WallPoint> linkGoalPoints = db.getPointsByNodeId(link.getNode2Id());
-//
-//            int startRightOrder = -1;
-//            int startLeftOrder = -1;
-//            int goalRightOrder = -1;
-//            int goalLeftOrder = -1;
-//
-//            if(linkStartPoints.get(0).getPointOrder() < linkStartPoints.get(1).getPointOrder()) {
-//                startRightOrder = linkStartPoints.get(1).getPointOrder();
-//                startLeftOrder = linkStartPoints.get(0).getPointOrder();
-//            } else {
-//                if(linkStartPoints.get(1).getPointOrder() == openSpacePointList.size()) {
-//                    startRightOrder = linkStartPoints.get(1).getPointOrder();
-//                    startLeftOrder = linkStartPoints.get(0).getPointOrder();
-//                } else {
-//                    startRightOrder = linkStartPoints.get(0).getPointOrder();
-//                    startLeftOrder = linkStartPoints.get(1).getPointOrder();
-//                }
-//            }
-//
-//            if(linkGoalPoints.get(1).getPointOrder() < linkGoalPoints.get(0).getPointOrder()) {
-//                goalRightOrder = linkGoalPoints.get(1).getPointOrder();
-//                goalLeftOrder = linkGoalPoints.get(0).getPointOrder();
-//            } else {
-//                if(linkGoalPoints.get(1).getPointOrder() == openSpacePointList.size()) {
-//                    goalRightOrder = linkGoalPoints.get(1).getPointOrder();
-//                    goalLeftOrder = linkGoalPoints.get(0).getPointOrder();
-//                } else {
-//                    goalRightOrder = linkGoalPoints.get(0).getPointOrder();
-//                    goalLeftOrder = linkGoalPoints.get(1).getPointOrder();
-//                }
-//            }
-//
-//            //交差点の壁の右側を表すリスト
-//            List<WallPoint> intersectionRightWall = getOneSideIntersectionWall(openSpacePointList, startRightOrder, goalRightOrder, true);
-//            for(WallPoint wallPoint:intersectionRightWall) {
-//                oneSideWall.add(wallPoint.getLatng());
-//            }
-//
-//            //交差点の壁の左側を表すリスト
-//            List<WallPoint> intersectionLeftWall = getOneSideIntersectionWall(openSpacePointList, startLeftOrder, goalLeftOrder, false);
-//            for(WallPoint wallPoint:intersectionLeftWall) {
-//                anotherSideWall.add(wallPoint.getLatng());
-//            }
-
-        } else {
+        } else { //通路リンクの壁
             List<WallPoint> startPointList = db.getPointsByNodeId(link.getNode1Id());
             List<WallPoint> goalPointList = db.getPointsByNodeId(link.getNode2Id());
 

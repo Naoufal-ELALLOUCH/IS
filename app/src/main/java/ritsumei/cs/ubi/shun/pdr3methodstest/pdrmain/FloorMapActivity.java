@@ -60,7 +60,9 @@ public class FloorMapActivity extends FragmentActivity {
 	protected void moveToCreationCore() {
 
 		CameraUpdate cull =
-				CameraUpdateFactory.newLatLngZoom(new LatLng(34.979561, 135.964429), 19);
+//				CameraUpdateFactory.newLatLngZoom(new LatLng(34.979561, 135.964429), 19); //cc
+                CameraUpdateFactory.newLatLngZoom(new LatLng(34.702283947, 135.49986183), 19); //umechika
+
 		map.moveCamera(cull);
 
 	}
