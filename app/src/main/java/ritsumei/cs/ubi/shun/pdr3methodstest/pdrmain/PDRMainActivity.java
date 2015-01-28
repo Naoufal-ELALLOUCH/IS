@@ -32,7 +32,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
@@ -149,17 +148,28 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         double offset[] = {pref.getFloat(SettingsActivity.GYRO_OFFSET_X, 0.0f), pref.getFloat(SettingsActivity.GYRO_OFFSET_Y, 0.0f), pref.getFloat(SettingsActivity.GYRO_OFFSET_Z, 0.0f)};
 
-        db = new DatabaseHelper(this);
-        try {
 
-            db.createEmptyDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
+        /*ファイルからクエリを実行してDB作成*/
+        db = new DatabaseHelper(this, DatabaseHelper.DATABASE_VERSION);
+        db.execQueryList(getQueryFromFile(DB_QUERY_FILE));
 
 
-        //db = new DatabaseHelper(this, DatabaseHelper.DATABASE_VERSION);
-        //db.execQueryList(getQueryFromFile(DB_QUERY_FILE));
+
+        /* assetsのdbファイルをコピー*/
+//        db = new DatabaseHelper(this);
+//        try {
+//            db.createEmptyDataBase();
+//        } catch (IOException ioe) {
+//            throw new Error("Unable to create database");
+//        }
+
+
+
+
+
+
+
+
 
         /**
          * PDRの初期化
@@ -426,11 +436,11 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             List<Link> linkList = new ArrayList<>();
             linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(314));
             linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(316));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(306));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(177));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(179));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(181));
-
+            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(305));
+            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(307));
+            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(175));
+            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(173));
+            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(171));
             List<List<LatLng>> wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
 
             for(List<LatLng> wall : wallInfo) {
