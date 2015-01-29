@@ -4,15 +4,9 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,241 +25,241 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private List<String> queryList = new ArrayList<>();
     public Context context;
     private static DatabaseHelper sSingleton = null;
-
-    private SQLiteDatabase mDatabase;
-    private final Context mContext;
-    private final File mDatabasePath;
+//
+//    private SQLiteDatabase mDatabase;
+//    private final Context mContext;
+//    private final File mDatabasePath;
 
     private static String DB_NAME = "umechika_psn";
     private static String DB_NAME_ASSET = "umechika_psn.db";
 
-//    /**
-//     * クエリによってデータベースを作成するときのコンストラクタ
-//     * @param context
-//     * @param queryList
-//     */
-//    public DatabaseHelper(Context context, List<String> queryList) {
-//        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-//        this.context = context;
-//        this.queryList = queryList;
-//    }
+    /**
+     * クエリによってデータベースを作成するときのコンストラクタ
+     * @param context
+     * @param queryList
+     */
+    public DatabaseHelper(Context context, List<String> queryList) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        this.context = context;
+        this.queryList = queryList;
+    }
 
     /**
      * 既に用意されているデータベースを利用するときのコンストラクタ
      * @param context
      * @param databaseVersion
      */
-//    public DatabaseHelper(Context context, int databaseVersion) {
-//        super(context, DATABASE_NAME, null, databaseVersion);
-//        this.context = context;
-//    }
-//
-////    public static synchronized DatabaseHelper getInstance(Context context, List<String> queryList) {
-////        if (sSingleton == null) {
-////            sSingleton = new DatabaseHelper(context, queryList);
-////        }
-////        return sSingleton;
-////    }
-//
-//    public static synchronized DatabaseHelper getInstance(Context context, int databaseVersion) {
+    public DatabaseHelper(Context context, int databaseVersion) {
+        super(context, DATABASE_NAME, null, databaseVersion);
+        this.context = context;
+    }
+
+//    public static synchronized DatabaseHelper getInstance(Context context, List<String> queryList) {
 //        if (sSingleton == null) {
-//            sSingleton = new DatabaseHelper(context, databaseVersion);
+//            sSingleton = new DatabaseHelper(context, queryList);
 //        }
 //        return sSingleton;
 //    }
 
-
-    public DatabaseHelper(Context context) {
-        super(context, DB_NAME, null, DATABASE_VERSION);
-        mContext = context;
-        mDatabasePath = mContext.getDatabasePath(DB_NAME);
-    }
-
-    /**
-     * asset に格納したデータベースをコピーするための空のデータベースを作成する
-     */
-    public void createEmptyDataBase() throws IOException {
-        boolean dbExist = checkDataBaseExists();
-
-        if (dbExist) {
-            // すでにデータベースは作成されている
-        } else {
-            // このメソッドを呼ぶことで、空のデータベースがアプリのデフォルトシステムパスに作られる
-            getReadableDatabase();
-
-            try {
-                // asset に格納したデータベースをコピーする
-                copyDataBaseFromAsset();
-
-                String dbPath = mDatabasePath.getAbsolutePath();
-                SQLiteDatabase checkDb = null;
-                try {
-                    checkDb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
-                } catch (SQLiteException e) {
-                }
-
-                if (checkDb != null) {
-                    checkDb.setVersion(DATABASE_VERSION);
-                    checkDb.close();
-                }
-
-            } catch (IOException e) {
-                throw new Error("Error copying database");
-            }
+    public static synchronized DatabaseHelper getInstance(Context context, int databaseVersion) {
+        if (sSingleton == null) {
+            sSingleton = new DatabaseHelper(context, databaseVersion);
         }
-    }
-
-    /**
-     * 再コピーを防止するために、すでにデータベースがあるかどうか判定する
-     *
-     * @return 存在している場合 {@code true}
-     */
-    private boolean checkDataBaseExists() {
-        String dbPath = mDatabasePath.getAbsolutePath();
-
-        SQLiteDatabase checkDb = null;
-        try {
-            checkDb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
-        } catch (SQLiteException e) {
-            // データベースはまだ存在していない
-        }
-
-        if (checkDb == null) {
-            // データベースはまだ存在していない
-            return false;
-        }
-
-        int oldVersion = checkDb.getVersion();
-        int newVersion = DATABASE_VERSION;
-
-        if (oldVersion == newVersion) {
-            // データベースは存在していて最新
-            checkDb.close();
-            return true;
-        }
-
-        // データベースが存在していて最新ではないので削除
-        File f = new File(dbPath);
-        f.delete();
-        return false;
-    }
-
-    /**
-     * asset に格納したデーだベースをデフォルトのデータベースパスに作成したからのデータベースにコピーする
-     */
-    private void copyDataBaseFromAsset() throws IOException {
-
-        // asset 内のデータベースファイルにアクセス
-        InputStream mInput = mContext.getAssets().open(DB_NAME_ASSET);
-
-        // デフォルトのデータベースパスに作成した空のDB
-        OutputStream mOutput = new FileOutputStream(mDatabasePath);
-
-        // コピー
-        byte[] buffer = new byte[1024];
-        int size;
-        while ((size = mInput.read(buffer)) > 0) {
-            mOutput.write(buffer, 0, size);
-        }
-
-        // Close the streams
-        mOutput.flush();
-        mOutput.close();
-        mInput.close();
-    }
-
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    }
-
-    @Override
-    public synchronized void close() {
-        if(mDatabase != null)
-            mDatabase.close();
-
-        super.close();
+        return sSingleton;
     }
 
 
-
-
+//    public DatabaseHelper(Context context) {
+//        super(context, DB_NAME, null, DATABASE_VERSION);
+//        mContext = context;
+//        mDatabasePath = mContext.getDatabasePath(DB_NAME);
+//    }
 //
-//    //データベースの作成
+//    /**
+//     * asset に格納したデータベースをコピーするための空のデータベースを作成する
+//     */
+//    public void createEmptyDataBase() throws IOException {
+//        boolean dbExist = checkDataBaseExists();
+//
+//        if (dbExist) {
+//            // すでにデータベースは作成されている
+//        } else {
+//            // このメソッドを呼ぶことで、空のデータベースがアプリのデフォルトシステムパスに作られる
+//            getReadableDatabase();
+//
+//            try {
+//                // asset に格納したデータベースをコピーする
+//                copyDataBaseFromAsset();
+//
+//                String dbPath = mDatabasePath.getAbsolutePath();
+//                SQLiteDatabase checkDb = null;
+//                try {
+//                    checkDb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
+//                } catch (SQLiteException e) {
+//                }
+//
+//                if (checkDb != null) {
+//                    checkDb.setVersion(DATABASE_VERSION);
+//                    checkDb.close();
+//                }
+//
+//            } catch (IOException e) {
+//                throw new Error("Error copying database");
+//            }
+//        }
+//    }
+//
+//    /**
+//     * 再コピーを防止するために、すでにデータベースがあるかどうか判定する
+//     *
+//     * @return 存在している場合 {@code true}
+//     */
+//    private boolean checkDataBaseExists() {
+//        String dbPath = mDatabasePath.getAbsolutePath();
+//
+//        SQLiteDatabase checkDb = null;
+//        try {
+//            checkDb = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+//        } catch (SQLiteException e) {
+//            // データベースはまだ存在していない
+//        }
+//
+//        if (checkDb == null) {
+//            // データベースはまだ存在していない
+//            return false;
+//        }
+//
+//        int oldVersion = checkDb.getVersion();
+//        int newVersion = DATABASE_VERSION;
+//
+//        if (oldVersion == newVersion) {
+//            // データベースは存在していて最新
+//            checkDb.close();
+//            return true;
+//        }
+//
+//        // データベースが存在していて最新ではないので削除
+//        File f = new File(dbPath);
+//        f.delete();
+//        return false;
+//    }
+//
+//    /**
+//     * asset に格納したデーだベースをデフォルトのデータベースパスに作成したからのデータベースにコピーする
+//     */
+//    private void copyDataBaseFromAsset() throws IOException {
+//
+//        // asset 内のデータベースファイルにアクセス
+//        InputStream mInput = mContext.getAssets().open(DB_NAME_ASSET);
+//
+//        // デフォルトのデータベースパスに作成した空のDB
+//        OutputStream mOutput = new FileOutputStream(mDatabasePath);
+//
+//        // コピー
+//        byte[] buffer = new byte[1024];
+//        int size;
+//        while ((size = mInput.read(buffer)) > 0) {
+//            mOutput.write(buffer, 0, size);
+//        }
+//
+//        // Close the streams
+//        mOutput.flush();
+//        mOutput.close();
+//        mInput.close();
+//    }
+//
 //    @Override
 //    public void onCreate(SQLiteDatabase db) {
-//
-//        //UbiNaviで出力した、DB生成クエリを読み込む
-//        //execQueryFromFile(DB_QUERY_FILE, db);
-//
-//        //スキーマの定義
-//        String NODE_DATABASE_CREATE_STATES =
-//                "create table if not exists " + NODE_TABLE + "("
-//                        + " id integer primary key"
-//                        + ", latitude double not null"
-//                        + ", longitude double not null"
-//                        + ", level real not null"
-//                        + ", type integer not null"
-//                        + ", grid_id text not null"
-//                        + ", area_id integer not null"
-//                        + ");";
-//        db.execSQL(NODE_DATABASE_CREATE_STATES);
-//
-//
-//        String POINT_DATABASE_CREATE_STATES =
-//                "create table if not exists " + WALL_POINT_TABLE + " ("
-//                        + " id integer primary key"
-//                        + ", node_id integer"
-//                        + ", group_number integer not null"
-//                        + ", point_order integer not null"
-//                        + ", latitude real not null"
-//                        + ", longitude real not null"
-//                        + ", grid_id integer not null"
-//                        + ", area_id integer not null"
-//                        + ")";
-//        db.execSQL(POINT_DATABASE_CREATE_STATES);
-//
-//        /**
-//         * bearingはラジアン形式
-//         */
-//        String LINK_DATABASE_CREATE_STATES =
-//                "create table if not exists " + LINK_TABLE + " ("
-//                        + " id integer primary key"
-//                        + ", node1_id integer not null"
-//                        + ", node2_id integer not null"
-//                        + ", distance real not null"
-//                        + ", bearing real not null"
-//                        + ", type integer not null"
-//                        + ", pressure real not null"
-//                        + ", area_id integer not null"
-//                        + ")";
-//        db.execSQL(LINK_DATABASE_CREATE_STATES);
-//
-//        String LINK_GRID_DATABASE_CREATE_STATES =
-//                "create table if not exists " + LINK_GRID_TABLE + " ("
-//                        + " link_id integer not null"
-//                        + ", grid_id text not null"
-//                        + ", area_id integer not null"
-//                        + ")";
-//
-//        db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
-//
-//
 //    }
 //
-//    //データベースの更新
-//	/*DATABASE_VERSIONの値が最初に実行した時と、新しく実行した時の値が等しくなければ、
-//	 * このメソッドが呼び出され、データベースを再度作成する
-//	 * 値が大きくても、小さくてもよい*/
 //    @Override
 //    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-//        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
-//        Log.v("DB","onUpgrade");
-//        onCreate(db);
 //    }
+//
+//    @Override
+//    public synchronized void close() {
+//        if(mDatabase != null)
+//            mDatabase.close();
+//
+//        super.close();
+//    }
+
+
+
+
+
+    //データベースの作成
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+
+        //UbiNaviで出力した、DB生成クエリを読み込む
+        //execQueryFromFile(DB_QUERY_FILE, db);
+
+        //スキーマの定義
+        String NODE_DATABASE_CREATE_STATES =
+                "create table if not exists " + NODE_TABLE + "("
+                        + " id integer primary key"
+                        + ", latitude double not null"
+                        + ", longitude double not null"
+                        + ", level real not null"
+                        + ", type integer not null"
+                        + ", grid_id text not null"
+                        + ", area_id integer not null"
+                        + ");";
+        db.execSQL(NODE_DATABASE_CREATE_STATES);
+
+
+        String POINT_DATABASE_CREATE_STATES =
+                "create table if not exists " + WALL_POINT_TABLE + " ("
+                        + " id integer primary key"
+                        + ", node_id integer"
+                        + ", group_number integer not null"
+                        + ", point_order integer not null"
+                        + ", latitude real not null"
+                        + ", longitude real not null"
+                        + ", grid_id integer not null"
+                        + ", area_id integer not null"
+                        + ")";
+        db.execSQL(POINT_DATABASE_CREATE_STATES);
+
+        /**
+         * bearingはラジアン形式
+         */
+        String LINK_DATABASE_CREATE_STATES =
+                "create table if not exists " + LINK_TABLE + " ("
+                        + " id integer primary key"
+                        + ", node1_id integer not null"
+                        + ", node2_id integer not null"
+                        + ", distance real not null"
+                        + ", bearing real not null"
+                        + ", type integer not null"
+                        + ", pressure real not null"
+                        + ", area_id integer not null"
+                        + ")";
+        db.execSQL(LINK_DATABASE_CREATE_STATES);
+
+        String LINK_GRID_DATABASE_CREATE_STATES =
+                "create table if not exists " + LINK_GRID_TABLE + " ("
+                        + " link_id integer not null"
+                        + ", grid_id text not null"
+                        + ", area_id integer not null"
+                        + ")";
+
+        db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
+
+
+    }
+
+    //データベースの更新
+	/*DATABASE_VERSIONの値が最初に実行した時と、新しく実行した時の値が等しくなければ、
+	 * このメソッドが呼び出され、データベースを再度作成する
+	 * 値が大きくても、小さくてもよい*/
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
+        Log.v("DB","onUpgrade");
+        onCreate(db);
+    }
 
     /**
      * queryを実行する

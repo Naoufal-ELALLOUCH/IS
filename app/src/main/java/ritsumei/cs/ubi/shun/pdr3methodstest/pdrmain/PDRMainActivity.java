@@ -32,7 +32,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
@@ -96,6 +95,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 
     private PeakStepDetector stepDetector;
 
+    private DatabaseHelper db;
     //PDRのみ
     private PDRPositionCalculator pdrPositionCalculator;
     private DirectionCalculator directionCalculator;
@@ -119,7 +119,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 
     private DecimalFormat df = new DecimalFormat("0.00");
 
-    DatabaseHelper db;
+    private EnginePrefConfig enginePrefConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,17 +149,9 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         double offset[] = {pref.getFloat(SettingsActivity.GYRO_OFFSET_X, 0.0f), pref.getFloat(SettingsActivity.GYRO_OFFSET_Y, 0.0f), pref.getFloat(SettingsActivity.GYRO_OFFSET_Z, 0.0f)};
 
-        db = new DatabaseHelper(this);
-        try {
+        enginePrefConfig = new EnginePrefConfig(this);
 
-            db.createEmptyDataBase();
-        } catch (IOException ioe) {
-            throw new Error("Unable to create database");
-        }
-
-
-        //db = new DatabaseHelper(this, DatabaseHelper.DATABASE_VERSION);
-        //db.execQueryList(getQueryFromFile(DB_QUERY_FILE));
+        db = new DatabaseHelper(this, 1);
 
         /**
          * PDRの初期化
@@ -312,8 +304,33 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                     moveMarker(collisionDetectMatchingMarkerId, collisionDetectMatchingTrackPoint.getLocation());
                     location = collisionDetectMatchingTrackPoint.getLocation();
 
+                    map.clear();
+                    List<Link> linkList = mCollisionDetectMatching.getLinkList();
+                    if(linkList.size() > 0) {
+                        List<List<LatLng>> wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
+
+                        for (List<LatLng> wall : wallInfo) {
+                            PolylineOptions po = new PolylineOptions()
+                                    .color(Color.BLUE)
+                                    .width(3)
+                                    .addAll(wall);
+                            Polyline polyline = map.addPolyline(po);
+                        }
+
+
+                        for (Link link : linkList) {
+                            PolylineOptions po = new PolylineOptions()
+                                    .width(3)
+                                    .color(Color.GREEN)
+                                    .add(db.getNodeById(link.getNode1Id()).getLatLng())
+                                    .add(db.getNodeById(link.getNode2Id()).getLatLng());
+                            Polyline polyline = map.addPolyline(po);
+                        }
+                    }
                     directionTextView.setText("" + df.format(collisionDetectMatchingTrackPoint.getDirection()) + "°, linkId:" + collisionDetectMatchingTrackPoint.getLinkId());
                 } else {
+
+                    Log.e("Activity", "change raw PDR");
                     isCollisionDetectSucMatchingSuccess = false;
                     moveMarker(collisionDetectMatchingMarkerId, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()));
                     location = new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng());
@@ -394,8 +411,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                     if(pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
                         TrackPoint collisionDetectMatchingTrackPoint = mCollisionDetectMatching.calculateCollisionDetectMatchingPosition(rawTrackPoint);
                         LatLng collisionDetectMatchingPoint = collisionDetectMatchingTrackPoint.getLocation();
-                        collisionDetectMatchingPdrPositionCalculator.setPoint(startLat, startLng, -3);
-                        // collisionDetectMatchingPdrPositionCalculator.setPoint(rawPoint.latitude, rawPoint.longitude, startDirection);
+//                        collisionDetectMatchingPdrPositionCalculator.setPoint(startLat, startLng, -3);
+                        collisionDetectMatchingPdrPositionCalculator.setPoint(rawPoint.latitude, rawPoint.longitude, startDirection);
                         collisionDetectMatchingDirectionCalculator.setDegreesDirection(startDirection);
                         createMarker(collisionDetectMatchingMarkerId, collisionDetectMatchingPoint, MarkerInfoObject.RED);
                     }
@@ -423,33 +440,33 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             }
         } else if (v.getId() == R.id.resetButton) {
 
-            List<Link> linkList = new ArrayList<>();
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(314));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(316));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(306));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(177));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(179));
-            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(181));
-
-            List<List<LatLng>> wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
-
-            for(List<LatLng> wall : wallInfo) {
-                PolylineOptions po = new PolylineOptions()
-                        .color(Color.BLUE)
-                        .width(3)
-                        .addAll(wall);
-                Polyline polyline = map.addPolyline(po);
-            }
-
-
-            for(Link link : linkList) {
-                PolylineOptions po = new PolylineOptions()
-                        .width(3)
-                        .color(Color.RED)
-                        .add(db.getNodeById(link.getNode1Id()).getLatLng())
-                        .add(db.getNodeById(link.getNode2Id()).getLatLng());
-                Polyline polyline = map.addPolyline(po);
-            }
+//            List<Link> linkList = new ArrayList<>();
+//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(314));
+//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(316));
+//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(306));
+//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(177));
+//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(179));
+//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(181));
+//
+//            List<List<LatLng>> wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
+//
+//            for(List<LatLng> wall : wallInfo) {
+//                PolylineOptions po = new PolylineOptions()
+//                        .color(Color.BLUE)
+//                        .width(3)
+//                        .addAll(wall);
+//                Polyline polyline = map.addPolyline(po);
+//            }
+//
+//
+//            for(Link link : linkList) {
+//                PolylineOptions po = new PolylineOptions()
+//                        .width(3)
+//                        .color(Color.RED)
+//                        .add(db.getNodeById(link.getNode1Id()).getLatLng())
+//                        .add(db.getNodeById(link.getNode2Id()).getLatLng());
+//                Polyline polyline = map.addPolyline(po);
+//            }
 
             /**
              * 軌跡、現在地をリセットする

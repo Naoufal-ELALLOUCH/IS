@@ -84,139 +84,143 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
      * @return
      */
     public TrackPoint calculateCollisionDetectMatchingPosition(TrackPoint trackPoint) {
-        rawTrajectory.add(trackPoint);
 
-        TrackPoint smTrackPoint = mSkeletonMatching.calculateSkeletonMatchingPosition(trackPoint);
-        if(smTrackPoint == null) {
-            return null;
-        } else {
-            skeletonMatchingTrackPoint.setTrackPoint(smTrackPoint);
-        }
-        Link matchingLink = mCollisionDetectMatchingHelper.db.getLinkById(skeletonMatchingTrackPoint.getLinkId());
+        try {
+            rawTrajectory.add(trackPoint);
 
-        Log.v("CM", "linkId:" + matchingLink.getId());
-        trackPoint.setLinkId(matchingLink.getId());
-
-        if(!isFirst) {
-            if(trackPoint.getIsStraight()) {
-                if(!lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り終わり
-                    if(lastStraightLinkId != matchingLink.getId()) {
-                        if(turnCount > 0) {
-                            rawTrajectory.removeTrajectory(turndStepCount);
-                            adjustStepNumberOfHighAccuracyPoints(turndStepCount);
-
-                            linkList.remove(0);
-                            Log.v("CM", "remove 1");
-                        }
-
-                        turnCount++;
-                        turndStepCount = rawTrajectory.size() - 1;
-                    } else {
-                        passageFinishStepCount.remove(passageFinishStepCount.size() - 1);
-                    }
-                }
+            TrackPoint smTrackPoint = mSkeletonMatching.calculateSkeletonMatchingPosition(trackPoint);
+            if (smTrackPoint == null) {
+                return null;
             } else {
-                if(lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り始め
-				/*通路終了時の歩数*/
-                    passageFinishStepCount.add(rawTrajectory.size() - 1);
-                    lastStraightLinkId = lastLinkId;
-                }
+                skeletonMatchingTrackPoint.setTrackPoint(smTrackPoint);
             }
+            Link matchingLink = mCollisionDetectMatchingHelper.db.getLinkById(skeletonMatchingTrackPoint.getLinkId());
 
-            if(lastLinkId != matchingLink.getId()) {
-                if(linkList.size() > 1) {
+            Log.v("CM", "linkId:" + matchingLink.getId());
+            trackPoint.setLinkId(matchingLink.getId());
 
-                    int lastCommonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), linkList.get(linkList.size() - 1));
-                    int commonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), matchingLink);
-                    if (lastCommonNodeId == commonNodeId) {
-                        linkList.remove(linkList.size() - 1);
-                    }
-                }
-                linkList.add(matchingLink);
-            }
+            if (!isFirst) {
+                if (trackPoint.getIsStraight()) {
+                    if (!lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り終わり
+                        if (lastStraightLinkId != matchingLink.getId()) {
+                            if (turnCount > 0) {
+                                rawTrajectory.removeTrajectory(turndStepCount);
+                                adjustStepNumberOfHighAccuracyPoints(turndStepCount);
+                                linkList.remove(0);
+                            }
 
-            boolean isCollision = false;
-            if(trackPoint.getIsStraight()) {
-
-                if(!lastTransedTrackPoint.getIsStraight()) {
-                    if(!(isCollision = isCollisionDetectLinkWall(turningTrajectory, matchingLink))) {
-                        if (linkList.size() > 1) {
- //                           isCollision = isCollisionDetectLinkWall(turningTrajectory, linkList.get(linkList.size() - 2));
-                            List<Link> turningLinkList = new ArrayList<>();
-                            turningLinkList.add(linkList.get(linkList.size() - 2));
-                            turningLinkList.add(linkList.get(linkList.size() - 1));
-                            List<List<LatLng>> wallinfo = mCollisionDetectMatchingHelper.getLinksWallInfo(turningLinkList);
-                            isCollision = mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(rawTrajectory, wallinfo);
+                            turnCount++;
+                            turndStepCount = rawTrajectory.size() - 1;
+                        } else {
+                            passageFinishStepCount.remove(passageFinishStepCount.size() - 1);
                         }
                     }
                 } else {
-                    isCollision = isCollisionDetectLinkWall(trackPoint.getLocation(), lastTransedTrackPoint.getLocation(), matchingLink);
+                    if (lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り始め
+				/*通路終了時の歩数*/
+                        passageFinishStepCount.add(rawTrajectory.size() - 1);
+                        lastStraightLinkId = lastLinkId;
+                    }
                 }
-                turningTrajectory.clear();
-            } else {
+
+                if (lastLinkId != matchingLink.getId()) {
+                    if (linkList.size() > 1) {
+
+                        int lastCommonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), linkList.get(linkList.size() - 1));
+                        int commonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), matchingLink);
+                        if (lastCommonNodeId == commonNodeId) {
+                            linkList.remove(linkList.size() - 1);
+                        }
+                    }
+                    linkList.add(matchingLink);
+                }
+
+                boolean isCollision = false;
+                if (trackPoint.getIsStraight()) {
+
+                    if (!lastTransedTrackPoint.getIsStraight()) {
+                        if (!(isCollision = isCollisionDetectLinkWall(turningTrajectory, matchingLink))) {
+                            if (linkList.size() > 1) {
+                                //isCollision = isCollisionDetectLinkWall(turningTrajectory, linkList.get(linkList.size() - 2));
+                                List<Link> turningLinkList = new ArrayList<>();
+                                turningLinkList.add(linkList.get(linkList.size() - 2));
+                                turningLinkList.add(linkList.get(linkList.size() - 1));
+                                List<List<LatLng>> wallinfo = mCollisionDetectMatchingHelper.getLinksWallInfo(turningLinkList);
+                                isCollision = mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(rawTrajectory, wallinfo);
+                            }
+                        }
+                    } else {
+                        isCollision = isCollisionDetectLinkWall(trackPoint.getLocation(), lastTransedTrackPoint.getLocation(), matchingLink);
+                    }
+                    turningTrajectory.clear();
+                } else {
                     turningTrajectory.add(trackPoint);
 
-            }
+                }
 
-            if(isCollision) {
+                if (isCollision) {
 
-                List<Point> rateSet = new ArrayList<Point>();
-                rateSet.addAll(getRateSetNotCollideLinksWall(rawTrajectory, linkList));
+                    List<Point> rateSet = new ArrayList<Point>();
+                    rateSet.addAll(getRateSetNotCollideLinksWall(rawTrajectory, linkList));
 
-                //壁に当たらないような変換ができないとき、初期値をスケルトンマッチングのものに切り替える
-                if(rateSet.size() == 0) {
-                    LatLng skeletonMatchingPoint = mCollisionDetectMatchingHelper.getProjectedPoint(trackPoint.getLocation(), matchingLink);
-                    double matchingDirection = getMatchingLinkDirection(trackPoint.getDirection(), matchingLink);
-                    trackPoint.setLocation(skeletonMatchingPoint);
-                    trackPoint.setDirection(matchingDirection);
-                    newStartTrackPoint = trackPoint;
+                    //壁に当たらないような変換ができないとき、初期値をスケルトンマッチングのものに切り替える
+                    if (rateSet.size() == 0) {
+                        LatLng skeletonMatchingPoint = mCollisionDetectMatchingHelper.getProjectedPoint(trackPoint.getLocation(), matchingLink);
+                        double matchingDirection = getMatchingLinkDirection(trackPoint.getDirection(), matchingLink);
+                        trackPoint.setLocation(skeletonMatchingPoint);
+                        trackPoint.setDirection(matchingDirection);
+                        newStartTrackPoint = trackPoint;
 
-                    rawTrajectory.clear();
-                    rawTrajectory.add(trackPoint);
+                        rawTrajectory.clear();
+                        rawTrajectory.add(trackPoint);
 
-                    linkList.clear();
-                    linkList.add(matchingLink);
+                        linkList.clear();
+                        linkList.add(matchingLink);
 
-                    turndStepCount = 0;
-                    turnCount = 0;
-                    highAccuracyPointList.clear();
+                        turndStepCount = 0;
+                        turnCount = 0;
+                        highAccuracyPointList.clear();
 
-                } else {//壁に当たらないように変換できるような較正係数の組から尤もらしいものを選択し、変換を行う
-                    if (isHighAccuracyPoint) {
+                    } else {//壁に当たらないように変換できるような較正係数の組から尤もらしいものを選択し、変換を行う
+                        if (isHighAccuracyPoint) {
                       /*最もマッチングするリンクに近い軌跡に変換する較正係数の組を取得する*/
-                        correctRate.set(getTransedTrajectoryToPassHighAccuracyPoints(rawTrajectory, rateSet, highAccuracyPointList, stepNumberList));
-                    } else {
-                        correctRate = getCentroid(rateSet);
+                            correctRate.set(getTransedTrajectoryToPassHighAccuracyPoints(rawTrajectory, rateSet, highAccuracyPointList, stepNumberList));
+                        } else {
+                            correctRate = getCentroid(rateSet);
+                        }
+
+                        rawTrajectory.transTrack(correctRate);
+                        lastDirectionRate = correctRate.getX() * lastDirectionRate;
+                        lastDistanceRate = correctRate.getY() * lastDistanceRate;
+                        trackPoint = rawTrajectory.get(rawTrajectory.size() - 1);
+
+                        Log.v("CM", "{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
                     }
 
-                    rawTrajectory.transTrack(correctRate);
-                    lastDirectionRate = correctRate.getX() * lastDirectionRate;
-                    lastDistanceRate = correctRate.getY() * lastDistanceRate;
-                    trackPoint = rawTrajectory.get(rawTrajectory.size() - 1);
+                    int SIZE = mTrajectoryTransedListeners.size();
+                    for (int i = 0; i < SIZE; i++) {
+                        mTrajectoryTransedListeners.get(i).onTrajectoryTransed(new Point(lastDirectionRate, lastDistanceRate), rawTrajectory, trackPoint);
+                    }
+                    mSkeletonMatching.setFirst();
 
-                    Log.v("CM", "{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
                 }
-
-                int SIZE = mTrajectoryTransedListeners.size();
-                for (int i = 0; i < SIZE; i++) {
-                    mTrajectoryTransedListeners.get(i).onTrajectoryTransed(new Point(lastDirectionRate, lastDistanceRate), rawTrajectory, trackPoint);
-                }
-                mSkeletonMatching.setFirst();
-
+            } else {
+                isFirst = false;
+                passageFinishStepCount.add(0);
+                linkList.add(matchingLink);
+                Log.v("CM", "first");
             }
-        } else {
-            isFirst = false;
-            passageFinishStepCount.add(0);
-            linkList.add(matchingLink);
-            Log.v("CM", "first");
+
+            lastSkeletonMatchingTrackPoint.setTrackPoint(skeletonMatchingTrackPoint);
+            lastTransedTrackPoint.setTrackPoint(trackPoint);
+
+            lastLinkId = matchingLink.getId();
+
+            return trackPoint;
+        } catch(Exception e) {
+            Log.e("CM", "MapMatchig is Failed");
+            return null;
         }
-
-        lastSkeletonMatchingTrackPoint.setTrackPoint(skeletonMatchingTrackPoint);
-        lastTransedTrackPoint.setTrackPoint(trackPoint);
-
-        lastLinkId = matchingLink.getId();
-
-        return trackPoint;
     }
 
    private List<Point> getRateSetNotCollideLinksWall(Trajectory trajectory, List<Link> linkList) {
@@ -421,6 +425,10 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         } else {
             return -(matchingLink.getBearing());
         }
+    }
+
+    public List<Link> getLinkList() {
+        return linkList;
     }
 
 }

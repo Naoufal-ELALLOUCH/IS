@@ -30,4 +30,11 @@
         android:layout_height="wrap_content"
         android:text="Applay"
         android:id="@+id/method_applay_button"/>
+
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Download"
+        android:id="@+id/button_download"/>
 </LinearLayout>

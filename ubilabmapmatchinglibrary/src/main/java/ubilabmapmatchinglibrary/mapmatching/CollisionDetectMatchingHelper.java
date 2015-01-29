@@ -53,14 +53,6 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                 wallPointListA.add(wallPointListA.get(0));
                 wallPointListA.remove(0);
 
-
-                for(WallPoint wallPointA : wallPointListA) {
-                    Log.v("WALL_TEST", "wallPointA:" + wallPointA.getId());
-                }
-                for(WallPoint wallPointB : wallPointListB) {
-                    Log.v("WALL_TEST", "wallPointB:" + wallPointB.getId());
-                }
-
                 for(int i = 0; i < wallPointListA.size(); i++) {
                     List<LatLng> wall = getOneSideIntersectionWall(openSpacePointList, wallPointListB.get(i).getPointOrder(), wallPointListA.get(i).getPointOrder(), true);
                     linkWall.add(wall);
@@ -73,8 +65,9 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             }
 
         } else { //通路リンクの壁
-            List<WallPoint> startPointList = db.getPointsByNodeId(link.getNode1Id());
-            List<WallPoint> goalPointList = db.getPointsByNodeId(link.getNode2Id());
+            List<WallPoint> startPointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode1Id()).get(0).getGroupNumber());
+            List<WallPoint> goalPointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode2Id()).get(0).getGroupNumber());
+            //List<WallPoint> goalPointList = db.getPointsByNodeId(link.getNode2Id());
 
             WallPoint[] linkStartPoints = getCrossLinkPoints(link, startPointList);
             WallPoint[] linkGoalPoints = getCrossLinkPoints(link, goalPointList);
@@ -235,6 +228,8 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             List<List<LatLng>> linksWallInfo = new ArrayList<List<LatLng>>();
             List<Link> passageLinkList= new ArrayList<>();
             for(Link link : linkList) {
+
+                Log.v("CM", "linkList linkId:" + link.getId());
                 if (link.getType() == Link.LinkType.OPEN_SPACE) {
                     if (passageLinkList.size() != 0) {
                         linksWallInfo.addAll(getLinksWallInfo(passageLinkList));
@@ -258,7 +253,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                 return linksWallInfo;
             }
             for(Link link : passageLinkList) {
-                Log.v("CM", "passages linkId:" + link.getId());
+                Log.v("CM", "passagesLinkList linkId:" + link.getId());
             }
             List<Node> nodeList = getNodeListByLinkList(passageLinkList);
             //リンクの左側の壁を表すリスト
@@ -282,8 +277,8 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                     WallPoint[] firstLinkGoalPoints = getCrossLinkPoints(lastLink, commonPointList);
                     WallPoint[] nextLinkStartPoints = getCrossLinkPoints(link, commonPointList);
 
-                    Log.v("CM","firstGoal[0]:" + firstLinkGoalPoints[0].getPointOrder() + ", firstGoal[1]:" + firstLinkGoalPoints[1].getPointOrder());
-                    Log.v("CM","nextStart[0]:" + nextLinkStartPoints[0].getPointOrder() + ", nextStart[1]:" + nextLinkStartPoints[1].getPointOrder());
+                    Log.v("CM","firstGoal[0]:" + firstLinkGoalPoints[0].getId() + ", firstGoal[1]:" + firstLinkGoalPoints[1].getId());
+                    Log.v("CM","nextStart[0]:" + nextLinkStartPoints[0].getId() + ", nextStart[1]:" + nextLinkStartPoints[1].getId());
 
                     //交差点の壁の右側を表すリスト
                     List<LatLng> intersectionRightWall = getOneSideIntersectionWall(commonPointList, firstLinkGoalPoints[1].getPointOrder(), nextLinkStartPoints[0].getPointOrder(), true);
