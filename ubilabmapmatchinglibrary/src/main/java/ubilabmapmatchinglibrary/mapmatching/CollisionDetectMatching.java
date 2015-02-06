@@ -419,10 +419,10 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     }
 
     public double getMatchingLinkDirection(double rawDirection, Link matchingLink){
-        if(Math.cos(Math.toRadians(matchingLink.getBearing()) - Math.toRadians(rawDirection)) > 0) {
-            return matchingLink.getBearing();
+        if(Math.cos(Math.toRadians(matchingLink.getBearing()) - Math.toRadians(rawDirection)) < 0) {
+            return -matchingLink.getBearing();
         } else {
-            return -(matchingLink.getBearing());
+            return matchingLink.getBearing();
         }
     }
 
@@ -430,5 +430,8 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         return linkList;
     }
 
+    public void removeOldTrajectory() {
+        rawTrajectory.getTrajectory().clear();
+    }
 }
 
