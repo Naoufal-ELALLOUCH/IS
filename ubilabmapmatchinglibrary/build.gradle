@@ -37,7 +37,7 @@ dependencies {
 
 apply plugin: 'maven'
 
-version = '1.0.19-SNAPSHOT' // バージョンをいい感じに書いてください
+version = '1.0.20-SNAPSHOT' // バージョンをいい感じに書いてください
 group   = 'jp.ac.ritsumei.cs.ubi'
 archivesBaseName = 'ubilab-map-matching-library' // 書かなかったらプロジェクト名が使われるらしい
 

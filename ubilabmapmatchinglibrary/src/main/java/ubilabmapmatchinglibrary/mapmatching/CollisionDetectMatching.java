@@ -420,7 +420,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
     public double getMatchingLinkDirection(double rawDirection, Link matchingLink){
         if(Math.cos(Math.toRadians(matchingLink.getBearing()) - Math.toRadians(rawDirection)) < 0) {
-            return -matchingLink.getBearing();
+            return matchingLink.getBearing() + 180;
         } else {
             return matchingLink.getBearing();
         }

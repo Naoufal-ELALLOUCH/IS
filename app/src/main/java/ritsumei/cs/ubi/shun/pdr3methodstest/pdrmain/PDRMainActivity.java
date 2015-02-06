@@ -13,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -357,7 +358,9 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         //Log.v("CM", "TrajectoryTransed");
 
         if(pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
+            Log.v("direction", "linkDirection:" + newTrackPoint.getDirection());
             collisionDetectMatchingPdrPositionCalculator.setPoint(newTrackPoint.getLocation().latitude, newTrackPoint.getLocation().longitude, newTrackPoint.getDirection());
+                        directionCalculator.setDegreesDirection(newTrackPoint.getDirection());
             //MapMatching用のPDRクラスに較正係数を反映
             collisionDetectMatchingDirectionCalculator.setDirectionRate(rate.getX());
             collisionDetectMatchingPdrPositionCalculator.setDistanceRate(rate.getY());
