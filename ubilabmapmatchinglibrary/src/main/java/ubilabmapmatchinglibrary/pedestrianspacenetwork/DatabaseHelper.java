@@ -5,7 +5,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -257,7 +256,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
-        Log.v("DB","onUpgrade");
+       ////Log.v("DB","onUpgrade");
         onCreate(db);
     }
 
@@ -274,7 +273,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             db.setTransactionSuccessful();
         } catch (Exception e){         // 例外発生
-            Log.v("DB_ERROR","query error");
+           ////Log.v("DB_ERROR","query error");
             e.printStackTrace();
         } finally {
             db.endTransaction();
@@ -381,7 +380,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return pointsList;
 
         } catch (SQLException e) {
-            Log.v("MM","getPointsByGroupNumber" + e.toString());
+           ////Log.v("MM","getPointsByGroupNumber" + e.toString());
             db.close();
             return null;
         }

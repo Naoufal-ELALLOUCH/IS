@@ -1,6 +1,4 @@
-package ubilabmapmatchinglibrary.mapmatching;
-
-import android.content.Context;
+package ubilabmapmatchinglibrary.statement;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -8,14 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ubilabmapmatchinglibrary.calculate.Calculator2D;
-import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
+import ubilabmapmatchinglibrary.mapmatching.TrackPoint;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
 
 /**
- * スケルトンマッチング処理を行うクラス
+ * Created by shun on 2015/02/01.
  */
-public class SkeletonMatching {
-
+public class StatementSkeletonMatching {
     private int count = 0;
 
     /**
@@ -24,7 +21,7 @@ public class SkeletonMatching {
     private static final double RX = 40076500;
     private static final double RY = 40008600;
 
-    private static SkeletonMatchingHelper mSkeletonMatchingHelper;
+    private static StatementSkeletonMatchingHelper mSkeletonMatchingHelper;
 
     private static LatLng matchedPoint;
 
@@ -33,17 +30,11 @@ public class SkeletonMatching {
 
     private static TrackPoint lastTrackPoint = new TrackPoint();
     private static Link matchingLink;
-
-
-    private static Link lastMatchingLink = null;
-    private static LatLng openSpaceStartPoint;
-
-
     private static boolean isFirst;
     private static boolean isLastStraight;
 
-    public SkeletonMatching(Context context, DatabaseHelper db) {
-        mSkeletonMatchingHelper = new SkeletonMatchingHelper(context, db);
+    public StatementSkeletonMatching(StatementDatabaseHelper db) {
+        mSkeletonMatchingHelper = new StatementSkeletonMatchingHelper(db);
         isFirst = true;
     }
 
@@ -74,58 +65,41 @@ public class SkeletonMatching {
                         return null;
                     }
 
-
-                    if (lastMatchingLink.getType() == Link.LinkType.OPEN_SPACE) {
-                        matchingLink = mSkeletonMatchingHelper.getMatchingLink(correctedTrackPoint.getLocation(), openSpaceStartPoint, candidateMatchingLinkList);
-                    } else {
-                        matchingLink = mSkeletonMatchingHelper.getMatchingLink(correctedTrackPoint.getLocation(), baseTrackPoint.getLocation(), candidateMatchingLinkList);
-                    }
-
+                    matchingLink = mSkeletonMatchingHelper.getMatchingLink(correctedTrackPoint.getLocation(), baseTrackPoint.getLocation(), candidateMatchingLinkList);
                     if (matchingLink == null) {
                         return null;
                     }
-
-                    LatLng baseMatchedPoint;
                     matchedPoint = mSkeletonMatchingHelper.getProjectedPoint(correctedTrackPoint.getLocation(), matchingLink);
-
-                    baseMatchedPoint = mSkeletonMatchingHelper.getProjectedPoint(baseTrackPoint.getLocation(), matchingLink);
-
-
-
-                    if(lastMatchingLink != null) {
-                        if(lastMatchingLink.getType() != Link.LinkType.OPEN_SPACE && matchingLink.getType() == Link.LinkType.OPEN_SPACE) {
-                            openSpaceStartPoint = correctedTrackPoint.getLocation();
-                        }
-                    }
-                    lastMatchingLink = matchingLink;
-
+                    LatLng baseMatchedPoint = mSkeletonMatchingHelper.getProjectedPoint(baseTrackPoint.getLocation(), matchingLink);
 
                     lastTrackPoint.setTrackPoint(trackPoint);
 
                     double matchedDirection = Calculator2D.calculateDirection(baseMatchedPoint, matchedPoint);
                     double matchedDistance = Calculator2D.calculateDistance(baseTrackPoint.getLocation(), matchedPoint);
 
-                   ////Log.v("SM", "MatchingLinkId:" + matchingLink.getId() + ", MatchedDirection" + matchedDirection);
-//               ////Log.v("SM", "BasePoint:" + baseTrackPoint.getLocation().latitude + ", " + baseTrackPoint.getLocation().longitude);
-//               ////Log.v("SM", "CorrectedPoint:" + correctedTrackPoint.getLocation().latitude + ", " + baseTrackPoint.getLocation().longitude);
-//               ////Log.v("SM", "TrackPoint:" + point.latitude + ", " + point.longitude);
-//               ////Log.v("SM", "MatchedPoint:" + matchedPoint.latitude + ", " + matchedPoint.longitude);
-                   ////Log.v("SM", "---------------------------");
+                    System.out.println("SM" + "MatchingLinkId:" + matchingLink.getId() + ", MatchedDirection" + matchedDirection);
+//                ////Log.v("SM", "BasePoint:" + baseTrackPoint.getLocation().latitude + ", " + baseTrackPoint.getLocation().longitude);
+//                ////Log.v("SM", "CorrectedPoint:" + correctedTrackPoint.getLocation().latitude + ", " + baseTrackPoint.getLocation().longitude);
+//                ////Log.v("SM", "TrackPoint:" + point.latitude + ", " + point.longitude);
+//                ////Log.v("SM", "MatchedPoint:" + matchedPoint.latitude + ", " + matchedPoint.longitude);
+                    System.out.println("SM" +  "---------------------------");
 
                     baseTrackPoint.setTrackPoint(trackPoint.getTime(), matchedPoint, correctedTrackPoint.getDirection(), matchedDistance, trackPoint.getIsStraight(), matchingLink.getId());
                 } else { //曲進中は前回の座標(baseTrackPoint)を基準に座標を再計算する
+                    TrackPoint onLinkTrackPoint = new TrackPoint(trackPoint);
+                    onLinkTrackPoint.setLocation(mSkeletonMatchingHelper.getProjectedPoint(trackPoint.getLocation(), matchingLink));
                     lastTrackPoint.setTrackPoint(trackPoint);
                     baseTrackPoint.setTrackPoint(correctedTrackPoint.getTime(), correctedTrackPoint.getLocation(), correctedTrackPoint.getDirection(), correctedTrackPoint.getDistance(), correctedTrackPoint.getIsStraight(), matchingLink.getId());
+                    return onLinkTrackPoint;
                 }
 
             } else { //過去の位置情報がない時のスケルトンマッチング
                 List<Link> firstCandidateMatchingLinkList = mSkeletonMatchingHelper.getFirstCandidateLinkList(point);
-               ////Log.v("SM", "firstCandidateMatchingLinkList.size():" + firstCandidateMatchingLinkList.size());
+                System.out.println("SM" +  "firstCandidateMatchingLinkList.size():" + firstCandidateMatchingLinkList.size());
                 if (firstCandidateMatchingLinkList.size() == 0) {
                     return null;
                 }
                 matchingLink = mSkeletonMatchingHelper.getMatchingLink(point, direction, firstCandidateMatchingLinkList);
-                lastMatchingLink = matchingLink;
                 matchedPoint = mSkeletonMatchingHelper.getProjectedPoint(point, matchingLink);
                 lastTrackPoint.setTrackPoint(trackPoint);
                 baseTrackPoint.setTrackPoint(trackPoint.getTime(), matchedPoint, direction, 0, trackPoint.getIsStraight(), matchingLink.getId());
@@ -135,8 +109,8 @@ public class SkeletonMatching {
             isLastStraight = isStraight;
             return baseTrackPoint;
         } catch (Exception e) {
-
-           ////Log.e("SM", "SkeletonMatchig is Failed");
+            System.out.println("SM" + "SkeletonMatchig is Failed");
+            e.printStackTrace();
             return  null;
         }
     }
@@ -162,3 +136,4 @@ public class SkeletonMatching {
         isFirst = true;
     }
 }
+

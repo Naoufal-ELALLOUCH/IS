@@ -65,7 +65,7 @@ public class ParseDownloader {
     public void startDownLoad() {
         //Helperの作成
 
-        Log.v("Downloader", "mapDBVersion:" + mapDBversion);
+        //Log.v("Downloader", "mapDBVersion:" + mapDBversion);
         mapDatabaseHelper = DatabaseHelper.getInstance(context, mapDBversion);
         try {
             //エリアIDの取得
@@ -123,7 +123,7 @@ public class ParseDownloader {
             queries.add(sql);
         }
 
-        Log.e("node", "size:" + results.size());
+        //Log.e("node", "size:" + results.size());
         mapDatabaseHelper.execQueryList(queries);
 
     }
@@ -174,7 +174,7 @@ public class ParseDownloader {
             queries.add(sql);
         }
 
-        Log.e("link", "size:" + queries.size());
+        //Log.e("link", "size:" + queries.size());
         mapDatabaseHelper.execQueryList(queries);
     }
 
@@ -241,7 +241,7 @@ public class ParseDownloader {
             queries.add(sql);
         }
 
-        Log.e("point", "size:" + queries.size());
+        //Log.e("point", "size:" + queries.size());
         mapDatabaseHelper.execQueryList(queries);
 
     }

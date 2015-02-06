@@ -37,7 +37,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SetUp" />
-
+        <Button
+            android:id="@+id/resultButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Result" />
         <TextView
             android:id="@+id/directionText"
             android:layout_width="wrap_content"
