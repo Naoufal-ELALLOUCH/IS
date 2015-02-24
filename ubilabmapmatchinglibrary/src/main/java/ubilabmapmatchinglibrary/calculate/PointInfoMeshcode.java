@@ -1,7 +1,5 @@
 package ubilabmapmatchinglibrary.calculate;
 
-import android.util.Log;
-
 public class PointInfoMeshcode {
     /**
      * 緯度経度からメッシュコードを返すクラス
@@ -50,7 +48,7 @@ public class PointInfoMeshcode {
             h = h % (22500 / times);
             int m = ((r*2) +(w+1));
 
-            Log.d("Tag", "level:" + level + "c" + c + "h" + h + "r" + r + "w" + w + "m" + m);
+            //Log.d("Tag", "level:" + level + "c" + c + "h" + h + "r" + r + "w" + w + "m" + m);
 
             meshcode = meshcode + m;
             times *=2;
@@ -106,7 +104,7 @@ public class PointInfoMeshcode {
             h = h  - ((double)g * denomx);
             int m = ((r*2) +(w+1));
 
-            Log.d ("Tag", "level:" + level +"c" + c+ "h" + h+ "r" + r + "w" + w + "m" + m);
+            ////Log.d ("Tag", "level:" + level +"c" + c+ "h" + h+ "r" + r + "w" + w + "m" + m);
 
             meshcode = meshcode + m;
             denomx /=2.0;
@@ -120,7 +118,7 @@ public class PointInfoMeshcode {
         int lat, lon;
         int steplat=0, steplon=0;
 
-        Log.d("Tag", "meshcode:" + meshcode);
+        ////Log.d("Tag", "meshcode:" + meshcode);
 		/* 3次メッシュ以上は扱わない*/
         if (meshcode.length() < 8){
             return null;
@@ -131,7 +129,7 @@ public class PointInfoMeshcode {
         int val = Integer.parseInt(meshcode.substring(start, start+2));
         lat = val * (60000 * 40);
         start+=2;
-        Log.d("Tag", "meshcode:" + meshcode + ", start:" + start + ", meshcode.substring(start,2):" + meshcode.substring(start,2));
+        ////Log.d("Tag", "meshcode:" + meshcode + ", start:" + start + ", meshcode.substring(start,2):" + meshcode.substring(start,2));
         val = Integer.parseInt(meshcode.substring(start, start+2));
         lon = (val * 3600000) + 360000000;
         start +=2;

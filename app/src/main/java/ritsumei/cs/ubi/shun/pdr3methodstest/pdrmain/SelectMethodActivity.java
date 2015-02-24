@@ -1,6 +1,7 @@
 package ritsumei.cs.ubi.shun.pdr3methodstest.pdrmain;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Toast;
 
 import ritsumei.cs.ubi.shun.pdr3methodstest.R;
 /**
@@ -26,11 +28,29 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
     public static final String METHOD_SM_KEY = "methodSm";
     public static final String METHOD_CM_KEY = "methodCm";
 
+    private static ProgressDialog waitDialog;
+    private Button downloadButton;
+    private EnginePrefConfig enginePrefConfig;
+    private ParseDownloader parseDownloader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = PreferenceManager.getDefaultSharedPreferences(this);
         editor = pref.edit();
+
+        // インスタンス作成
+        waitDialog = new ProgressDialog(this);
+        // タイトル設定
+        waitDialog.setTitle("設定ファイルをダウンロード中");
+        // メッセージ設定
+        waitDialog.setMessage("now loading...");
+        // スタイル設定 スピナー
+        waitDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        // キャンセル可能か(バックキーでキャンセル）
+        waitDialog.setCancelable(false);
+        enginePrefConfig = new EnginePrefConfig(this);
+        parseDownloader = new ParseDownloader(this);
 
         setContentView(R.layout.activity_select_method);
 
@@ -43,6 +63,44 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
 
         applyButton = (Button) findViewById(R.id.method_applay_button);
         applyButton.setOnClickListener(this);
+
+        downloadButton = (Button) findViewById(R.id.button_download);
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (!enginePrefConfig.getKeyLastArea().equals(enginePrefConfig.getKeyArea())) {
+                    // ダイアログ表示
+                    waitDialog.show();
+                    // 別スレッドで時間のかかる処理を実行
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            parseDownloader.setAreaName(enginePrefConfig.getKeyArea());
+                            parseDownloader.incrementDBVersion();
+                            enginePrefConfig.setKeyWirelessDbVersion(enginePrefConfig.getKeyWirelessDbVersion() + 1);
+                            enginePrefConfig.setKeyPsnDbVersion(enginePrefConfig.getKeyPsnDbVersion() + 1);
+                            parseDownloader.startDownLoad();
+                            // 終わったらダイアログ消去
+                            enginePrefConfig.setKeyLastArea(enginePrefConfig.getKeyArea());
+                            waitDialog.dismiss();
+                        }
+
+                    }).start();
+
+                } else {
+                    showToast();
+                }
+
+            }
+        });
+    }
+
+
+    private void showToast() {
+        Toast.makeText(this, "already downloaded", Toast.LENGTH_LONG).show();
     }
 
     @Override

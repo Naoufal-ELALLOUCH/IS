@@ -1,6 +1,4 @@
-package ubilabmapmatchinglibrary.mapmatching;
-
-import android.content.Context;
+package ubilabmapmatchinglibrary.statement;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -8,21 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ubilabmapmatchinglibrary.calculate.Calculator2D;
-import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
+import ubilabmapmatchinglibrary.mapmatching.Point;
+import ubilabmapmatchinglibrary.mapmatching.TrackPoint;
+import ubilabmapmatchinglibrary.mapmatching.Trajectory;
+import ubilabmapmatchinglibrary.mapmatching.TrajectoryTransedDetector;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
 
 /**
- * Created by shun on 2015/01/09.
+ * Created by shun on 2015/02/01.
  */
-public class CollisionDetectMatching extends TrajectoryTransedDetector{
+public class StatementCollisionDetectMatching extends TrajectoryTransedDetector {
 
     private static final int MIN_DIRECTION_RATE = 90;
     private static final int MAX_DIRECTION_RATE = 110;
     private static final int MIN_DISTANCE_RATE = 80;
     private static final int MAX_DISTANCE_RATE = 120;
 
-    public static CollisionDetectMatchingHelper mCollisionDetectMatchingHelper;
-    public static SkeletonMatching mSkeletonMatching;
+    public static StatementCollisionDetectMatchingHelper mCollisionDetectMatchingHelper;
+    public static StatementSkeletonMatching mSkeletonMatching;
 
     private boolean isFirst = false;
 
@@ -57,7 +58,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
     private TrackPoint newStartTrackPoint;
 
-   //較正係数の組
+    //較正係数の組
     Point correctRate = new Point();
 
     //ルート順のリンクを格納するリスト
@@ -69,9 +70,9 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     private double lastDistanceRate = 1.0;
 
     private Trajectory turningTrajectory = new Trajectory();
-    public CollisionDetectMatching(Context context, DatabaseHelper db) {
-        mSkeletonMatching = new SkeletonMatching(context, db);
-        mCollisionDetectMatchingHelper = new CollisionDetectMatchingHelper(context, db);
+    public StatementCollisionDetectMatching(StatementDatabaseHelper db) {
+        mSkeletonMatching = new StatementSkeletonMatching(db);
+        mCollisionDetectMatchingHelper = new StatementCollisionDetectMatchingHelper(db);
         isFirst = true;
     }
 
@@ -95,7 +96,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
             }
             Link matchingLink = mCollisionDetectMatchingHelper.db.getLinkById(skeletonMatchingTrackPoint.getLinkId());
 
-            ////Log.v("CM", "linkId:" + matchingLink.getId());
+           System.out.println("linkId:" + matchingLink.getId());
             trackPoint.setLinkId(matchingLink.getId());
 
             if (!isFirst) {
@@ -193,7 +194,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         lastDistanceRate = correctRate.getY() * lastDistanceRate;
                         trackPoint = rawTrajectory.get(rawTrajectory.size() - 1);
 
-                        ////Log.v("CM", "{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
+                       System.out.println("{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
                     }
 
                     int SIZE = mTrajectoryTransedListeners.size();
@@ -207,7 +208,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                 isFirst = false;
                 passageFinishStepCount.add(0);
                 linkList.add(matchingLink);
-                ////Log.v("CM", "first");
+               System.out.println("first");
             }
 
             lastSkeletonMatchingTrackPoint.setTrackPoint(skeletonMatchingTrackPoint);
@@ -217,45 +218,46 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
             return trackPoint;
         } catch(Exception e) {
-            ////Log.e("CM", "MapMatchig is Failed");
+           System.out.println("MapMatchig is Failed");
+           e.printStackTrace();
             return null;
         }
     }
 
-   private List<Point> getRateSetNotCollideLinksWall(Trajectory trajectory, List<Link> linkList) {
-       List<Point> rateSet = new ArrayList<Point>();
+    private List<Point> getRateSetNotCollideLinksWall(Trajectory trajectory, List<Link> linkList) {
+        List<Point> rateSet = new ArrayList<Point>();
 
-       List<List<LatLng>> linksWall =  mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
+        List<List<LatLng>> linksWall =  mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
 
         /*ループ用にintで表記*/
-       int intDirectionRate = MIN_DIRECTION_RATE;
-       int intDistanceRate = MIN_DISTANCE_RATE;
+        int intDirectionRate = MIN_DIRECTION_RATE;
+        int intDistanceRate = MIN_DISTANCE_RATE;
 
-       //ループさせて各較正係数の組について調べる
-       while (intDirectionRate <= MAX_DIRECTION_RATE) {
-           double directionRate = (double)intDirectionRate / 100.0/ lastDirectionRate;
+        //ループさせて各較正係数の組について調べる
+        while (intDirectionRate <= MAX_DIRECTION_RATE) {
+            double directionRate = (double)intDirectionRate / 100.0/ lastDirectionRate;
 
-           while (intDistanceRate <= MAX_DISTANCE_RATE) {
-               double distanceRate = (double)intDistanceRate / 100.0/ lastDistanceRate;
+            while (intDistanceRate <= MAX_DISTANCE_RATE) {
+                double distanceRate = (double)intDistanceRate / 100.0/ lastDistanceRate;
 
-               Trajectory transedTrajectory = new Trajectory();
-               transedTrajectory.addAll(trajectory);
+                Trajectory transedTrajectory = new Trajectory();
+                transedTrajectory.addAll(trajectory);
 
-               transedTrajectory.transTrack(directionRate, distanceRate);
-               if (!mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(transedTrajectory, linksWall)) {
-                   rateSet.add(new Point(directionRate , distanceRate));
-               }
+                transedTrajectory.transTrack(directionRate, distanceRate);
+                if (!mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(transedTrajectory, linksWall)) {
+                    rateSet.add(new Point(directionRate , distanceRate));
+                }
 
-               intDistanceRate++;
-           }
-           intDistanceRate = MIN_DISTANCE_RATE;
-           intDirectionRate++;
-       }
+                intDistanceRate++;
+            }
+            intDistanceRate = MIN_DISTANCE_RATE;
+            intDirectionRate++;
+        }
 
-       ////Log.v("CM","RateSetSize:" + rateSet.size());
-       return rateSet;
+       System.out.println("RateSetSize:" + rateSet.size());
+        return rateSet;
 
-   }
+    }
 
     /**
      * ある1歩が壁とぶつかるか判定する
@@ -419,10 +421,10 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     }
 
     public double getMatchingLinkDirection(double rawDirection, Link matchingLink){
-        if(Math.cos(Math.toRadians(matchingLink.getBearing()) - Math.toRadians(rawDirection)) < 0) {
-            return matchingLink.getBearing() + 180;
-        } else {
+        if(Math.cos(Math.toRadians(matchingLink.getBearing()) - Math.toRadians(rawDirection)) > 0) {
             return matchingLink.getBearing();
+        } else {
+            return -(matchingLink.getBearing());
         }
     }
 
@@ -430,8 +432,5 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         return linkList;
     }
 
-    public void removeOldTrajectory() {
-        rawTrajectory.getTrajectory().clear();
-    }
 }
 

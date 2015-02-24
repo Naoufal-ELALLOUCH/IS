@@ -1,4 +1,4 @@
-package ubilabmapmatchinglibrary.mapmatching;
+package ubilabmapmatchinglibrary.statement;
 
 import android.content.Context;
 import android.location.Location;
@@ -10,15 +10,13 @@ import java.util.List;
 
 import ubilabmapmatchinglibrary.calculate.Calculator2D;
 import ubilabmapmatchinglibrary.calculate.PointInfoMeshcode;
-import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Node;
 
 /**
- * スケルトンマッチングに必要な情報を算出するクラス
+ * Created by shun on 2015/02/01.
  */
-public class SkeletonMatchingHelper {
-
+public class StatementSkeletonMatchingHelper {
     private final static double MU_D = 10.0;
     private final static double A = 0.17;
     private final static double N_D = 1.4;
@@ -31,13 +29,11 @@ public class SkeletonMatchingHelper {
     final static double RX = 40076500;
     final static double RY = 40008600;
 
-    public static DatabaseHelper db;
+    public static StatementDatabaseHelper db;
     private static Context context;
 
-    public SkeletonMatchingHelper(Context context, DatabaseHelper db) {
-        this.context = context;
+    public StatementSkeletonMatchingHelper(StatementDatabaseHelper db) {
         this.db = db;
-        //db = DatabaseHelper.getInstance(context);
     }
 
     /**
@@ -89,7 +85,7 @@ public class SkeletonMatchingHelper {
      */
     public static double calculateMatchingScore(LatLng point, LatLng lastPoint, Link link) {
         double pointsDirection = Calculator2D.calculateDirection(lastPoint, point);
-        ////Log.v("SCORE", "pointsDirection:" + pointsDirection);
+        System.out.println("SCORE" + "pointsDirection:" + pointsDirection);
         return calculateMatchingScore(point, pointsDirection, link);
     }
 
@@ -102,11 +98,11 @@ public class SkeletonMatchingHelper {
      */
     public static double calculateMatchingScore(LatLng point, double direction, Link link) {
         double distanceScore = calculateDistanceScore(calculateDistanceToLink(point, link));
-//       ////Log.v("SCORE", "Direction:" +  direction + ", LinkBearing:" + link.getBearing() + ", directionDiff:" + (direction - link.getBearing()));
+//       System.out.println("SCORE", "Direction:" +  direction + ", LinkBearing:" + link.getBearing() + ", directionDiff:" + (direction - link.getBearing()));
         double directionScore = calculateDirectionScore((Math.toRadians(direction - link.getBearing())));
         double totalScore = distanceScore + directionScore;
-//       ////Log.v("SCORE", "LinkID:" + link.getId() + ", TotalScore" + totalScore);
-//       ////Log.v("SCORE", "--------------------------------------------------------------------");
+//       System.out.println("SCORE", "LinkID:" + link.getId() + ", TotalScore" + totalScore);
+//       System.out.println("SCORE", "--------------------------------------------------------------------");
         return totalScore;
     }
 
@@ -117,7 +113,7 @@ public class SkeletonMatchingHelper {
      */
     public static double calculateDistanceScore(double distance) {
         double score = MU_D - A * Math.pow(distance, N_D);
-//       ////Log.v("SCORE", "Distance:" + distance + ", DistanceScore:" + score);
+//       System.out.println("SCORE", "Distance:" + distance + ", DistanceScore:" + score);
         return score;
     }
 
@@ -143,7 +139,7 @@ public class SkeletonMatchingHelper {
     public static double calculateDistanceToLink(LatLng point, Link link) {
         LatLng closestPoint = getProjectedPoint(point, link);
         float results[] = new float[3];
-        ////Log.v("SCORE", "closestPoint:" + closestPoint.longitude +  ", " + closestPoint.latitude);
+        System.out.println("SCORE" + "closestPoint:" + closestPoint.longitude +  ", " + closestPoint.latitude);
         Location.distanceBetween(point.latitude, point.longitude, closestPoint.latitude, closestPoint.longitude, results);
         return results[0];
     }
@@ -167,7 +163,7 @@ public class SkeletonMatchingHelper {
     public static double calculateDirectionScore(double direction) {
         double cos = Math.cos(direction);
         double score =MU_ALPHA * Math.pow(cos, N_ALPHA);
-        ////Log.v("SCORE", "Direction:" +  Math.toDegrees(direction) + ", DirectionCos:" + cos + ", DirectionScore:" + score);
+        System.out.println("SCORE" + "Direction:" +  Math.toDegrees(direction) + ", DirectionCos:" + cos + ", DirectionScore:" + score);
         return score;
     }
 
@@ -274,7 +270,6 @@ public class SkeletonMatchingHelper {
         double b = d[0] * (linePoint1.latitude - point.latitude) + d[1] * (linePoint1.longitude - point.longitude);
         double t =  - (b / a);
 
-        ////Log.v("MM", "method2 a:" + a + ", b:" + b + "t:" + t);
         if(t < 0) {
             return false;
         } else if (t > 1.0) {
@@ -305,7 +300,7 @@ public class SkeletonMatchingHelper {
      * @return
      */
     public static List<Link> getFirstCandidateLinkList(LatLng point) {
-       return getLinkListByGridIdList(getSurroundGridList(point));
+        return getLinkListByGridIdList(getSurroundGridList(point));
     }
 
     /**
@@ -355,7 +350,7 @@ public class SkeletonMatchingHelper {
         movedPoint = calculateMovedPoint(point, 15, -15);
         surroundGridList.add(PointInfoMeshcode.calcMeshCode(movedPoint.latitude, movedPoint.longitude, 9));
 
-        //surroundGridList.add("0");//TODO:link_grid_infoが完成したら上のものに戻す
+//        surroundGridList.add("0");//TODO:link_grid_infoが完成したら上のものに戻す
 
         return surroundGridList;
     }
@@ -389,3 +384,4 @@ public class SkeletonMatchingHelper {
     }
 
 }
+

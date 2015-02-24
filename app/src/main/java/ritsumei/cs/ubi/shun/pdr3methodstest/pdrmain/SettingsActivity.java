@@ -49,6 +49,7 @@ public class SettingsActivity extends Activity implements OnClickListener, Senso
 	private Button gyroCalibration;
 	private Button applyChange;
 
+
 	/**
 	 * 歩幅のプリファレンスキー
 	 */
@@ -129,8 +130,8 @@ public class SettingsActivity extends Activity implements OnClickListener, Senso
         applyChange.setOnClickListener(this);
 
 		AlertDlgBldr = new AlertDialog.Builder(this);
-
 	}
+
 
 	@Override
 	public void onClick(View v) {

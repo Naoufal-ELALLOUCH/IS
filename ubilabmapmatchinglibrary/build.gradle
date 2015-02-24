@@ -18,6 +18,17 @@ android {
     }
 }
 
+task clearJar(type: Delete) {
+    delete 'build/libs/map-matching-library-for-simulation-1.0.2.jar'
+}
+task makeJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('release/')
+    include('classes.jar')
+    rename('classes.jar', 'map-matching-library-for-simulation-1.0.2.jar')
+}
+makeJar.dependsOn(clearJar, build)
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
@@ -26,7 +37,7 @@ dependencies {
 
 apply plugin: 'maven'
 
-version = '1.0.11-SNAPSHOT' // バージョンをいい感じに書いてください
+version = '1.0.20-SNAPSHOT' // バージョンをいい感じに書いてください
 group   = 'jp.ac.ritsumei.cs.ubi'
 archivesBaseName = 'ubilab-map-matching-library' // 書かなかったらプロジェクト名が使われるらしい
 

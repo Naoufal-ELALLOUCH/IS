@@ -5,7 +5,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +24,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private List<String> queryList = new ArrayList<>();
     public Context context;
     private static DatabaseHelper sSingleton = null;
+//
+//    private SQLiteDatabase mDatabase;
+//    private final Context mContext;
+//    private final File mDatabasePath;
 
+    private static String DB_NAME = "umechika_psn";
+    private static String DB_NAME_ASSET = "umechika_psn.db";
 
-    /*List<String>のクエリからDBを生成*/
     /**
      * クエリによってデータベースを作成するときのコンストラクタ
      * @param context
@@ -63,116 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sSingleton;
     }
 
-    //データベースの作成
-    @Override
-    public void onCreate(SQLiteDatabase db) {
 
-        //UbiNaviで出力した、DB生成クエリを読み込む
-        //execQueryFromFile(DB_QUERY_FILE, db);
-
-        //スキーマの定義
-        String NODE_DATABASE_CREATE_STATES =
-                "create table if not exists " + NODE_TABLE + "("
-                        + " id integer primary key"
-                        + ", latitude double not null"
-                        + ", longitude double not null"
-                        + ", level real not null"
-                        + ", type integer not null"
-                        + ", grid_id text not null"
-                        + ", area_id integer not null"
-                        + ");";
-        db.execSQL(NODE_DATABASE_CREATE_STATES);
-
-
-        String POINT_DATABASE_CREATE_STATES =
-                "create table if not exists " + WALL_POINT_TABLE + " ("
-                        + " id integer primary key"
-                        + ", node_id integer"
-                        + ", group_number integer not null"
-                        + ", point_order integer not null"
-                        + ", latitude real not null"
-                        + ", longitude real not null"
-                        + ", grid_id integer not null"
-                        + ", area_id integer not null"
-                        + ")";
-        db.execSQL(POINT_DATABASE_CREATE_STATES);
-
-        /**
-         * bearingはラジアン形式
-         */
-        String LINK_DATABASE_CREATE_STATES =
-                "create table if not exists " + LINK_TABLE + " ("
-                        + " id integer primary key"
-                        + ", node1_id integer not null"
-                        + ", node2_id integer not null"
-                        + ", distance real not null"
-                        + ", bearing real not null"
-                        + ", type integer not null"
-                        + ", pressure real not null"
-                        + ", area_id integer not null"
-                        + ")";
-        db.execSQL(LINK_DATABASE_CREATE_STATES);
-
-        String LINK_GRID_DATABASE_CREATE_STATES =
-                "create table if not exists " + LINK_GRID_TABLE + " ("
-                        + " link_id integer not null"
-                        + ", grid_id text not null"
-                        + ", area_id integer not null"
-                        + ")";
-
-        db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
-
-
-    }
-
-    //データベースの更新
-	/*DATABASE_VERSIONの値が最初に実行した時と、新しく実行した時の値が等しくなければ、
-	 * このメソッドが呼び出され、データベースを再度作成する
-	 * 値が大きくても、小さくてもよい*/
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
-        Log.v("DB","onUpgrade");
-        onCreate(db);
-    }
-
-    /**
-     * queryを実行する
-     * @param queryList
-     */
-    public void execQueryList(List<String> queryList) {
-        SQLiteDatabase db = getWritableDatabase();
-        try {
-            db.beginTransaction();
-            for(String query : queryList) {
-                db.execSQL(query);
-            }
-            db.setTransactionSuccessful();
-        } catch (Exception e){         // 例外発生
-            Log.v("DB_ERROR","query error");
-            e.printStackTrace();
-        } finally {
-            db.endTransaction();
-        }
-
-    }
-
-
-
-
-
-
-
-
-
-
-    /*assetsのdbファイルを直接コピーしてDBを生成*/
-//    private SQLiteDatabase mDatabase;
-//    private final Context mContext;
-//    private final File mDatabasePath;
-//
-//    private static String DB_NAME = "umechika_psn";
-//    private static String DB_NAME_ASSET = "umechika_psn.db";
 //    public DatabaseHelper(Context context) {
 //        super(context, DB_NAME, null, DATABASE_VERSION);
 //        mContext = context;
@@ -292,7 +187,100 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
 
-    /* 歩行空間情報を取得するクエリを実行*/
+    //データベースの作成
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+
+        //UbiNaviで出力した、DB生成クエリを読み込む
+        //execQueryFromFile(DB_QUERY_FILE, db);
+
+        //スキーマの定義
+        String NODE_DATABASE_CREATE_STATES =
+                "create table if not exists " + NODE_TABLE + "("
+                        + " id integer primary key"
+                        + ", latitude double not null"
+                        + ", longitude double not null"
+                        + ", level real not null"
+                        + ", type integer not null"
+                        + ", grid_id text not null"
+                        + ", area_id integer not null"
+                        + ");";
+        db.execSQL(NODE_DATABASE_CREATE_STATES);
+
+
+        String POINT_DATABASE_CREATE_STATES =
+                "create table if not exists " + WALL_POINT_TABLE + " ("
+                        + " id integer primary key"
+                        + ", node_id integer"
+                        + ", group_number integer not null"
+                        + ", point_order integer not null"
+                        + ", latitude real not null"
+                        + ", longitude real not null"
+                        + ", grid_id integer not null"
+                        + ", area_id integer not null"
+                        + ")";
+        db.execSQL(POINT_DATABASE_CREATE_STATES);
+
+        /**
+         * bearingはラジアン形式
+         */
+        String LINK_DATABASE_CREATE_STATES =
+                "create table if not exists " + LINK_TABLE + " ("
+                        + " id integer primary key"
+                        + ", node1_id integer not null"
+                        + ", node2_id integer not null"
+                        + ", distance real not null"
+                        + ", bearing real not null"
+                        + ", type integer not null"
+                        + ", pressure real not null"
+                        + ", area_id integer not null"
+                        + ")";
+        db.execSQL(LINK_DATABASE_CREATE_STATES);
+
+        String LINK_GRID_DATABASE_CREATE_STATES =
+                "create table if not exists " + LINK_GRID_TABLE + " ("
+                        + " link_id integer not null"
+                        + ", grid_id text not null"
+                        + ", area_id integer not null"
+                        + ")";
+
+        db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
+
+
+    }
+
+    //データベースの更新
+	/*DATABASE_VERSIONの値が最初に実行した時と、新しく実行した時の値が等しくなければ、
+	 * このメソッドが呼び出され、データベースを再度作成する
+	 * 値が大きくても、小さくてもよい*/
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + DATABASE_NAME);
+       ////Log.v("DB","onUpgrade");
+        onCreate(db);
+    }
+
+    /**
+     * queryを実行する
+     * @param queryList
+     */
+    public void execQueryList(List<String> queryList) {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            db.beginTransaction();
+            for(String query : queryList) {
+                db.execSQL(query);
+            }
+            db.setTransactionSuccessful();
+        } catch (Exception e){         // 例外発生
+           ////Log.v("DB_ERROR","query error");
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
+
      /**
      * queryによりNodeを一つ取得する
      * @param db
@@ -392,7 +380,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return pointsList;
 
         } catch (SQLException e) {
-            Log.v("MM","getPointsByGroupNumber" + e.toString());
+           ////Log.v("MM","getPointsByGroupNumber" + e.toString());
             db.close();
             return null;
         }

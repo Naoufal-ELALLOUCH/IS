@@ -149,7 +149,7 @@ public class FloorMapActivity extends FragmentActivity {
 			markerList.get(index).addPoint(point);
 		}
 
-//		Log.v("map","CreateMaeker:"+ markerId + ","+ point + "," + markerColor + "," + markerList.get(0).getPolylineColor());
+//		//Log.v("map","CreateMaeker:"+ markerId + ","+ point + "," + markerColor + "," + markerList.get(0).getPolylineColor());
 	}
 
 	public void moveMarkerDefaultPolylineColor(int id, LatLng point) {
@@ -187,7 +187,7 @@ public class FloorMapActivity extends FragmentActivity {
 	 * 指定したidのMarkerInfoObjectに格納されている全てのpointを結ぶPolylineを書く
 	 */
 	public void drawPolylineAllPoints(int id, int color) {
-//		Log.v("map","polyline:"+ id + ","+ lastPoint +"," + point + "," + color);
+//		//Log.v("map","polyline:"+ id + ","+ lastPoint +"," + point + "," + color);
 		int i = searchIndex(id);
 
 		PolylineOptions po = new PolylineOptions()
@@ -199,7 +199,7 @@ public class FloorMapActivity extends FragmentActivity {
 	}
 
     public void drawPolylineAllPoints2(int id, int color) {
-//		Log.v("map","polyline:"+ id + ","+ lastPoint +"," + point + "," + color);
+//		//Log.v("map","polyline:"+ id + ","+ lastPoint +"," + point + "," + color);
         int i = searchIndex(id);
 
         markerList.get(i).getPoints().clear();
