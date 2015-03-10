@@ -148,6 +148,12 @@ public class SkeletonMatchingHelper {
         return results[0];
     }
 
+    /**
+     * 点からリンクのもつノードまでの距離
+     * @param point
+     * @param link
+     * @return
+     */
     public static double calculateDistanceToClosestNode(LatLng point, Link link){
         float[] result = new float[3];
         Location.distanceBetween(point.latitude, point.longitude, db.getNodeById(link.getNode1Id()).getLat(), db.getNodeById(link.getNode1Id()).getLng(), result);
@@ -213,35 +219,6 @@ public class SkeletonMatchingHelper {
         return new LatLng(x, y);
     }
 
-//    /**
-//     * リンクに上に射影できるか否かを確かめる
-//     * @param point
-//     * @param link
-//     * @return
-//     */
-//    public static boolean isProjectToLink(LatLng point, Link link) {
-//
-//        double d[] = new double[2];
-//
-//        Node node1 = db.getNodeById(link.getNode1Id());
-//        Node node2 = db.getNodeById(link.getNode2Id());
-//
-//        d[0] = node2.getLat() - node1.getLat();
-//        d[1] = node2.getLng() - node1.getLng();
-//
-//        double a = norm(d);
-//        double b = d[0] * (node1.getLat() - point.latitude) + d[1] * (node1.getLng() - point.longitude);
-//        double t =  - (b / a);
-//
-//       ////Log.v("MM", "method1 a:" + a + ", b:" + b + "t:" + t);
-//        if(t < 0) {
-//            return false;
-//        } else if (t > 1.0) {
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
 
     /**
      * リンクに上に射影できるか否かを確かめる
@@ -282,20 +259,6 @@ public class SkeletonMatchingHelper {
         } else {
             return true;
         }
-    }
-
-    public static double getMatchingLinkDistance(LatLng matchingPoint, Link matchingLink, double direction){
-        float[] results = new float[3];
-        double cos = Math.cos(Math.toRadians(Math.abs(matchingLink.getBearing() - direction)));
-
-        if(cos > 0) {
-            Location.distanceBetween(db.getNodeById(matchingLink.getNode1Id()).getLat(), db.getNodeById(matchingLink.getNode1Id()).getLng(), matchingPoint.latitude, matchingPoint.longitude, results);
-        } else {
-            Location.distanceBetween(db.getNodeById(matchingLink.getNode2Id()).getLat(), db.getNodeById(matchingLink.getNode2Id()).getLng(), matchingPoint.latitude, matchingPoint.longitude, results);
-        }
-
-        return results[0];
-
     }
 
     /**

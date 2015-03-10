@@ -16,6 +16,11 @@ import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
  */
 public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
+    /**
+     * 較正係数の範囲
+     * 進行方向変化量の較正係数Rdの範囲は0.9倍～1.1倍
+     * 歩幅の較正係数Rsの範囲は0.8～1.2倍
+     */
     private static final int MIN_DIRECTION_RATE = 90;
     private static final int MAX_DIRECTION_RATE = 110;
     private static final int MIN_DISTANCE_RATE = 80;
@@ -36,6 +41,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     private static List<Integer> passageFinishStepCount = new ArrayList<Integer>();
     private static List<Integer> passageStartStepCount = new ArrayList<Integer>();
 
+    /*高精度な絶対座標が得られたかどうか*/
     private static boolean isHighAccuracyPoint = false;
     private static List<LatLng> highAccuracyPointList = new ArrayList<LatLng>();
     private static List<Integer> stepNumberList = new ArrayList<Integer>();
@@ -69,13 +75,15 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     private double lastDistanceRate = 1.0;
 
     private Trajectory turningTrajectory = new Trajectory();
+
+    /**
+     * コンストラクタ
+     */
     public CollisionDetectMatching(Context context, DatabaseHelper db) {
         mSkeletonMatching = new SkeletonMatching(context, db);
         mCollisionDetectMatchingHelper = new CollisionDetectMatchingHelper(context, db);
         isFirst = true;
     }
-
-
 
     /**
      * 与えられたTrackPointを基に最新のスケルトンマッチング後のTrackPoint(座標や、方角、マッチングしているLinkIdの情報)を算出するクラス
@@ -222,6 +230,12 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         }
     }
 
+    /**
+     * 壁にぶつからないように変換できる較正係数の組のセットを取得する
+     * @param trajectory
+     * @param linkList
+     * @return
+     */
    private List<Point> getRateSetNotCollideLinksWall(Trajectory trajectory, List<Link> linkList) {
        List<Point> rateSet = new ArrayList<Point>();
 
@@ -418,6 +432,12 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         }
     }
 
+    /**
+     * 推定進行方向をマッチングリンクにマッチングさせた際の進行方向を取得する
+     * @param rawDirection
+     * @param matchingLink
+     * @return
+     */
     public double getMatchingLinkDirection(double rawDirection, Link matchingLink){
         if(Math.cos(Math.toRadians(matchingLink.getBearing()) - Math.toRadians(rawDirection)) < 0) {
             return matchingLink.getBearing() + 180;
@@ -428,10 +448,6 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
     public List<Link> getLinkList() {
         return linkList;
-    }
-
-    public void removeOldTrajectory() {
-        rawTrajectory.getTrajectory().clear();
     }
 }
 
