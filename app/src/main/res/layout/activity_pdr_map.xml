@@ -18,7 +18,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
+        android:baselineAligned="false"
+        android:layout_alignParentRight="true"
+        android:gravity="bottom|left|right">
 
         <Button
             android:id="@+id/startButton"
@@ -31,22 +33,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reset" />
-        
+
         <Button
             android:id="@+id/setupButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="SetUp" />
-        <Button
-            android:id="@+id/resultButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Result" />
+
         <TextView
             android:id="@+id/directionText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="hoge"
             android:textColor="@color/bright_foreground_disabled_material_light"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 

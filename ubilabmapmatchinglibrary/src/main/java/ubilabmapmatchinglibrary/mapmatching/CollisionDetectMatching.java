@@ -1,6 +1,7 @@
 package ubilabmapmatchinglibrary.mapmatching;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -92,7 +93,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
      */
     public TrackPoint calculateCollisionDetectMatchingPosition(TrackPoint trackPoint) {
 
-        try {
+//        try {
             rawTrajectory.add(trackPoint);
 
             TrackPoint smTrackPoint = mSkeletonMatching.calculateSkeletonMatchingPosition(trackPoint);
@@ -103,7 +104,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
             }
             Link matchingLink = mCollisionDetectMatchingHelper.db.getLinkById(skeletonMatchingTrackPoint.getLinkId());
 
-            ////Log.v("CM", "linkId:" + matchingLink.getId());
+//            Log.v("CM", "linkId:" + matchingLink.getId());
             trackPoint.setLinkId(matchingLink.getId());
 
             if (!isFirst) {
@@ -122,12 +123,10 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                             passageFinishStepCount.remove(passageFinishStepCount.size() - 1);
                         }
                     }
-                } else {
-                    if (lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り始め
-				/*通路終了時の歩数*/
-                        passageFinishStepCount.add(rawTrajectory.size() - 1);
-                        lastStraightLinkId = lastLinkId;
-                    }
+                } else if (lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り始め
+                /*通路終了時の歩数*/
+                    passageFinishStepCount.add(rawTrajectory.size() - 1);
+                    lastStraightLinkId = lastLinkId;
                 }
 
                 if (lastLinkId != matchingLink.getId()) {
@@ -224,10 +223,10 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
             lastLinkId = matchingLink.getId();
 
             return trackPoint;
-        } catch(Exception e) {
-            ////Log.e("CM", "MapMatchig is Failed");
-            return null;
-        }
+//        } catch(Exception e) {
+//            Log.e("CM", "MapMatchig is Failed" + e);
+//            return null;
+//        }
     }
 
     /**

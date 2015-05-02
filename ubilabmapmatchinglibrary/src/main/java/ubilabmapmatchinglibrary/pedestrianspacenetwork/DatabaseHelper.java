@@ -5,7 +5,15 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,13 +69,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //    }
 
     public static synchronized DatabaseHelper getInstance(Context context, int databaseVersion) {
+//        context.deleteDatabase(DATABASE_NAME);
         if (sSingleton == null) {
             sSingleton = new DatabaseHelper(context, databaseVersion);
         }
         return sSingleton;
     }
-
-
 //    public DatabaseHelper(Context context) {
 //        super(context, DB_NAME, null, DATABASE_VERSION);
 //        mContext = context;
@@ -183,8 +190,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //        super.close();
 //    }
 
+    public void dropDB() {
+        SQLiteDatabase db = getWritableDatabase();
+        try {
+            db.execSQL("DROP TABLE " + NODE_TABLE);
+            db.execSQL("DROP TABLE " + WALL_POINT_TABLE);
+            db.execSQL("DROP TABLE " + LINK_TABLE);
+            db.execSQL("DROP TABLE " + LINK_GRID_TABLE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
 
-
+//    public void execQueryFromFile(String db_query_file, SQLiteDatabase db) throws IOException {
+////        String filePath = Environment.DIRECTORY_DOWNLOADS + "/" + db_query_file;
+//        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + db_query_file;
+//        File file = new File(filePath);
+//        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+//
+//        String line = bufferedReader.readLine();
+//        while(line != null) {
+//            try {
+//                db.execSQL(line);
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//            line = bufferedReader.readLine();
+//        }
+//        db.close();
+//    }
 
 
     //データベースの作成
@@ -192,20 +228,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         //UbiNaviで出力した、DB生成クエリを読み込む
-        //execQueryFromFile(DB_QUERY_FILE, db);
+//        execQueryFromFile(DB_QUERY_FILE, db);
 
-        //スキーマの定義
-        String NODE_DATABASE_CREATE_STATES =
-                "create table if not exists " + NODE_TABLE + "("
-                        + " id integer primary key"
-                        + ", latitude double not null"
-                        + ", longitude double not null"
-                        + ", level real not null"
-                        + ", type integer not null"
-                        + ", grid_id text not null"
-                        + ", area_id integer not null"
-                        + ");";
-        db.execSQL(NODE_DATABASE_CREATE_STATES);
+//        try {
+//            readDatabaseFromFile();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
         String POINT_DATABASE_CREATE_STATES =
@@ -269,11 +298,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         try {
             db.beginTransaction();
             for(String query : queryList) {
+                Log.v("execQueryList", query);
                 db.execSQL(query);
             }
             db.setTransactionSuccessful();
         } catch (Exception e){         // 例外発生
-           ////Log.v("DB_ERROR","query error");
+           Log.v("DB_ERROR","query error");
             e.printStackTrace();
         } finally {
             db.endTransaction();

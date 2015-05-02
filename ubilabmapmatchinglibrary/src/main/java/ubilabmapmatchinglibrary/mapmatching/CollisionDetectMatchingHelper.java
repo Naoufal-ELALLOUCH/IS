@@ -1,6 +1,7 @@
 package ubilabmapmatchinglibrary.mapmatching;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -32,7 +33,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
         List<LatLng> oneSideWall = new ArrayList<LatLng>();
         List<LatLng> anotherSideWall = new ArrayList<LatLng>();
 
-        ////Log.v("WallTest", "link.getType" + link.getType() + ", " + link.getType().ordinal());
+//        Log.v("WallTest", "link.getType" + link.getType() + ", " + link.getType().ordinal());
         if(link.getType() == Link.LinkType.OPEN_SPACE) {
             List<WallPoint> openSpacePointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode1Id()).get(0).getGroupNumber());
 
@@ -42,7 +43,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             List<WallPoint> wallPointListB = new ArrayList<>();
 
             for(WallPoint wallPoint :openSpacePointList) {
-                ////Log.v("CM", "wallPoint.getId:" + wallPoint.getId() + "wallPoint.getNodeId:" + wallPoint.getNodeId());
+//                Log.v("CM", "wallPoint.getId:" + wallPoint.getId() + "wallPoint.getNodeId:" + wallPoint.getNodeId());
                 if(wallPoint.getNodeId() != -1) {
                     if (!openSpaceNodeList.contains(wallPoint.getNodeId())) {
                         wallPointListA.add(wallPoint);
@@ -75,6 +76,10 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
 
             WallPoint[] linkStartPoints = getCrossLinkPoints(link, startPointList);
             WallPoint[] linkGoalPoints = getCrossLinkPoints(link, goalPointList);
+
+            if(linkStartPoints[1] == null) {
+//                Log.v("hogehoge", "piyopiyo");
+            }
 
             if(!Calculator2D.isCrossed2Line(linkStartPoints[0].getLatng(), linkGoalPoints[0].getLatng(), linkStartPoints[1].getLatng(), linkGoalPoints[1].getLatng())) {
                 oneSideWall.add(linkStartPoints[0].getLatng());
@@ -154,8 +159,10 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
      */
     public List<List<LatLng>> getLinksWallInfo(List<Link> linkList) {
         for(Link link : linkList) {
-            ////Log.v("CM", "getWallLink linkId:" + link.getId());
+//            Log.v("CM", "getWallLink linkId:" + link.getId());
         }
+//        Log.v("CM", "Link Size : " + linkList.size());
+
         int linkSize = linkList.size();
         if(linkSize == 0) {
             return null;
@@ -168,7 +175,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             List<Link> passageLinkList= new ArrayList<>();
             for(Link link : linkList) {
 
-                ////Log.v("CM", "linkList linkId:" + link.getId());
+//                Log.v("CM", "linkList linkId:" + link.getId());
                 if (link.getType() == Link.LinkType.OPEN_SPACE) {
                     if (passageLinkList.size() != 0) {
                         linksWallInfo.addAll(getLinksWallInfo(passageLinkList));
@@ -184,7 +191,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
 
 
             linkSize = passageLinkList.size();
-            ////Log.v("CM", "passageLinkListSize:" + linkSize);
+//            Log.v("CM", "passageLinkListSize:" + linkSize);
             if(linkSize == 0) {
                 return linksWallInfo;
             } else if(linkSize < 3){
@@ -192,7 +199,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                 return linksWallInfo;
             }
             for(Link link : passageLinkList) {
-                ////Log.v("CM", "passagesLinkList linkId:" + link.getId());
+//                Log.v("CM", "passagesLinkList linkId:" + link.getId());
             }
             List<Node> nodeList = getNodeListByLinkList(passageLinkList);
             //リンクの左側の壁を表すリスト

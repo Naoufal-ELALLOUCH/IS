@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 import ritsumei.cs.ubi.shun.pdr3methodstest.R;
 /**
  * Created by shun on 2014/12/25.
@@ -69,15 +71,14 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
             @Override
             public void onClick(View v) {
 
-
-                if (!enginePrefConfig.getKeyLastArea().equals(enginePrefConfig.getKeyArea())) {
+//                if (!enginePrefConfig.getKeyLastArea().equals(enginePrefConfig.getKeyArea())) {
                     // ダイアログ表示
                     waitDialog.show();
                     // 別スレッドで時間のかかる処理を実行
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
                             parseDownloader.setAreaName(enginePrefConfig.getKeyArea());
                             parseDownloader.incrementDBVersion();
                             enginePrefConfig.setKeyWirelessDbVersion(enginePrefConfig.getKeyWirelessDbVersion() + 1);
@@ -86,18 +87,22 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
                             // 終わったらダイアログ消去
                             enginePrefConfig.setKeyLastArea(enginePrefConfig.getKeyArea());
                             waitDialog.dismiss();
-                        }
+//                            showToast("Loaded");
+//                        }
+//                    }).start();
 
-                    }).start();
-
-                } else {
-                    showToast();
-                }
+//                } else {
+//                    showToast();
+//                }
 
             }
         });
     }
 
+
+    private void showToast(String messageString) {
+        Toast.makeText(this, messageString, Toast.LENGTH_SHORT).show();
+    }
 
     private void showToast() {
         Toast.makeText(this, "already downloaded", Toast.LENGTH_LONG).show();

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -23,9 +24,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
@@ -54,8 +60,8 @@ import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
 
 
 public class PDRMainActivity extends FloorMapActivity implements StepListener, TrajectoryTransedListener, SensorEventListener, OnClickListener , GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
-//    public static final String DB_QUERY_FILE = "cc5f_network_sql.txt";
-    public static final String DB_QUERY_FILE = "cc_psn.txt";
+    public static final String DB_QUERY_FILE = "cc5f_network_sql.txt";
+//    public static final String DB_QUERY_FILE = "cc_psn.txt";
 
     private SensorManager manager;
     private SharedPreferences pref;
@@ -117,6 +123,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
     double startLng = 135.96445966511965;
     double directionLat = 34.97947695565969;
     double directionLng = 135.96473459154367;
+//    double directionLat = 34.9794887;
+//    double directionLng = 135.9643983;
 
     private DecimalFormat df = new DecimalFormat("0.00");
 
@@ -137,8 +145,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         setupButton = (Button)findViewById(R.id.setupButton);
         setupButton.setOnClickListener(this);
 
-        resultButton = (Button)findViewById(R.id.resultButton);
-        resultButton.setOnClickListener(this);
+//        resultButton = (Button)findViewById(R.id.resultButton);
+//        resultButton.setOnClickListener(this);
 
         directionTextView = (TextView)findViewById(R.id.directionText);
         directionTextView.setText("ready");
@@ -156,7 +164,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         enginePrefConfig = new EnginePrefConfig(this);
 
         db = new DatabaseHelper(this, 1);
-       
+
+
 
         /**
          * PDRの初期化
@@ -177,8 +186,14 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         mCollisionDetectMatching.addListener(this);
         isCollisionDetectSucMatchingSuccess = true;
 
+        BitmapDescriptor floormap = BitmapDescriptorFactory.fromResource(R.drawable.floormap_cc5f);
+        options = new GroundOverlayOptions();
+        options.image(floormap);
+        options.anchor(0, 1);
+        options.bearing(3f);
+        options.position(new LatLng(34.979389,135.963716), 101.385f, 43.795f);
     }
-
+    GroundOverlayOptions options = null;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -281,6 +296,12 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
     }
 
 
+    TrackPoint cmPdrTrackPoint = null;
+    TrackPoint collisionDetectMatchingTrackPoint = null;
+    Runtime runtime = null;
+    List<Link> linkList;
+    List<List<LatLng>> wallInfo;
+
     public void onStep(long time) {
 
         if(pref.getBoolean(SelectMethodActivity.METHOD_PDR_KEY, true)) {
@@ -302,24 +323,27 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             collisionDetectMatchingPdrPositionCalculator.calculatePosition(collisionDetectMatchingDirectionCalculator.getRadiansDirection(), pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), time, pref.getFloat(SettingsActivity.STEP_RATE_KEY, 37500.0f));
             if(isCollisionDetectSucMatchingSuccess) {
 
-                TrackPoint cmPdrTrackPoint = new TrackPoint(time, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()), collisionDetectMatchingPdrPositionCalculator.getDegreesCalibratedDirection(), collisionDetectMatchingPdrPositionCalculator.getCalibratedStepLength(), collisionDetectMatchingPdrPositionCalculator.getIsStraight(), -1);
-                TrackPoint collisionDetectMatchingTrackPoint = mCollisionDetectMatching.calculateCollisionDetectMatchingPosition(cmPdrTrackPoint);
+                cmPdrTrackPoint = new TrackPoint(time, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()), collisionDetectMatchingPdrPositionCalculator.getDegreesCalibratedDirection(), collisionDetectMatchingPdrPositionCalculator.getCalibratedStepLength(), collisionDetectMatchingPdrPositionCalculator.getIsStraight(), -1);
+                collisionDetectMatchingTrackPoint = mCollisionDetectMatching.calculateCollisionDetectMatchingPosition(cmPdrTrackPoint);
 
                 if (collisionDetectMatchingTrackPoint != null) {
                     moveMarker(collisionDetectMatchingMarkerId, collisionDetectMatchingTrackPoint.getLocation());
                     location = collisionDetectMatchingTrackPoint.getLocation();
 
                     map.clear();
-                    List<Link> linkList = mCollisionDetectMatching.getLinkList();
+                    map.addGroundOverlay(options).setTransparency(0.1f);
+//                    List<Link> linkList = mCollisionDetectMatching.getLinkList();
+                    linkList = mCollisionDetectMatching.getLinkList();
                     if(linkList.size() > 0) {
-                        List<List<LatLng>> wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
+                        wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
 
                         for (List<LatLng> wall : wallInfo) {
                             PolylineOptions po = new PolylineOptions()
                                     .color(Color.BLUE)
                                     .width(3)
                                     .addAll(wall);
-                            Polyline polyline = map.addPolyline(po);
+//                            Polyline polyline = map.addPolyline(po);
+                            map.addPolyline(po);
                         }
 
 
@@ -329,15 +353,18 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                                     .color(Color.GREEN)
                                     .add(db.getNodeById(link.getNode1Id()).getLatLng())
                                     .add(db.getNodeById(link.getNode2Id()).getLatLng());
-                            Polyline polyline = map.addPolyline(po);
+//                            Polyline polyline = map.addPolyline(po);
+                            map.addPolyline(po);
                         }
                     }
                     directionTextView.setText("" + df.format(collisionDetectMatchingTrackPoint.getDirection()) + "°, linkId:" + collisionDetectMatchingTrackPoint.getLinkId());
+                    moveMarkerDefaultPolylineColor(collisionDetectMatchingMarkerId, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()));
                 } else {
-
+                    directionTextView.setText("Raw PDR Mode");
                     //Log.e("Activity", "change raw PDR");
-                    isCollisionDetectSucMatchingSuccess = false;
+//                    isCollisionDetectSucMatchingSuccess = false;
                     moveMarker(collisionDetectMatchingMarkerId, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()));
+                    moveMarkerDefaultPolylineColor(collisionDetectMatchingMarkerId, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()));
                     location = new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng());
 
                 }
@@ -347,9 +374,16 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             }
         }
 
-        removePolyline(collisionDetectMatchingMarkerId);
+//TODO: 検証
         trajectoryMap.put(Long.toString(time), location);
         drawPolylineAllPoints2(collisionDetectMatchingMarkerId, markerList.get(searchIndex(collisionDetectMatchingMarkerId)).getPolylineColor());
+
+        int index = searchIndex(collisionDetectMatchingMarkerId);
+        if(index > -1) {
+            removePolyline(collisionDetectMatchingMarkerId);
+//            drawPolylineAllPoints2(collisionDetectMatchingMarkerId, 0);
+            drawPolylineAllPoints2(collisionDetectMatchingMarkerId, markerList.get(index).getPolylineColor());
+        }
 
     }
 
@@ -359,7 +393,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         //Log.v("CM", "TrajectoryTransed");
 
         if(pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
-            Log.v("direction", "linkDirection:" + newTrackPoint.getDirection());
+//            Log.v("direction", "linkDirection:" + newTrackPoint.getDirection());
             collisionDetectMatchingPdrPositionCalculator.setPoint(newTrackPoint.getLocation().latitude, newTrackPoint.getLocation().longitude, newTrackPoint.getDirection());
                         directionCalculator.setDegreesDirection(newTrackPoint.getDirection());
             //MapMatching用のPDRクラスに較正係数を反映
@@ -426,7 +460,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 
 
                     startSensor();
-                    startButton.setText("Pause");
+//                    startButton.setText("Pause");
 
                     markerList.get(startMarkerIndex).getMarker().remove();
                     markerList.get(directionMarkerIndex).getMarker().remove();

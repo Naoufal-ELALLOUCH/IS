@@ -1,13 +1,27 @@
 package ritsumei.cs.ubi.shun.pdr3methodstest.pdrmain;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,36 +78,91 @@ public class ParseDownloader {
      */
     public void startDownLoad() {
         //Helperの作成
+        ListView fileListView = new ListView(context);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1);
 
-        //Log.v("Downloader", "mapDBVersion:" + mapDBversion);
-        mapDatabaseHelper = DatabaseHelper.getInstance(context, mapDBversion);
-        try {
-            //エリアIDの取得
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("area");
-            query.whereEqualTo("name", areaName);
-            List<ParseObject> idList = query.find();
-            areaID = idList.get(0).getInt("area_id");
+        final AlertDialog dialog = new AlertDialog.Builder(context)
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setTitle("既存データの読み込み")
+                .setMessage("ファイルを選択してください．")
+                .setView(fileListView)
+                .setPositiveButton("キャンセル", null)
+                .show();
 
-            //pdr
-            //DatabaseHelper.NODE_TABLE
-            readPedestrianNode();
+        String saveRootPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
+        File[] files = new File(saveRootPath).listFiles();
+        if (files != null) {
+            for (File file : files) {
+                adapter.add(file.getName());
+            }
+            fileListView.setAdapter(adapter);
+            fileListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    ListView listView = (ListView) parent;
+                    String selectedFileName = (String) listView.getItemAtPosition(position);
 
-            //DatabaseHelper.LINK_TABLE
-            readPedestrianLink();
-
-            //DatabaseHelper.WALL_POINT_TABLE
-            readPedestrianPoint();
-
-            //DatabaseHelper.LINK_GRID_TABLE
-            readPedestrianGrid();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
+                    mapDatabaseHelper = DatabaseHelper.getInstance(context, mapDBversion);
+                    mapDatabaseHelper.dropDB();
+                    Log.v("StartDownload", "Drop DB");
+                    try {
+                        readDatabaseFromFile(selectedFileName);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(context, "読み込みエラー", Toast.LENGTH_SHORT).show();
+                    } finally {
+                        Log.v("StartDownload", "Read Database from file.");
+                    }
+                    dialog.dismiss();
+                }
+            });
         }
+
+//        try {
+//            //エリアIDの取得
+//            ParseQuery<ParseObject> query = ParseQuery.getQuery("area");
+//            query.whereEqualTo("name", areaName);
+//            List<ParseObject> idList = query.find();
+//            areaID = idList.get(0).getInt("area_id");
+//
+//            //pdr
+//            //DatabaseHelper.NODE_TABLE
+//            readPedestrianNode();
+//
+//            //DatabaseHelper.LINK_TABLE
+//            readPedestrianLink();
+//
+//            //DatabaseHelper.WALL_POINT_TABLE
+//            readPedestrianPoint();
+//
+//            //DatabaseHelper.LINK_GRID_TABLE
+//            readPedestrianGrid();
+//
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
     }
 
 
+    private void readDatabaseFromFile(String db_query_file) throws IOException {
+        String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + db_query_file;
+        File file = new File(filePath);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        List<String> queries = new ArrayList<>();
 
+        String line = bufferedReader.readLine();
+        while(line != null) {
+            if(!line.endsWith(";")) {
+                Toast.makeText(context, "このファイルは読み込めません", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            queries.add(line);
+            line = bufferedReader.readLine();
+        }
+        bufferedReader.close();
+        mapDatabaseHelper.execQueryList(queries);
+        Toast.makeText(context, "読み込み完了", Toast.LENGTH_SHORT).show();
+    }
 
     private void readPedestrianNode() throws ParseException {
         ParseQuery<ParseObject> queryPedestrianNode = ParseQuery.getQuery("node");
