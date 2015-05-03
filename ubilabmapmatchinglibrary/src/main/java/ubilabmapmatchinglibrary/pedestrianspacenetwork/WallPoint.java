@@ -6,15 +6,15 @@ import com.google.android.gms.maps.model.LatLng;
  * WallPoint(交差点の4隅の頂点などの通路の出口を構成する点)を表すクラス
  */
 public class WallPoint {
-    int id;
-    int nodeId;
-    int groupNumber;
+    String id;
+    String nodeId;
+    String groupNumber;
     int pointOrder;
     double lat;
     double lng;
     String grid;
 
-    public WallPoint(int id, int nodeId, int groupNumber, int pointOrder, double lat, double lng, String grid) {
+    public WallPoint(String id, String nodeId, String groupNumber, int pointOrder, double lat, double lng, String grid) {
         this.id = id;
         this.nodeId = nodeId;
         this.groupNumber = groupNumber;
@@ -24,27 +24,27 @@ public class WallPoint {
         this.grid = grid;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getNodeId() {
+    public String getNodeId() {
         return nodeId;
     }
 
-    public void setNodeId(int nodeId) {
+    public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
     }
 
-    public int getGroupNumber() {
+    public String getGroupNumber() {
         return groupNumber;
     }
 
-    public void setGroupNumber(int groupNumber) {
+    public void setGroupNumber(String groupNumber) {
         this.groupNumber = groupNumber;
     }
 

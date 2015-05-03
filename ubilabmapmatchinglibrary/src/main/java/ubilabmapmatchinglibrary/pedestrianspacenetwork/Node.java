@@ -6,7 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
  * Node(交差点の中央などの点)を表すクラス
  */
 public class Node {
-    private int id;
+    private String id;
     private double lat;
     private double lng;
     private int level; //TOD:今後踊り場とか追加するならdoubleに
@@ -21,7 +21,7 @@ public class Node {
     private NodeType type;
     private String gridId;
 
-    public Node(int id, double lat, double lng,int level, NodeType type, String gridId) {
+    public Node(String id, double lat, double lng,int level, NodeType type, String gridId) {
         this.id = id;
         this.lat = lat;
         this.lng = lng;
@@ -30,7 +30,7 @@ public class Node {
         this.gridId = gridId;
     }
 
-    public Node(int id, double lat, double lng,int level, int type, String gridId) {
+    public Node(String id, double lat, double lng,int level, int type, String gridId) {
         this.id = id;
         this.lat = lat;
         this.lng = lng;
@@ -39,11 +39,11 @@ public class Node {
         this.gridId = gridId;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

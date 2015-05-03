@@ -58,9 +58,9 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     Trajectory transedTrajectory = new Trajectory();
 
     //直前のリンクのIdを格納
-    private int lastLinkId;
+    private String lastLinkId;
 
-    private int lastStraightLinkId = -1;
+    private String lastStraightLinkId = "null";
 
     private TrackPoint newStartTrackPoint;
 
@@ -110,7 +110,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
             if (!isFirst) {
                 if (trackPoint.getIsStraight()) {
                     if (!lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り終わり
-                        if (lastStraightLinkId != matchingLink.getId()) {
+                        if (!lastStraightLinkId.equals(matchingLink.getId())) {
                             if (turnCount > 0) {
                                 rawTrajectory.removeTrajectory(turndStepCount);
                                 adjustStepNumberOfHighAccuracyPoints(turndStepCount);
@@ -129,12 +129,12 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                     lastStraightLinkId = lastLinkId;
                 }
 
-                if (lastLinkId != matchingLink.getId()) {
+                if (!lastLinkId.equals(matchingLink.getId())) {
                     if (linkList.size() > 1) {
 
-                        int lastCommonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), linkList.get(linkList.size() - 1));
-                        int commonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), matchingLink);
-                        if (lastCommonNodeId == commonNodeId) {
+                        String lastCommonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), linkList.get(linkList.size() - 1));
+                        String commonNodeId = mCollisionDetectMatchingHelper.getLinksCommonNodeId(linkList.get(linkList.size() - 2), matchingLink);
+                        if (lastCommonNodeId.equals(commonNodeId)) {
                             linkList.remove(linkList.size() - 1);
                         }
                     }

@@ -310,10 +310,10 @@ public class StatementSkeletonMatchingHelper {
      */
     public static List<Link> getLinkListByGridIdList(List<String> surroundGridList) {
         List<Link> firstCandidateMatchingLinkList = new ArrayList<Link>();
-        List<Integer> firstCandidateMatchingLinkIdList = new ArrayList<>();
+        List<String> firstCandidateMatchingLinkIdList = new ArrayList<>();
         for (String gridId : surroundGridList) {
-            List<Integer> firstCandidateMatchingLinkIdListInGrid = db.getLinkIdListByGridId(gridId);
-            for (int linkId : firstCandidateMatchingLinkIdListInGrid) {
+            List<String> firstCandidateMatchingLinkIdListInGrid = db.getLinkIdListByGridId(gridId);
+            for (String linkId : firstCandidateMatchingLinkIdListInGrid) {
                 if(!firstCandidateMatchingLinkIdList.contains(linkId)) {
                     firstCandidateMatchingLinkIdList.add(linkId);
                     firstCandidateMatchingLinkList.add(db.getLinkById(linkId));
@@ -375,9 +375,9 @@ public class StatementSkeletonMatchingHelper {
      * @return
      */
     public static List<Link> getCandidateLinkList(Link lastMatchedLink) {
-        List<Integer> candidateMatchingLinkIdList = db.getConnectingLinkIdListByLinkId(lastMatchedLink.getId());
+        List<String> candidateMatchingLinkIdList = db.getConnectingLinkIdListByLinkId(lastMatchedLink.getId());
         List<Link> candidateMatchingLinkList = new ArrayList<Link>();
-        for (int linkId : candidateMatchingLinkIdList) {
+        for (String linkId : candidateMatchingLinkIdList) {
             candidateMatchingLinkList.add(db.getLinkById(linkId));
         }
         return candidateMatchingLinkList;

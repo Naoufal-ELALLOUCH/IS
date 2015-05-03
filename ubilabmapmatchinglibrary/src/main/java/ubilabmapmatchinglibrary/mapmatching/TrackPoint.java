@@ -8,7 +8,7 @@ public class TrackPoint {
 	private double direction;
 	private double distance;
     private boolean isStraight;
-	private int linkId;
+	private String linkId;
 	
 	public TrackPoint() { 
 		this.time = 0;
@@ -16,10 +16,10 @@ public class TrackPoint {
 		this.direction = 0;
 		this.distance = 0;
         this.isStraight = true;
-		this.linkId = -1;
+		this.linkId = "null";
 	}
 	
-	public TrackPoint (long time, double lat, double lng, double direction, double distance, boolean isStraight, int linkId) {
+	public TrackPoint (long time, double lat, double lng, double direction, double distance, boolean isStraight, String linkId) {
 		this.time = time;
 		this.location = new LatLng(lat, lng);
 		this.direction = direction;
@@ -28,7 +28,7 @@ public class TrackPoint {
 		this.linkId = linkId;
 	}
 
-	public TrackPoint (long time, LatLng location, double direction, double distance, boolean isStraight, int linkId) {
+	public TrackPoint (long time, LatLng location, double direction, double distance, boolean isStraight, String linkId) {
 		this.time = time;
 		this.location = location;
 		this.direction = direction;
@@ -55,7 +55,7 @@ public class TrackPoint {
 		this.linkId = track.getLinkId();
 	}
 
-    public void setTrackPoint (long time, double lat, double lng, double direction, double distance, boolean isStraight, int linkId) {
+    public void setTrackPoint (long time, double lat, double lng, double direction, double distance, boolean isStraight, String linkId) {
         this.time = time;
         this.location = new LatLng(lat, lng);
         this.direction = direction;
@@ -64,7 +64,7 @@ public class TrackPoint {
         this.linkId = linkId;
     }
 
-    public void setTrackPoint (long time, LatLng location, double direction, double distance, boolean isStraight, int linkId) {
+    public void setTrackPoint (long time, LatLng location, double direction, double distance, boolean isStraight, String linkId) {
         this.time = time;
         this.location = location;
         this.direction = direction;
@@ -113,10 +113,10 @@ public class TrackPoint {
 		return isStraight;
 	}
 	
-	public int getLinkId() {
+	public String getLinkId() {
 		return linkId;
 	}
 
-    public void setLinkId(int linkId) { this.linkId = linkId; }
+    public void setLinkId(String linkId) { this.linkId = linkId; }
 
 }

@@ -311,7 +311,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 
         if(pref.getBoolean(SelectMethodActivity.METHOD_SM_KEY, false)) {
             skeletonMatchingPdrPositionCalculator.calculatePosition(skeletonMatchingDirectionCalculator.getRadiansDirection(), pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), time, pref.getFloat(SettingsActivity.STEP_RATE_KEY, 37500.0f));
-            TrackPoint smPdrTrackPoint = new TrackPoint(time, new LatLng(skeletonMatchingPdrPositionCalculator.getLat(), skeletonMatchingPdrPositionCalculator.getLng()), skeletonMatchingPdrPositionCalculator.getDegreesCalibratedDirection(), skeletonMatchingPdrPositionCalculator.getCalibratedStepLength(), skeletonMatchingPdrPositionCalculator.getIsStraight(), -1);
+            TrackPoint smPdrTrackPoint = new TrackPoint(time, new LatLng(skeletonMatchingPdrPositionCalculator.getLat(), skeletonMatchingPdrPositionCalculator.getLng()), skeletonMatchingPdrPositionCalculator.getDegreesCalibratedDirection(), skeletonMatchingPdrPositionCalculator.getCalibratedStepLength(), skeletonMatchingPdrPositionCalculator.getIsStraight(), "null");
             TrackPoint skeletonMatchingTrackPoint = mSkeletonMatching.calculateSkeletonMatchingPosition(smPdrTrackPoint);
             moveMarkerDefaultPolylineColor(skeletonMatchedMarkerId, skeletonMatchingTrackPoint.getLocation());
 //            directionTextView.setText("" + df.format(skeletonMatchingTrackPoint.getDirection()) + "°, straight:" + skeletonMatchingTrackPoint.getIsStraight());
@@ -323,7 +323,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             collisionDetectMatchingPdrPositionCalculator.calculatePosition(collisionDetectMatchingDirectionCalculator.getRadiansDirection(), pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), time, pref.getFloat(SettingsActivity.STEP_RATE_KEY, 37500.0f));
             if(isCollisionDetectSucMatchingSuccess) {
 
-                cmPdrTrackPoint = new TrackPoint(time, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()), collisionDetectMatchingPdrPositionCalculator.getDegreesCalibratedDirection(), collisionDetectMatchingPdrPositionCalculator.getCalibratedStepLength(), collisionDetectMatchingPdrPositionCalculator.getIsStraight(), -1);
+                cmPdrTrackPoint = new TrackPoint(time, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()), collisionDetectMatchingPdrPositionCalculator.getDegreesCalibratedDirection(), collisionDetectMatchingPdrPositionCalculator.getCalibratedStepLength(), collisionDetectMatchingPdrPositionCalculator.getIsStraight(), "null");
                 collisionDetectMatchingTrackPoint = mCollisionDetectMatching.calculateCollisionDetectMatchingPosition(cmPdrTrackPoint);
 
                 if (collisionDetectMatchingTrackPoint != null) {
@@ -337,7 +337,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                     if(linkList.size() > 0) {
                         wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
 
-                        for (List<LatLng> wall : wallInfo) {
+                        for (List<LatLng> wall : wallInfo) { //広場のあたりがおかしい
                             PolylineOptions po = new PolylineOptions()
                                     .color(Color.BLUE)
                                     .width(3)
@@ -431,7 +431,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                     int directionMarkerIndex = searchIndex(directionMarkerId);
 
                     LatLng rawPoint = markerList.get(startMarkerIndex).getLastPoint();
-                    TrackPoint rawTrackPoint = new TrackPoint(0, rawPoint, startDirection, pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), true, -1);
+                    TrackPoint rawTrackPoint = new TrackPoint(0, rawPoint, startDirection, pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), true, "null");
 
                     if(pref.getBoolean(SelectMethodActivity.METHOD_PDR_KEY, true)) {
                         pdrPositionCalculator.setPoint(rawPoint.latitude, rawPoint.longitude, startDirection);

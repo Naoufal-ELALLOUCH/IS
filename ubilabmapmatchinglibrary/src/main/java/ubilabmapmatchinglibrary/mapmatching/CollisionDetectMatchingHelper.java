@@ -37,14 +37,14 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
         if(link.getType() == Link.LinkType.OPEN_SPACE) {
             List<WallPoint> openSpacePointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode1Id()).get(0).getGroupNumber());
 
-            List<Integer> openSpaceNodeList = new ArrayList<>();
+            List<String> openSpaceNodeList = new ArrayList<>();
 
             List<WallPoint> wallPointListA = new ArrayList<>();
             List<WallPoint> wallPointListB = new ArrayList<>();
 
             for(WallPoint wallPoint :openSpacePointList) {
 //                Log.v("CM", "wallPoint.getId:" + wallPoint.getId() + "wallPoint.getNodeId:" + wallPoint.getNodeId());
-                if(wallPoint.getNodeId() != -1) {
+                if(!wallPoint.getNodeId().equals("null")) {
                     if (!openSpaceNodeList.contains(wallPoint.getNodeId())) {
                         wallPointListA.add(wallPoint);
                         openSpaceNodeList.add(wallPoint.getNodeId());
@@ -54,7 +54,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                 }
             }
 
-            if(wallPointListA.get(0).getNodeId() == wallPointListB.get(0).getNodeId()) {
+            if(wallPointListA.get(0).getNodeId().equals(wallPointListB.get(0).getNodeId())) {
                 wallPointListA.add(wallPointListA.get(0));
                 wallPointListA.remove(0);
 
@@ -113,9 +113,9 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
         List<LatLng> leftWallInfo = new ArrayList<LatLng>();
         List<LatLng> rightWallInfo = new ArrayList<LatLng>();
 
-        int commonNodeId = getLinksCommonNodeId(firstLink, nextLink);
-        int startNodeId = getAnotherLinksNodeId(firstLink, commonNodeId);
-        int goalNodeId = getAnotherLinksNodeId(nextLink, commonNodeId);
+        String commonNodeId = getLinksCommonNodeId(firstLink, nextLink);
+        String startNodeId = getAnotherLinksNodeId(firstLink, commonNodeId);
+        String goalNodeId = getAnotherLinksNodeId(nextLink, commonNodeId);
 
         List<WallPoint> startPointList = db.getPointsByGroupNumber(db.getPointsByNodeId(startNodeId).get(0).getGroupNumber());
         List<WallPoint> commonPointList = db.getPointsByGroupNumber(db.getPointsByNodeId(commonNodeId).get(0).getGroupNumber());
@@ -175,7 +175,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             List<Link> passageLinkList= new ArrayList<>();
             for(Link link : linkList) {
 
-//                Log.v("CM", "linkList linkId:" + link.getId());
+                Log.v("CM", "linkList linkId:" + link.getId());
                 if (link.getType() == Link.LinkType.OPEN_SPACE) {
                     if (passageLinkList.size() != 0) {
                         linksWallInfo.addAll(getLinksWallInfo(passageLinkList));
@@ -288,19 +288,19 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
      * @param link2
      * @return
      */
-    public static int getLinksCommonNodeId(Link link1, Link link2) {
-        int link1Node1Id =link1.getNode1Id();
-        int link1Node2Id =link1.getNode2Id();
-        int link2Node1Id =link2.getNode1Id();
-        int link2Node2Id =link2.getNode2Id();
+    public static String getLinksCommonNodeId(Link link1, Link link2) {
+        String link1Node1Id =link1.getNode1Id();
+        String link1Node2Id =link1.getNode2Id();
+        String link2Node1Id =link2.getNode1Id();
+        String link2Node2Id =link2.getNode2Id();
 
-        int commonNodeId;
-        if((link1Node1Id == link2Node1Id) || (link1Node1Id == link2Node2Id)) {
+        String commonNodeId;
+        if((link1Node1Id.equals(link2Node1Id)) || (link1Node1Id.equals(link2Node2Id))) {
             commonNodeId = link1Node1Id;
-        } else if ((link1Node2Id == link2Node1Id) || (link1Node2Id == link2Node2Id)) {
+        } else if ((link1Node2Id.equals(link2Node1Id)) || (link1Node2Id.equals(link2Node2Id))) {
             commonNodeId = link1Node2Id;
         } else {
-            commonNodeId = -1;
+            commonNodeId = "null";
         }
 
         return commonNodeId;
@@ -313,8 +313,8 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
      * @param nodeId
      * @return
      */
-    public static int getAnotherLinksNodeId(Link link, int nodeId ) {
-        if(link.getNode1Id() == nodeId) {
+    public static String getAnotherLinksNodeId(Link link, String nodeId ) {
+        if(link.getNode1Id().equals(nodeId)) {
             return link.getNode2Id();
         } else {
             return link.getNode1Id();
@@ -368,12 +368,12 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
     public List<Node> getNodeListByLinkList(List<Link> linkList) {
         List<Node> nodeList = new ArrayList<Node>();
         Link lastLink = null;
-        int nextNodeId = -1;
+        String nextNodeId = null;
         for(Link link: linkList) {
             if(lastLink != null) {
                 if(nodeList.size() == 0) {
                     nextNodeId = getLinksCommonNodeId(link, lastLink);
-                    int firstNodeId = getAnotherLinksNodeId(lastLink, nextNodeId);
+                    String firstNodeId = getAnotherLinksNodeId(lastLink, nextNodeId);
                     nodeList.add(db.getNodeById(firstNodeId));
                     nodeList.add(db.getNodeById(nextNodeId));
                 }

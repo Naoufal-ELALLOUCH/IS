@@ -241,7 +241,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "create table if not exists " + WALL_POINT_TABLE + " ("
                         + " id integer primary key"
                         + ", node_id integer"
-                        + ", group_number integer not null"
+                        + ", \"group\" integer not null"
                         + ", point_order integer not null"
                         + ", latitude real not null"
                         + ", longitude real not null"
@@ -321,7 +321,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteCursor c = (SQLiteCursor) db.rawQuery(query, null);
         c.moveToFirst();
-        Node node = new Node(c.getInt(0), c.getDouble(1), c.getDouble(2), (int)c.getDouble(3), c.getInt(4), c.getString(5));
+        Node node = new Node(c.getString(0), c.getDouble(1), c.getDouble(2), (int)c.getDouble(3), c.getInt(4), c.getString(5));
         c.close();
 
         return node;
@@ -332,11 +332,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param id
      * @return
      */
-    public Node getNodeById(int id) {
+    public Node getNodeById(String id) {
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_NODE_BY_ID =
-                "select * from " + NODE_TABLE + " where id = " + id;
+                "select * from " + NODE_TABLE + " where id = '" + id + "'";
 
         try{
             Node node = getNodeByQuery(db, GET_NODE_BY_ID);
@@ -361,7 +361,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<WallPoint> pointsList = new ArrayList<WallPoint>();
         boolean next = c.moveToFirst();
         while(next) {
-            pointsList.add(new WallPoint(c.getInt(0), c.getInt(1), c.getInt(2), c.getInt(3), c.getDouble(4), c.getDouble(5), c.getString(6)));
+            pointsList.add(new WallPoint(c.getString(0), c.getString(1), c.getString(2), c.getInt(3), c.getDouble(4), c.getDouble(5), c.getString(6)));
             next = c.moveToNext();
         }
         c.close();
@@ -373,12 +373,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param nodeId
      * @return
      */
-    public List<WallPoint> getPointsByNodeId(int nodeId) {
+    public List<WallPoint> getPointsByNodeId(String nodeId) {
 
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_POINTS_BY_NODE_ID =
-                "select * from " + WALL_POINT_TABLE + " where node_id = " + nodeId + " order by point_order";
+                "select * from " + WALL_POINT_TABLE + " where node_id = '" + nodeId + "' order by point_order";
 
         try{
 
@@ -398,11 +398,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param groupNumber
      * @return
      */
-    public List<WallPoint> getPointsByGroupNumber(int groupNumber) {
+    public List<WallPoint> getPointsByGroupNumber(String groupNumber) {
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_POINTS_BY_GROUP_ID =
-                "select * from " + WALL_POINT_TABLE + " where group_number = " + groupNumber + " order by point_order";
+                "select * from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "' order by point_order";
 
         try{
             List<WallPoint> pointsList = (getPointsByQuery(db, GET_POINTS_BY_GROUP_ID));
@@ -428,7 +428,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteCursor c = (SQLiteCursor) db.rawQuery(query, null);
         c.moveToFirst();
 
-        Link link = new Link(c.getInt(0), c.getInt(1), c.getInt(2), c.getDouble(3), c.getDouble(4),  c.getInt(5), c.getDouble(6));
+        Link link = new Link(c.getString(0), c.getString(1), c.getString(2), c.getDouble(3), c.getDouble(4),  c.getInt(5), c.getDouble(6));
         c.close();
 
         return link;
@@ -439,11 +439,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param id
      * @return
      */
-    public Link getLinkById(int id) {
+    public Link getLinkById(String id) {
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_LINK_BY_ID =
-                "select * from " + LINK_TABLE + " where id like " + id;
+                "select * from " + LINK_TABLE + " where id like '" + id + "'";
 
         try{
             Link link = getLinkByQuery(db, GET_LINK_BY_ID);
@@ -461,10 +461,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param idList
      * @return
      */
-    public List<Link> getLinkListByIdList(List<Integer> idList) {
+    public List<Link> getLinkListByIdList(List<String> idList) {
         List<Link> linkList= new ArrayList<Link>();
         if(idList != null) {
-            for (int id : idList) {
+            for (String id : idList) {
                 linkList.add(getLinkById(id));
             }
             return linkList;
@@ -479,13 +479,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param query
      * @return
      */
-    public List<Integer> getLinkIdListByQuery(SQLiteDatabase db, String query) {
+    public List<String> getLinkIdListByQuery(SQLiteDatabase db, String query) {
 
         SQLiteCursor c = (SQLiteCursor)db.rawQuery(query, null);
-        List<Integer> linksIdList = new ArrayList<Integer>();
+        List<String> linksIdList = new ArrayList<>();
         boolean next = c.moveToFirst();
         while(next) {
-            linksIdList.add(c.getInt(0));
+            linksIdList.add(c.getString(0));
             next = c.moveToNext();
         }
         c.close();
@@ -498,14 +498,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param gridId
      * @return
      */
-    public List<Integer> getLinkIdListByGridId(String gridId) {
+    public List<String> getLinkIdListByGridId(String gridId) {
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_LINKS_ID_BY_GRID_ID =
                 "select link_id from " + LINK_GRID_TABLE + " where grid_id like " + gridId;
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery(db, GET_LINKS_ID_BY_GRID_ID);
+            List<String> linksIdList = getLinkIdListByQuery(db, GET_LINKS_ID_BY_GRID_ID);
             db.close();
             return linksIdList;
 
@@ -522,7 +522,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param level
      * @return
      */
-    public List<Integer> getLinkIdListByGridIdAndLevel(String gridId, int level) {
+    public List<String> getLinkIdListByGridIdAndLevel(String gridId, int level) {
         SQLiteDatabase db = getReadableDatabase();
 
         //指定したgrid_idかつ、リンクを構成するノードが指定したlevelにあるlinkIdを取得するクエリ
@@ -532,7 +532,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         +LINK_TABLE + " where (node1_id or node2_id) in (select id from " + NODE_TABLE + "where level = " + level +"))";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery(db, GET_LINKS_BY_GRID_ID_AND_LEVEL);
+            List<String> linksIdList = getLinkIdListByQuery(db, GET_LINKS_BY_GRID_ID_AND_LEVEL);
             db.close();
             return linksIdList;
 
@@ -549,7 +549,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param level
      * @return
      */
-    public List<Integer> getLinkIdListByGridIdAndLevelAndType(String gridId, int level) {
+    public List<String> getLinkIdListByGridIdAndLevelAndType(String gridId, int level) {
         SQLiteDatabase db = getReadableDatabase();
 
         //指定したgrid_idかつ、リンクを構成するノードが指定したlevelにある、LinkTypeが0か1のlinkIdを取得するクエリ
@@ -560,7 +560,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         "and type = (" + Link.LinkType.PASSAGE.ordinal() + " or " + Link.LinkType.OPEN_SPACE.ordinal() + "))";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery(db, GET_LINKS_BY_GRID_ID_AND_LEVEL_AND_TYPE);
+            List<String> linksIdList = getLinkIdListByQuery(db, GET_LINKS_BY_GRID_ID_AND_LEVEL_AND_TYPE);
             db.close();
             return linksIdList;
 
@@ -576,18 +576,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param linkId
      * @return
      */
-    public List<Integer> getConnectingLinkIdListByLinkId(int linkId) {
+    public List<String> getConnectingLinkIdListByLinkId(String linkId) {
 
         Link link = getLinkById(linkId);
-        int node1Id = link.getNode1Id();
-        int node2Id = link.getNode2Id();
+        String node1Id = link.getNode1Id();
+        String node2Id = link.getNode2Id();
 
         SQLiteDatabase db = getReadableDatabase();
         String GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID =
-                "select id from " + LINK_TABLE + " where node1_id = " + node1Id + " or node2_id = " + node1Id + " or node1_id = " + node2Id + " or node2_id = " + node2Id;
+                "select id from " + LINK_TABLE + " where node1_id = '" + node1Id + "' or node2_id = '" + node1Id + "' or node1_id = '" + node2Id + "' or node2_id = '" + node2Id + "'";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery(db, GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID);
+            List<String> linksIdList = getLinkIdListByQuery(db, GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID);
             db.close();
             return linksIdList;
         } catch (SQLException e) {
@@ -602,17 +602,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param groupNumber
      * @return
      */
-    public List<Integer> getConnectingLinkIdListByGroupNumber(int groupNumber) {
+    public List<String> getConnectingLinkIdListByGroupNumber(String groupNumber) {
 
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID =
                 "select id from " + LINK_TABLE + " where type = " + Link.LinkType.PASSAGE.ordinal() + " and " +
-                        "(node1_id in (select node_id from " + WALL_POINT_TABLE + " where group_number = " + groupNumber + ")" +
-                        "or node2_id in (select node_id from " + WALL_POINT_TABLE + " where group_number = " + groupNumber + "))";
+                        "(node1_id in (select node_id from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "')" +
+                        "or node2_id in (select node_id from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "'))";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery(db, GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID);
+            List<String> linksIdList = getLinkIdListByQuery(db, GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID);
             db.close();
             return linksIdList;
         } catch (SQLException e) {
@@ -627,17 +627,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param link2Id
      * @return
      */
-    public Node getLinksCommonNode(int link1Id, int link2Id) {
+    public Node getLinksCommonNode(String link1Id, String link2Id) {
         SQLiteDatabase db = getReadableDatabase();
 
         String GET_LINKS_COMMON_NODE_ID =
-                "select node_id from" + LINK_TABLE  + "where (link1_id or link2_id) = " + link1Id + " or (link1_id or link2_id) = " + link2Id + ")";
+                "select node_id from" + LINK_TABLE  + "where (link1_id or link2_id) = '" + link1Id + "' or (link1_id or link2_id) = '" + link2Id + "')";
 
-        int commonNodeId = -1;
+        String commonNodeId = "null";
         try{
             SQLiteCursor c = (SQLiteCursor) db.rawQuery(GET_LINKS_COMMON_NODE_ID, null);
             c.moveToFirst();
-            commonNodeId = c.getInt(0);
+            commonNodeId = c.getString(0);
             c.close();
             db.close();
         } catch (SQLException e) {

@@ -4,9 +4,9 @@ package ubilabmapmatchinglibrary.pedestrianspacenetwork;
  * Link(Node同士を結ぶ線)を表すクラス
  */
 public class Link {
-    private int id;
-    private int node1Id;
-    private int node2Id;
+    private String id;
+    private String node1Id;
+    private String node2Id;
     private double distance;
     private double bearing;
     /*
@@ -23,7 +23,7 @@ public class Link {
 
 //    private List<Long> grids;
 
-    public Link(int id, int node1Id , int node2Id, double distance, double bearing, LinkType type, double pressureDiff) {
+    public Link(String id, String node1Id , String node2Id, double distance, double bearing, LinkType type, double pressureDiff) {
         this.id = id;
         this.node1Id = node1Id;
         this.node2Id = node2Id;
@@ -33,7 +33,7 @@ public class Link {
         this.pressureDiff = pressureDiff;
     }
 
-    public Link(int id, int node1Id , int node2Id, double distance, double bearing, int type, double pressureDiff) {
+    public Link(String id, String node1Id , String node2Id, double distance, double bearing, int type, double pressureDiff) {
         this.id = id;
         this.node1Id = node1Id;
         this.node2Id = node2Id;
@@ -53,27 +53,27 @@ public class Link {
         this.pressureDiff = link.pressureDiff;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public int getNode1Id() {
+    public String getNode1Id() {
         return node1Id;
     }
 
-    public void setNode1Id(int node1Id) {
+    public void setNode1Id(String node1Id) {
         this.node1Id = node1Id;
     }
 
-    public int getNode2Id() {
+    public String getNode2Id() {
         return node2Id;
     }
 
-    public void setNode2Id(int node2Id) {
+    public void setNode2Id(String node2Id) {
         this.node2Id = node2Id;
     }
 

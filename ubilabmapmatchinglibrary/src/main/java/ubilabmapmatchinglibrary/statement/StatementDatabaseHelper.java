@@ -37,7 +37,7 @@ public class StatementDatabaseHelper {
         try {
             rs = operationStatement.executeQuery(query);
             rs.next();;
-            node = new Node(rs.getInt("id"), rs.getDouble("latitude"), rs.getDouble("longitude"), (int) rs.getDouble("level"), rs.getInt("type"), rs.getString("grid_id"));
+            node = new Node(rs.getString("id"), rs.getDouble("latitude"), rs.getDouble("longitude"), (int) rs.getDouble("level"), rs.getInt("type"), rs.getString("grid_id"));
             rs.close();
         } catch (Exception e){
             e.printStackTrace();
@@ -50,7 +50,7 @@ public class StatementDatabaseHelper {
      * @param id
      * @return
      */
-    public Node getNodeById(int id) {
+    public Node getNodeById(String id) {
 
         String GET_NODE_BY_ID =
                 "select * from " + NODE_TABLE + " where id = " + id;
@@ -76,7 +76,7 @@ public class StatementDatabaseHelper {
             rs = operationStatement.executeQuery(query);
 
             while (rs.next()) {
-                pointsList.add(new WallPoint(rs.getInt("id"), rs.getInt("node_id"), rs.getInt("group_number"), rs.getInt("point_order"), rs.getDouble("latitude"), rs.getDouble("longitude"), rs.getString("grid_id")));
+                pointsList.add(new WallPoint(rs.getString("id"), rs.getString("node_id"), rs.getString("\"group\""), rs.getInt("point_order"), rs.getDouble("latitude"), rs.getDouble("longitude"), rs.getString("grid_id")));
             }
             rs.close();
         } catch(Exception e) {
@@ -90,10 +90,10 @@ public class StatementDatabaseHelper {
      * @param nodeId
      * @return
      */
-    public List<WallPoint> getPointsByNodeId(int nodeId) {
+    public List<WallPoint> getPointsByNodeId(String nodeId) {
 
         String GET_POINTS_BY_NODE_ID =
-                "select * from " + WALL_POINT_TABLE + " where node_id = " + nodeId + " order by point_order";
+                "select * from " + WALL_POINT_TABLE + " where node_id = '" + nodeId + "' order by point_order";
 
         try{
 
@@ -113,11 +113,11 @@ public class StatementDatabaseHelper {
      * @param groupNumber
      * @return
      */
-    public List<WallPoint> getPointsByGroupNumber(int groupNumber) {
+    public List<WallPoint> getPointsByGroupNumber(String groupNumber) {
         
 
         String GET_POINTS_BY_GROUP_ID =
-                "select * from " + WALL_POINT_TABLE + " where group_number = " + groupNumber + " order by point_order";
+                "select * from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "' order by point_order";
 
         try{
             List<WallPoint> pointsList = (getPointsByQuery( GET_POINTS_BY_GROUP_ID));
@@ -144,7 +144,7 @@ public class StatementDatabaseHelper {
         try {
             rs = operationStatement.executeQuery(query);
             rs.next();
-            link = new Link(rs.getInt("id"), rs.getInt("node1_id"), rs.getInt("node2_id"), rs.getDouble("distance"), rs.getDouble("bearing"), rs.getInt("type"), rs.getDouble("pressure"));
+            link = new Link(rs.getString("id"), rs.getString("node1_id"), rs.getString("node2_id"), rs.getDouble("distance"), rs.getDouble("bearing"), rs.getInt("type"), rs.getDouble("pressure"));
             rs.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,11 +157,11 @@ public class StatementDatabaseHelper {
      * @param id
      * @return
      */
-    public Link getLinkById(int id) {
+    public Link getLinkById(String id) {
         
 
         String GET_LINK_BY_ID =
-                "select * from " + LINK_TABLE + " where id like " + id;
+                "select * from " + LINK_TABLE + " where id like '" + id + "'";
 
         try{
             Link link = getLinkByQuery( GET_LINK_BY_ID);
@@ -179,10 +179,10 @@ public class StatementDatabaseHelper {
      * @param idList
      * @return
      */
-    public List<Link> getLinkListByIdList(List<Integer> idList) {
+    public List<Link> getLinkListByIdList(List<String> idList) {
         List<Link> linkList= new ArrayList<Link>();
         if(idList != null) {
-            for (int id : idList) {
+            for (String id : idList) {
                 linkList.add(getLinkById(id));
             }
             return linkList;
@@ -197,14 +197,14 @@ public class StatementDatabaseHelper {
      * @param query
      * @return
      */
-    public List<Integer> getLinkIdListByQuery(String query) {
+    public List<String> getLinkIdListByQuery(String query) {
 
-        List<Integer> linkIdList = new ArrayList<Integer>();
+        List<String> linkIdList = new ArrayList<>();
         try {
             rs = operationStatement.executeQuery(query);
 
             while (rs.next()) {
-                linkIdList.add(rs.getInt(1));
+                linkIdList.add(rs.getString(1));
             }
             rs.close();
         } catch(Exception e) {
@@ -218,13 +218,13 @@ public class StatementDatabaseHelper {
      * @param gridId
      * @return
      */
-    public List<Integer> getLinkIdListByGridId(String gridId) {
+    public List<String> getLinkIdListByGridId(String gridId) {
 
         String GET_LINKS_ID_BY_GRID_ID =
                 "select link_id from " + LINK_GRID_TABLE + " where grid_id like " + gridId;
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery( GET_LINKS_ID_BY_GRID_ID);
+            List<String> linksIdList = getLinkIdListByQuery( GET_LINKS_ID_BY_GRID_ID);
             
             return linksIdList;
 
@@ -241,7 +241,7 @@ public class StatementDatabaseHelper {
      * @param level
      * @return
      */
-    public List<Integer> getLinkIdListByGridIdAndLevel(String gridId, int level) {
+    public List<String> getLinkIdListByGridIdAndLevel(String gridId, int level) {
         
 
         //指定したgrid_idかつ、リンクを構成するノードが指定したlevelにあるlinkIdを取得するクエリ
@@ -251,7 +251,7 @@ public class StatementDatabaseHelper {
                         +LINK_TABLE + " where (node1_id or node2_id) in (select id from " + NODE_TABLE + "where level = " + level +"))";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery( GET_LINKS_BY_GRID_ID_AND_LEVEL);
+            List<String> linksIdList = getLinkIdListByQuery( GET_LINKS_BY_GRID_ID_AND_LEVEL);
             
             return linksIdList;
 
@@ -268,7 +268,7 @@ public class StatementDatabaseHelper {
      * @param level
      * @return
      */
-    public List<Integer> getLinkIdListByGridIdAndLevelAndType(String gridId, int level) {
+    public List<String> getLinkIdListByGridIdAndLevelAndType(String gridId, int level) {
         
 
         //指定したgrid_idかつ、リンクを構成するノードが指定したlevelにある、LinkTypeが0か1のlinkIdを取得するクエリ
@@ -279,7 +279,7 @@ public class StatementDatabaseHelper {
                         "and type = (" + Link.LinkType.PASSAGE.ordinal() + " or " + Link.LinkType.OPEN_SPACE.ordinal() + "))";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery( GET_LINKS_BY_GRID_ID_AND_LEVEL_AND_TYPE);
+            List<String> linksIdList = getLinkIdListByQuery( GET_LINKS_BY_GRID_ID_AND_LEVEL_AND_TYPE);
             
             return linksIdList;
 
@@ -295,18 +295,18 @@ public class StatementDatabaseHelper {
      * @param linkId
      * @return
      */
-    public List<Integer> getConnectingLinkIdListByLinkId(int linkId) {
+    public List<String> getConnectingLinkIdListByLinkId(String linkId) {
 
         Link link = getLinkById(linkId);
-        int node1Id = link.getNode1Id();
-        int node2Id = link.getNode2Id();
+        String node1Id = link.getNode1Id();
+        String node2Id = link.getNode2Id();
 
         
         String GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID =
-                "select id from " + LINK_TABLE + " where node1_id = " + node1Id + " or node2_id = " + node1Id + " or node1_id = " + node2Id + " or node2_id = " + node2Id;
+                "select id from " + LINK_TABLE + " where node1_id = '" + node1Id + "' or node2_id = '" + node1Id + "' or node1_id = '" + node2Id + "' or node2_id = '" + node2Id + "'";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery(GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID);
+            List<String> linksIdList = getLinkIdListByQuery(GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID);
             
             return linksIdList;
         } catch (SQLException e) {
@@ -321,17 +321,17 @@ public class StatementDatabaseHelper {
      * @param groupNumber
      * @return
      */
-    public List<Integer> getConnectingLinkIdListByGroupNumber(int groupNumber) {
+    public List<String> getConnectingLinkIdListByGroupNumber(String groupNumber) {
 
         
 
         String GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID =
                 "select id from " + LINK_TABLE + " where type = " + Link.LinkType.PASSAGE.ordinal() + " and " +
-                        "(node1_id in (select node_id from " + WALL_POINT_TABLE + " where group_number = " + groupNumber + ")" +
-                        "or node2_id in (select node_id from " + WALL_POINT_TABLE + " where group_number = " + groupNumber + "))";
+                        "(node1_id in (select node_id from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "')" +
+                        "or node2_id in (select node_id from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "'))";
 
         try{
-            List<Integer> linksIdList = getLinkIdListByQuery( GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID);
+            List<String> linksIdList = getLinkIdListByQuery( GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID);
             
             return linksIdList;
         } catch (SQLException e) {
@@ -346,17 +346,17 @@ public class StatementDatabaseHelper {
      * @param link2Id
      * @return
      */
-    public Node getLinksCommonNode(int link1Id, int link2Id) {
+    public Node getLinksCommonNode(String link1Id, String link2Id) {
 
-        int commonNodeId = -1;
+        String commonNodeId = "null";
         String GET_LINKS_COMMON_NODE_ID =
-                "select node_id from" + LINK_TABLE  + "where (link1_id or link2_id) = " + link1Id + " or (link1_id or link2_id) = " + link2Id + ")";
+                "select node_id from" + LINK_TABLE  + "where (link1_id or link2_id) = '" + link1Id + "' or (link1_id or link2_id) = '" + link2Id + "')";
 
         List<WallPoint> pointsList = new ArrayList<WallPoint>();
         try {
             rs = operationStatement.executeQuery(GET_LINKS_COMMON_NODE_ID);
             rs.next();
-            commonNodeId = rs.getInt(1);
+            commonNodeId = rs.getString(1);
             rs.close();
             
         } catch (Exception e) {
