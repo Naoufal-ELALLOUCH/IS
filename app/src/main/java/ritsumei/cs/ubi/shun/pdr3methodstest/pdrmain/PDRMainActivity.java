@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -14,7 +13,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,17 +22,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.BufferedReader;
@@ -301,6 +296,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
     Runtime runtime = null;
     List<Link> linkList;
     List<List<LatLng>> wallInfo;
+    LatLng location = new LatLng(0,0);
 
     public void onStep(long time) {
 
@@ -318,8 +314,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             directionTextView.setText("" + df.format(skeletonMatchingTrackPoint.getDirection()) + "°, linkId:" + skeletonMatchingTrackPoint.getLinkId());
         }
 
-        LatLng location = new LatLng(0,0);
         if(pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
+            System.gc();
             collisionDetectMatchingPdrPositionCalculator.calculatePosition(collisionDetectMatchingDirectionCalculator.getRadiansDirection(), pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), time, pref.getFloat(SettingsActivity.STEP_RATE_KEY, 37500.0f));
             if(isCollisionDetectSucMatchingSuccess) {
 
@@ -337,7 +333,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                     if(linkList.size() > 0) {
                         wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
 
-                        for (List<LatLng> wall : wallInfo) { //広場のあたりがおかしい
+                        for (List<LatLng> wall : wallInfo) {
                             PolylineOptions po = new PolylineOptions()
                                     .color(Color.BLUE)
                                     .width(3)
