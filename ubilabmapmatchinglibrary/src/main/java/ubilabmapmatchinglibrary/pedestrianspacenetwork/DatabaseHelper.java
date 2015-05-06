@@ -236,6 +236,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 //            e.printStackTrace();
 //        }
 
+        //ubinaviからのクエリで再生成するので、dropする時に落ちないようにするため。
+        String NODE_DATABASE_CREATE_STATES =
+                "CREATE TABLE IF NOT EXISTS " + NODE_TABLE + " (" +
+                        "'id' TEXT PRIMARY KEY" +
+                        ");";
+        db.execSQL(NODE_DATABASE_CREATE_STATES);
 
         String POINT_DATABASE_CREATE_STATES =
                 "create table if not exists " + WALL_POINT_TABLE + " ("
