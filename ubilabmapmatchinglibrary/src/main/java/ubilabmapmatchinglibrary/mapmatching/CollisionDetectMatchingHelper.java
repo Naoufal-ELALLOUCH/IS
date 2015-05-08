@@ -175,7 +175,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             List<Link> passageLinkList= new ArrayList<>();
             for(Link link : linkList) {
 
-                Log.v("CM", "linkList linkId:" + link.getId());
+//                Log.v("CM", "linkList linkId:" + link.getId());
                 if (link.getType() == Link.LinkType.OPEN_SPACE) {
                     if (passageLinkList.size() != 0) {
                         linksWallInfo.addAll(getLinksWallInfo(passageLinkList));

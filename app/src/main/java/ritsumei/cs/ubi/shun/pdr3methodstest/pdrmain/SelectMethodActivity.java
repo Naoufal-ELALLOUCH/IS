@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -25,10 +27,12 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
     private CheckBox smCheckBox;
     private CheckBox cmCheckBox;
     private Button applyButton;
+    private Switch colorfulPolylineSwitch;
 
     public static final String METHOD_PDR_KEY = "methodPdr";
     public static final String METHOD_SM_KEY = "methodSm";
     public static final String METHOD_CM_KEY = "methodCm";
+    public static final String COLORFUL_POLYLINE = "colorfulPolyline";
 
     private static ProgressDialog waitDialog;
     private Button downloadButton;
@@ -65,6 +69,15 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
 
         applyButton = (Button) findViewById(R.id.method_applay_button);
         applyButton.setOnClickListener(this);
+
+        colorfulPolylineSwitch = (Switch) findViewById(R.id.colorfulPolylineSwitch);
+        colorfulPolylineSwitch.setChecked(pref.getBoolean(COLORFUL_POLYLINE, false));
+        colorfulPolylineSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean(COLORFUL_POLYLINE, isChecked);
+            }
+        });
 
         downloadButton = (Button) findViewById(R.id.button_download);
         downloadButton.setOnClickListener(new View.OnClickListener() {

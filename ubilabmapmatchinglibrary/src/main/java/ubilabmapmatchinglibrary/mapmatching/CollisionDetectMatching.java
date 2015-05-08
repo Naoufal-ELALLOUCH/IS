@@ -1,6 +1,7 @@
 package ubilabmapmatchinglibrary.mapmatching;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -175,6 +176,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         double matchingDirection = getMatchingLinkDirection(trackPoint.getDirection(), matchingLink);
                         trackPoint.setLocation(skeletonMatchingPoint);
                         trackPoint.setDirection(matchingDirection);
+                        trackPoint.polylineColor = Color.CYAN;
                         newStartTrackPoint = trackPoint;
 
                         rawTrajectory.clear();
@@ -199,6 +201,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         lastDirectionRate = correctRate.getX() * lastDirectionRate;
                         lastDistanceRate = correctRate.getY() * lastDistanceRate;
                         trackPoint = rawTrajectory.get(rawTrajectory.size() - 1);
+                        trackPoint.polylineColor = Color.BLACK;
 
                         ////Log.v("CM", "{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
                     }

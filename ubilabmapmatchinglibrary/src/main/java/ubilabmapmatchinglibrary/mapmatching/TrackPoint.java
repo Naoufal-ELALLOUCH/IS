@@ -1,5 +1,7 @@
 package ubilabmapmatchinglibrary.mapmatching;
 
+import android.graphics.Color;
+
 import com.google.android.gms.maps.model.LatLng;
 
 public class TrackPoint {
@@ -9,6 +11,7 @@ public class TrackPoint {
 	private double distance;
     private boolean isStraight;
 	private String linkId;
+    public Integer polylineColor = Color.RED;
 	
 	public TrackPoint() { 
 		this.time = 0;

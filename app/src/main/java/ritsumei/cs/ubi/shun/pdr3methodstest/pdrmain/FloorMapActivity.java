@@ -1,8 +1,10 @@
 package ritsumei.cs.ubi.shun.pdr3methodstest.pdrmain;
 
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,7 +33,8 @@ public class FloorMapActivity extends FragmentActivity {
 	public GoogleMap map;
 	public List<MarkerInfoObject> markerList;
 
-    public Map<String, LatLng> trajectoryMap = new TreeMap<>();
+    public TreeMap<String, LatLng> trajectoryMap = new TreeMap<>();
+    public TreeMap<String, Integer> polylineColorMap = new TreeMap<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +172,18 @@ public class FloorMapActivity extends FragmentActivity {
 		markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(markerList.get(index).getIcon())));
 	}
 
+    public void moveMarkerWithPolylineColorColorful(int id, LatLng point, int color) {
+        int index = searchIndex(id);
+        markerList.get(index).addPoint(point);
+        markerList.get(index).addPolylineColor(color);
+
+        removePolyline(id);
+        drawPolylineAllPointsColorful(id);
+
+        markerList.get(index).getMarker().remove();
+        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(markerList.get(index).getIcon())));
+    }
+
     public void moveMarker(int id, LatLng point) {
         int index = searchIndex(id);
 
@@ -212,6 +227,38 @@ public class FloorMapActivity extends FragmentActivity {
                 .width(3.0f);
 
         markerList.get(i).setPolyline(map.addPolyline(po));
+    }
+
+    public void drawPolylineAllPointsColorful(int id) {
+        int i = searchIndex(id);
+        markerList.get(i).getPoints().clear();
+        markerList.get(i).getPolylineColors().clear();
+        for(Map.Entry<String, LatLng> e : trajectoryMap.entrySet()) {
+            markerList.get(i).addPoint(e.getValue());
+        }
+        for(Map.Entry<String, Integer> e : polylineColorMap.entrySet()) {
+            markerList.get(i).addPolylineColor(e.getValue());
+        }
+
+        PolylineOptions po = new PolylineOptions()
+                .addAll(markerList.get(i).getPoints())
+                .color(Color.RED)
+                .width(3.0f);
+        markerList.get(i).setPolyline(map.addPolyline(po));
+
+
+        for(int j=1; j<markerList.get(i).getPolylineColors().size(); j++) {
+            if (markerList.get(i).getPolylineColor(j) != Color.RED) {
+                LatLng latLng1 = markerList.get(i).getPoint(j-1);
+                LatLng latLng2 = markerList.get(i).getPoint(j);
+
+                PolylineOptions po2 = new PolylineOptions()
+                        .add(latLng1, latLng2)
+                        .color(markerList.get(i).getPolylineColor(j))
+                        .width(3.0f);
+                map.addPolyline(po2);
+            }
+        }
     }
 
 	/*

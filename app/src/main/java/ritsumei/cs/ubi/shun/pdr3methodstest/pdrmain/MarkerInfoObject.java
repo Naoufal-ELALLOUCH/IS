@@ -17,6 +17,7 @@ public class MarkerInfoObject {
 	private BitmapDescriptor icon;
 	private int polylineColor; //ex)0xff000000
 	private ArrayList<LatLng> points = new ArrayList<LatLng>();
+    private ArrayList<Integer> polylineColors = new ArrayList<>();
 	private Polyline polyline;
 	
 	static final int RED = 0;
@@ -77,7 +78,7 @@ public class MarkerInfoObject {
 	public void addPoint(LatLng point) {
 		this.points.add(point);
 	}
-	
+
 	public LatLng getPoint(int i) {
 		return this.points.get(i);
 	}
@@ -89,13 +90,23 @@ public class MarkerInfoObject {
 	public LatLng getLastPoint() {
 		return this.points.get(this.points.size()-1);
 	}
-	
+
 	public void changePoints(LatLng point) {
 		this.points.remove(this.points.size()-1);
 		this.points.add(point);
 	}
-	
-	public void setPolyline(Polyline polyline) {
+
+    public ArrayList<Integer> getPolylineColors() {
+        return this.polylineColors;
+    }
+    public int getPolylineColor(int i) {
+        return this.polylineColors.get(i);
+    }
+    public void addPolylineColor(int color) {
+        this.polylineColors.add(color);
+    }
+
+    public void setPolyline(Polyline polyline) {
 		this.polyline = polyline;
 	}
 	
