@@ -28,11 +28,13 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
     private CheckBox cmCheckBox;
     private Button applyButton;
     private Switch colorfulPolylineSwitch;
+    private Switch straightStepAutoAdjustSwitch;
 
     public static final String METHOD_PDR_KEY = "methodPdr";
     public static final String METHOD_SM_KEY = "methodSm";
     public static final String METHOD_CM_KEY = "methodCm";
     public static final String COLORFUL_POLYLINE = "colorfulPolyline";
+    public static final String STRAIGHT_STEP_AUTO_ADJUST = "straightStepAutoAdjust";
 
     private static ProgressDialog waitDialog;
     private Button downloadButton;
@@ -76,6 +78,15 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 editor.putBoolean(COLORFUL_POLYLINE, isChecked);
+            }
+        });
+
+        straightStepAutoAdjustSwitch = (Switch) findViewById(R.id.straightStepAutoAdjustSwitch);
+        straightStepAutoAdjustSwitch.setChecked(pref.getBoolean(STRAIGHT_STEP_AUTO_ADJUST, false));
+        straightStepAutoAdjustSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean(STRAIGHT_STEP_AUTO_ADJUST, isChecked);
             }
         });
 

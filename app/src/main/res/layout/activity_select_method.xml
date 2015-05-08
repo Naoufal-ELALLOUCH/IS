@@ -45,4 +45,12 @@
         android:id="@+id/colorfulPolylineSwitch"
         android:checked="false" />
 
+    <Switch
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="直進時の動的歩幅補正"
+        android:id="@+id/straightStepAutoAdjustSwitch"
+        android:layout_gravity="center_horizontal"
+        android:checked="false" />
+
 </LinearLayout>

@@ -89,6 +89,9 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         isFirst = true;
 
         this.rateSet = new ArrayList<>();
+        this.originLatLngArray = new ArrayList<>();
+        this.adjustedLatLngArray = new ArrayList<>();
+        this.straightStepRatePlusMinus = new ArrayList<>();
     }
 
     /**
@@ -183,7 +186,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         trackPoint.setLocation(skeletonMatchingPoint);
                         trackPoint.setDirection(matchingDirection);
                         trackPoint.polylineColor = Color.CYAN;
-                        newStartTrackPoint = trackPoint;
+                        newStartTrackPoint = trackPoint; //new~は使ってない？
 
                         rawTrajectory.clear();
                         rawTrajectory.add(trackPoint);
@@ -203,7 +206,16 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                             correctRate = getCentroid(rateSet);
                         }
 
-                        rawTrajectory.transTrack(correctRate);
+                        originLatLngArray.add(rawTrajectory.get(rawTrajectory.size()-1).getLocation());
+                        rawTrajectory.transTrack(correctRate); //生の軌跡を補正 //クラスフィールド上書き
+                        adjustedLatLngArray.add(rawTrajectory.get(rawTrajectory.size()-1).getLocation());
+
+                        if (correctRate.getY() < 1) {
+                            straightStepRatePlusMinus.add(false);
+                        } else {
+                            straightStepRatePlusMinus.add(true);
+                        }
+
                         lastDirectionRate = correctRate.getX() * lastDirectionRate;
                         lastDistanceRate = correctRate.getY() * lastDistanceRate;
                         trackPoint = rawTrajectory.get(rawTrajectory.size() - 1);
@@ -239,6 +251,13 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 //            Log.e("CM", "MapMatchig is Failed" + e);
 //            return null;
 //        }
+    }
+    public ArrayList<LatLng> originLatLngArray;
+    public ArrayList<LatLng> adjustedLatLngArray;
+    public ArrayList<Boolean> straightStepRatePlusMinus;
+
+    public static List<Integer> getPassageFinishStepCount() {
+        return passageFinishStepCount;
     }
 
     /**

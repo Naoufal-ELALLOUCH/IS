@@ -13,6 +13,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -328,12 +330,13 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 //                    pref.getFloat(SettingsActivity.STEP_RATE_KEY, 37500.0f) //歩調
                     stepRate
             );
+            Log.v("hogehoge", String.valueOf(collisionDetectMatchingPdrPositionCalculator.getCalibratedStepLength()));
             if(isCollisionDetectSucMatchingSuccess) {
                 cmPdrTrackPoint = new TrackPoint(
                         time,
                         new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()),
                         collisionDetectMatchingPdrPositionCalculator.getDegreesCalibratedDirection(), //補正後のラジアン形式な進行方向
-                        collisionDetectMatchingPdrPositionCalculator.getCalibratedStepLength(), //補正後の歩幅
+                        collisionDetectMatchingPdrPositionCalculator.getCalibratedStepLength(), //補正後の歩幅 //歩調を元にした補正 //使ってない？
                         collisionDetectMatchingPdrPositionCalculator.getIsStraight(), //直進中かどうか //PDR的な細かなブレを吸収
                         "null");
                 collisionDetectMatchingTrackPoint = mCollisionDetectMatching.calculateCollisionDetectMatchingPosition(cmPdrTrackPoint);
@@ -383,12 +386,22 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             } else {
                 location = new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng());
             }
+            trajectoryMap.put(Long.toString(time), location);
+            polylineColorMap.put(Long.toString(time), polylineColor);
+
             if (pref.getBoolean(SelectMethodActivity.COLORFUL_POLYLINE, false)) {
                 moveMarkerWithPolylineColorColorful(collisionDetectMatchingMarkerId,
                         new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(),
                                 collisionDetectMatchingPdrPositionCalculator.getLng()),
                         polylineColor
                 );
+                for (int i=0; i<mCollisionDetectMatching.originLatLngArray.size(); i++) {
+                    LatLng origin = mCollisionDetectMatching.originLatLngArray.get(i);
+                    LatLng adjusted = mCollisionDetectMatching.adjustedLatLngArray.get(i);
+                    if (origin != null && adjusted != null) {
+                        drawPolyline2Points(collisionDetectMatchingMarkerId, origin, adjusted, Color.BLUE);
+                    }
+                }
             } else {
                 moveMarkerWithPolyline(collisionDetectMatchingMarkerId,
                         new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(),
@@ -397,9 +410,6 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                 );
             }
         }
-
-        trajectoryMap.put(Long.toString(time), location);
-        polylineColorMap.put(Long.toString(time), polylineColor);
 
 //        moveMarkerDefaultPolylineColorで既にPolylineしてるから無駄？
 //        drawPolylineAllPoints2(collisionDetectMatchingMarkerId,
@@ -435,6 +445,25 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 //            }
 //            drawPolylineAllPoints(collisionDetectMatchingMarkerId, markerList.get(searchIndex(collisionDetectMatchingMarkerId)).getPolylineColor());
 
+            if (pref.getBoolean(SelectMethodActivity.STRAIGHT_STEP_AUTO_ADJUST, false)) {
+                if (!mCollisionDetectMatching.originLatLngArray.isEmpty() && !mCollisionDetectMatching.adjustedLatLngArray.isEmpty()) {
+                    LatLng origin = mCollisionDetectMatching.originLatLngArray.get(mCollisionDetectMatching.originLatLngArray.size() - 1);
+                    LatLng adjusted = mCollisionDetectMatching.adjustedLatLngArray.get(mCollisionDetectMatching.adjustedLatLngArray.size() - 1);
+                    if (origin != null && adjusted != null) {
+                        float calc[] = calc2PointDist(origin, adjusted);
+                        int stepCount = mCollisionDetectMatching.getPassageFinishStepCount().get(mCollisionDetectMatching.getPassageFinishStepCount().size() - 1);
+                        float distance = stepCount * stepLength/100;
+                        float coe;
+                        if (mCollisionDetectMatching.straightStepRatePlusMinus.get(mCollisionDetectMatching.straightStepRatePlusMinus.size() - 1)) {
+                            coe = (distance + calc[0]) / distance;
+                        } else {
+                            coe = (distance - calc[0]) / distance;
+                        }
+                        Toast.makeText(getApplicationContext(), "直進時歩幅を" + stepLength + "から" + stepLength * coe, Toast.LENGTH_SHORT).show();
+                        stepLength *= coe;
+                    }
+                }
+            }
 
             removePolyline(collisionDetectMatchingMarkerId);
             for(TrackPoint trackPoint : trajectory.getTrajectory()) {
