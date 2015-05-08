@@ -78,6 +78,8 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
     private Trajectory turningTrajectory = new Trajectory();
 
+    List<Point> rateSet;
+
     /**
      * コンストラクタ
      */
@@ -85,6 +87,8 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         mSkeletonMatching = new SkeletonMatching(context, db);
         mCollisionDetectMatchingHelper = new CollisionDetectMatchingHelper(context, db);
         isFirst = true;
+
+        this.rateSet = new ArrayList<>();
     }
 
     /**
@@ -110,7 +114,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
             if (!isFirst) {
                 if (trackPoint.getIsStraight()) {
-                    if (!lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り終わり
+                    if (!lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲進途中
                         if (!lastStraightLinkId.equals(matchingLink.getId())) {
                             if (turnCount > 0) {
                                 rawTrajectory.removeTrajectory(turndStepCount);
@@ -124,7 +128,8 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                             passageFinishStepCount.remove(passageFinishStepCount.size() - 1);
                         }
                     }
-                } else if (lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り始め
+//                } else if (lastSkeletonMatchingTrackPoint.getIsStraight()) { //直進中 //実質要らないのでは //これのせいでlastStraightLinkIdが更新されず、wallInfoが過去3つ分とかになってる？
+                } else {
                 /*通路終了時の歩数*/
                     passageFinishStepCount.add(rawTrajectory.size() - 1);
                     lastStraightLinkId = lastLinkId;
@@ -142,6 +147,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                     linkList.add(matchingLink);
                 }
 
+                //軌跡が衝突しているか否かの判定処理
                 boolean isCollision = false;
                 if (trackPoint.getIsStraight()) {
 
@@ -165,9 +171,9 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
 
                 }
 
+                //衝突
                 if (isCollision) {
-
-                    List<Point> rateSet = new ArrayList<Point>();
+                    rateSet.clear();
                     rateSet.addAll(getRateSetNotCollideLinksWall(rawTrajectory, linkList));
 
                     //壁に当たらないような変換ができないとき、初期値をスケルトンマッチングのものに切り替える
@@ -206,10 +212,13 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         ////Log.v("CM", "{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
                     }
 
-                    int SIZE = mTrajectoryTransedListeners.size();
-                    for (int i = 0; i < SIZE; i++) {
-                        mTrajectoryTransedListeners.get(i).onTrajectoryTransed(new Point(lastDirectionRate, lastDistanceRate), rawTrajectory, trackPoint);
+                    for (TrajectoryTransedListener listener: mTrajectoryTransedListeners) {
+                        listener.onTrajectoryTransed(new Point(lastDirectionRate, lastDistanceRate), rawTrajectory, trackPoint);
                     }
+//                    int SIZE = mTrajectoryTransedListeners.size();
+//                    for (int i = 0; i < SIZE; i++) {
+//                        mTrajectoryTransedListeners.get(i).onTrajectoryTransed(new Point(lastDirectionRate, lastDistanceRate), rawTrajectory, trackPoint);
+//                    }
                     mSkeletonMatching.setFirst();
 
                 }
