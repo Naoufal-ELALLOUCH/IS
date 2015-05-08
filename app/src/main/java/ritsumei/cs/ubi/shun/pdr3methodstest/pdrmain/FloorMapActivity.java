@@ -255,7 +255,7 @@ public class FloorMapActivity extends FragmentActivity {
                 PolylineOptions po2 = new PolylineOptions()
                         .add(latLng1, latLng2)
                         .color(markerList.get(i).getPolylineColor(j))
-                        .width(3.0f);
+                        .width(4.0f);
                 map.addPolyline(po2);
             }
         }
