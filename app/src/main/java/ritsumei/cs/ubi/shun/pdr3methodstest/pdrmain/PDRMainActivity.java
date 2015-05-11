@@ -1,5 +1,6 @@
 package ritsumei.cs.ubi.shun.pdr3methodstest.pdrmain;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,8 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +42,9 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +52,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -81,7 +90,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
     private Button startButton;
     private Button resetButton;
     private Button setupButton;
-    private Button resultButton;
+//    private Button resultButton;
+    private Button simulationModeButton;
     private Button selectStartPinButton;
     private Button selectDirectionPinButton;
     private TextView directionTextView;
@@ -135,6 +145,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 
     private EnginePrefConfig enginePrefConfig;
 
+    private android.os.Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,6 +162,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         setupButton = (Button)findViewById(R.id.setupButton);
         setupButton.setOnClickListener(this);
 
+        simulationModeButton = (Button)findViewById(R.id.simulationModeButton);
+        simulationModeButton.setOnClickListener(this);
 //        resultButton = (Button)findViewById(R.id.resultButton);
 //        resultButton.setOnClickListener(this);
 
@@ -173,6 +187,9 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         accRawData = new ArrayList<>();
         gyroRawData = new ArrayList<>();
 
+        rawObjectArrayList = new ArrayList<>();
+
+        this.handler = new Handler();
         /**
          * PDRの初期化
          */
@@ -575,12 +592,40 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                             this.isRawDataMeasure = false;
                         }
                     }
-                    isStart = true;
-                    startSensor();
-
                     markerList.get(startMarkerIndex).getMarker().remove();
                     markerList.get(directionMarkerIndex).getMarker().remove();
                     markerList.get(directionMarkerIndex).getPolyline().remove();
+
+                    isStart = true;
+
+                    if (isRawObjectsLoaded) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                long lastTimestamp = rawObjectArrayList.get(0).timestamp;
+                                long timestamp = 0;
+
+                                for (final RawObject object : rawObjectArrayList) {
+                                    timestamp = object.timestamp;
+
+                                    try {
+                                        handler.post(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                onSensorChangedSimulator(object);
+                                            }
+                                        });
+                                        Thread.sleep((timestamp - lastTimestamp) / 1000000, 0);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    lastTimestamp = timestamp;
+                                }
+                            }
+                        }).start();
+                    } else {
+                        startSensor();
+                    }
 
                 } else  {
                     alertDialog.setTitle("注意");
@@ -682,6 +727,39 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 //            alertDialog.create();
 //            alertDialog.show();
 
+        } else if (v.getId() == R.id.simulationModeButton) {
+            ListView fileListView = new ListView(this);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+
+            final AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .setTitle("シミュレーションデータの読み込み")
+                    .setMessage("ファイルを選択してください。")
+                    .setView(fileListView)
+                    .setPositiveButton("キャンセル", null)
+                    .show();
+            String saveRootPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
+            File[] files = new File(saveRootPath).listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    adapter.add(file.getName());
+                }
+                fileListView.setAdapter(adapter);
+                fileListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        ListView listView = (ListView) parent;
+                        String selectedFileName = (String) listView.getItemAtPosition(position);
+
+                        if (loadRawData(selectedFileName)) {
+                            Toast.makeText(getApplicationContext(), "読み込み完了", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getApplicationContext(), "読み込み失敗", Toast.LENGTH_SHORT).show();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+            }
         } else if(v.getId() == R.id.select_start_from_map_button) {
             mInitializePDRDialog.dismiss();
             flag = Status.SETTING_START_POINT;
@@ -693,10 +771,82 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         }
     }
 
+    private boolean loadRawData(String fileName) {
+        try {
+            this.rawObjectArrayList.clear();
+
+            String fileFullPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + fileName;
+            File file = new File(fileFullPath);
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                if (!line.equals("#")) {
+                    String[] splitLine = line.split(":");
+                    float[] values = {Float.parseFloat(splitLine[2]), Float.parseFloat(splitLine[3]), Float.parseFloat(splitLine[4])};
+                    this.rawObjectArrayList.add(new RawObject(Integer.parseInt(splitLine[0]), Long.parseLong(splitLine[1]), values));
+                }
+                line = bufferedReader.readLine();
+            }
+            bufferedReader.close();
+
+            Collections.sort(this.rawObjectArrayList, new RawObjectComparator());
+            this.isRawObjectsLoaded = true;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            this.isRawObjectsLoaded = false;
+            this.rawObjectArrayList.clear();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            this.isRawObjectsLoaded = false;
+            this.rawObjectArrayList.clear();
+            return false;
+        }
+        return true;
+    }
+
+
+    ArrayList<RawObject> rawObjectArrayList;
+    boolean isRawObjectsLoaded = false;
+
     PrintWriter printWriter;
     ArrayList<String> accRawData;
     ArrayList<String> gyroRawData;
     boolean isRawDataMeasure = false;
+
+    public void onSensorChangedSimulator(RawObject object) {
+        if (object.getType() == Sensor.TYPE_ACCELEROMETER) {
+
+            stepDetector.detectStepAndNotify(object.values, object.timestamp);
+
+            if (pref.getBoolean(SelectMethodActivity.METHOD_PDR_KEY, true)) {
+                directionCalculator.calculateLean(object.values);
+            }
+
+            if (pref.getBoolean(SelectMethodActivity.METHOD_SM_KEY, false)) {
+                skeletonMatchingDirectionCalculator.calculateLean(object.values);
+            }
+
+            if (pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
+                collisionDetectMatchingDirectionCalculator.calculateLean(object.values);
+            }
+
+        } else if (object.getType() == Sensor.TYPE_GYROSCOPE) {
+
+            if (pref.getBoolean(SelectMethodActivity.METHOD_PDR_KEY, true)) {
+                directionCalculator.calculateDirection(object.values, object.timestamp);
+            }
+
+            if (pref.getBoolean(SelectMethodActivity.METHOD_SM_KEY, false)) {
+                skeletonMatchingDirectionCalculator.calculateDirection(object.values, object.timestamp);
+            }
+
+            if (pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
+                collisionDetectMatchingDirectionCalculator.calculateDirection(object.values, object.timestamp);
+            }
+        }
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
