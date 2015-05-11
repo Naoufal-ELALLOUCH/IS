@@ -53,4 +53,12 @@
         android:layout_gravity="center_horizontal"
         android:checked="false" />
 
+    <Switch
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="生データ保存モード"
+        android:id="@+id/RawDataMeasureSwitch"
+        android:layout_gravity="center_horizontal"
+        android:checked="false" />
+
 </LinearLayout>
