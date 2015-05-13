@@ -186,6 +186,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         trackPoint.setLocation(skeletonMatchingPoint);
                         trackPoint.setDirection(matchingDirection);
                         trackPoint.polylineColor = Color.CYAN;
+                        trackPoint.isSkeletonMatch = true;
                         newStartTrackPoint = trackPoint; //new~は使ってない？
 
                         rawTrajectory.clear();
@@ -220,7 +221,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         lastDistanceRate = correctRate.getY() * lastDistanceRate;
                         trackPoint = rawTrajectory.get(rawTrajectory.size() - 1);
                         trackPoint.polylineColor = Color.BLACK;
-
+                        trackPoint.isSkeletonMatch = false;
                         ////Log.v("CM", "{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
                     }
 

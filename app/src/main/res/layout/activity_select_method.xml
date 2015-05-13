@@ -48,8 +48,24 @@
     <Switch
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="直進時の動的歩幅補正"
+        android:text="壁・リンクを表示"
+        android:id="@+id/wallLinkDrawSwitch"
+        android:layout_gravity="center_horizontal"
+        android:checked="false" />
+
+    <Switch
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="動的歩幅補正"
         android:id="@+id/straightStepAutoAdjustSwitch"
+        android:layout_gravity="center_horizontal"
+        android:checked="false" />
+
+    <Switch
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="常に動的歩幅補正"
+        android:id="@+id/straightStepAutoAdjustAlwaysSwitch"
         android:layout_gravity="center_horizontal"
         android:checked="false" />
 
@@ -60,5 +76,14 @@
         android:id="@+id/RawDataMeasureSwitch"
         android:layout_gravity="center_horizontal"
         android:checked="false" />
+
+    <Switch
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="チェックポイントLatLng出力"
+        android:id="@+id/checkPointLatLngOutputSwitch"
+        android:layout_gravity="center_horizontal"
+        android:checked="false"
+        android:enabled="false" />
 
 </LinearLayout>

@@ -28,15 +28,21 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
     private CheckBox cmCheckBox;
     private Button applyButton;
     private Switch colorfulPolylineSwitch;
+    private Switch wallLinkDrawSwitch;
     private Switch straightStepAutoAdjustSwitch;
+    private Switch straightStepAutoAdjustAlwaysSwitch;
     private Switch rawDataMeasureSwitch;
+    private Switch checkPointLatLngOutputSwitch;
 
     public static final String METHOD_PDR_KEY = "methodPdr";
     public static final String METHOD_SM_KEY = "methodSm";
     public static final String METHOD_CM_KEY = "methodCm";
     public static final String COLORFUL_POLYLINE = "colorfulPolyline";
+    public static final String WALL_LINK_DRAW = "wallLinkDrawSwitch";
     public static final String STRAIGHT_STEP_AUTO_ADJUST = "straightStepAutoAdjust";
+    public static final String STRAIGHT_STEP_AUTO_ADJUST_ALWAYS = "straightStepAutoAdjustAlways";
     public static final String RAW_DATA_MEASURE = "rawDataMeasure";
+    public static final String CHECK_POINT_LAT_LNG_OUTPUT = "checkPointLatLngOutput";
 
     private static ProgressDialog waitDialog;
     private Button downloadButton;
@@ -83,12 +89,30 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
             }
         });
 
+        wallLinkDrawSwitch = (Switch) findViewById(R.id.wallLinkDrawSwitch);
+        wallLinkDrawSwitch.setChecked(pref.getBoolean(WALL_LINK_DRAW, false));
+        wallLinkDrawSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean(WALL_LINK_DRAW, isChecked);
+            }
+        });
+
         straightStepAutoAdjustSwitch = (Switch) findViewById(R.id.straightStepAutoAdjustSwitch);
         straightStepAutoAdjustSwitch.setChecked(pref.getBoolean(STRAIGHT_STEP_AUTO_ADJUST, false));
         straightStepAutoAdjustSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 editor.putBoolean(STRAIGHT_STEP_AUTO_ADJUST, isChecked);
+            }
+        });
+
+        straightStepAutoAdjustAlwaysSwitch = (Switch) findViewById(R.id.straightStepAutoAdjustAlwaysSwitch);
+        straightStepAutoAdjustAlwaysSwitch.setChecked(pref.getBoolean(STRAIGHT_STEP_AUTO_ADJUST_ALWAYS, false));
+        straightStepAutoAdjustAlwaysSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean(STRAIGHT_STEP_AUTO_ADJUST_ALWAYS, isChecked);
             }
         });
 
@@ -100,6 +124,15 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
                 editor.putBoolean(RAW_DATA_MEASURE, isChecked);
             }
         });
+
+        checkPointLatLngOutputSwitch = (Switch) findViewById(R.id.checkPointLatLngOutputSwitch);
+        checkPointLatLngOutputSwitch.setChecked(pref.getBoolean(CHECK_POINT_LAT_LNG_OUTPUT, false));
+       checkPointLatLngOutputSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+           @Override
+           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               editor.putBoolean(CHECK_POINT_LAT_LNG_OUTPUT, isChecked);
+           }
+       });
 
         downloadButton = (Button) findViewById(R.id.button_download);
         downloadButton.setOnClickListener(new View.OnClickListener() {

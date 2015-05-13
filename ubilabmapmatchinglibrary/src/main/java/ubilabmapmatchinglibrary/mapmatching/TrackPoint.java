@@ -12,6 +12,7 @@ public class TrackPoint {
     private boolean isStraight;
 	private String linkId;
     public Integer polylineColor = Color.RED;
+    public Boolean isSkeletonMatch = false;
 	
 	public TrackPoint() { 
 		this.time = 0;

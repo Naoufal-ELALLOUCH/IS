@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import jp.ac.ritsumei.cs.ubi.shun.library.pdr.GyroCalibratedListener;
 import jp.ac.ritsumei.cs.ubi.shun.library.pdr.GyroOffsetCalculator;
@@ -48,7 +49,7 @@ public class SettingsActivity extends Activity implements OnClickListener, Senso
 	private Button stepCalibration;
 	private Button gyroCalibration;
 	private Button applyChange;
-
+    private Button stepRateResetButton;
 
 	/**
 	 * 歩幅のプリファレンスキー
@@ -128,6 +129,28 @@ public class SettingsActivity extends Activity implements OnClickListener, Senso
          */
         applyChange = (Button) findViewById(R.id.applyChangesButton);
         applyChange.setOnClickListener(this);
+
+        stepRateResetButton = (Button) findViewById(R.id.stepRateResetButton);
+        stepRateResetButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                mPDRParametersObject.setRate(37500.0f);
+//                mPDRParametersObject.setStepDiffThresh(1.0f);
+//                mPDRParametersObject.setPace(0);
+
+//                editor.putFloat(STEP_LENGTH_KEY, mPDRParametersObject.getStepLength());
+//                editor.putFloat(STEP_DIFF_THRESH_KEY, mPDRParametersObject.getStepDiffThresh());
+//                editor.putFloat(STEP_RATE_KEY, mPDRParametersObject.getRate());
+
+                editor.remove(STEP_RATE_KEY);
+                editor.putFloat(STEP_DIFF_THRESH_KEY, 1.0f);
+                editor.commit();
+
+                Toast.makeText(getApplicationContext(), "デフォルト値: 37500.0f, 1.0fをセット", Toast.LENGTH_SHORT).show();
+//                editPreferences();
+                finish();
+            }
+        });
 
 		AlertDlgBldr = new AlertDialog.Builder(this);
 	}

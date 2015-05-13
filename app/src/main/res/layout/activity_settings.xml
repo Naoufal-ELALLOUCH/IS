@@ -51,7 +51,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Step Calibration" />
-   <TextView
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="StepRateリセット"
+        android:id="@+id/stepRateResetButton" />
+
+    <TextView
         android:id="@+id/explainTextView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
