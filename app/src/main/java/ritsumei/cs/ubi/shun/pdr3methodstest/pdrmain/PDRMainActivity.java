@@ -865,7 +865,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             String line = bufferedReader.readLine();
             while (line != null) {
                 if (!line.equals("#")) {
-                    String[] splitLine = line.split(":");
+                    String[] splitLine = line.split(",");
                     if(splitLine.length < 5) {
                         this.checkPointTimes_loaded.add(Long.parseLong(splitLine[0]));
                     } else {
@@ -946,18 +946,18 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             nowTime = event.timestamp;
             switch (event.sensor.getType()) {
                 case Sensor.TYPE_ACCELEROMETER:
-                    accRawData.add(String.valueOf(event.sensor.getType()) + ":" +
-                                    String.valueOf(event.timestamp) + ":" +
-                                    String.valueOf(event.values[0]) + ":" +
-                                    String.valueOf(event.values[1]) + ":" +
+                    accRawData.add(String.valueOf(event.sensor.getType()) + "," +
+                                    String.valueOf(event.timestamp) + "," +
+                                    String.valueOf(event.values[0]) + "," +
+                                    String.valueOf(event.values[1]) + "," +
                                     String.valueOf(event.values[2])
                     );
                     break;
                 case Sensor.TYPE_GYROSCOPE:
-                    gyroRawData.add(String.valueOf(event.sensor.getType()) + ":" +
-                                    String.valueOf(event.timestamp) + ":" +
-                                    String.valueOf(event.values[0]) + ":" +
-                                    String.valueOf(event.values[1]) + ":" +
+                    gyroRawData.add(String.valueOf(event.sensor.getType()) + "," +
+                                    String.valueOf(event.timestamp) + "," +
+                                    String.valueOf(event.values[0]) + "," +
+                                    String.valueOf(event.values[1]) + "," +
                                     String.valueOf(event.values[2])
                     );
                     break;
