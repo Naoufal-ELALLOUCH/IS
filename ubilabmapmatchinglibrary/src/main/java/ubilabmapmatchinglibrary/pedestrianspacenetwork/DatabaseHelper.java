@@ -238,47 +238,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         //ubinaviからのクエリで再生成するので、dropする時に落ちないようにするため。
         String NODE_DATABASE_CREATE_STATES =
-                "CREATE TABLE IF NOT EXISTS " + NODE_TABLE + " (" +
-                        "'id' TEXT PRIMARY KEY" +
-                        ");";
+                "CREATE TABLE IF NOT EXISTS "+ NODE_TABLE +" ( " +
+                        "'id' TEXT PRIMARY KEY, " +
+                        "'latitude' TEXT NOT NULL, " +
+                        "'longitude' TEXT NOT NULL, " +
+                        "'level' INTEGER NOT NULL, " +
+                        "'type' INTEGER NOT NULL, " +
+                        "'grid_id' TEXT NOT NULL, " +
+                        "'area_id' INTEGER NOT NULL);";
         db.execSQL(NODE_DATABASE_CREATE_STATES);
 
         String POINT_DATABASE_CREATE_STATES =
-                "create table if not exists " + WALL_POINT_TABLE + " ("
-                        + " id integer primary key"
-                        + ", node_id integer"
-                        + ", \"group\" integer not null"
-                        + ", point_order integer not null"
-                        + ", latitude real not null"
-                        + ", longitude real not null"
-                        + ", grid_id integer not null"
-                        + ", area_id integer not null"
-                        + ")";
+                "CREATE TABLE IF NOT EXISTS "+ WALL_POINT_TABLE + " ( " +
+                        " 'id' TEXT PRIMARY KEY, " +
+                        "'node_id' TEXT, " +
+                        "'group' TEXT NOT NULL, " +
+                        "'point_order' INTEGER NOT NULL, " +
+                        "'latitude' TEXT NOT NULL, " +
+                        "'longitude' TEXT NOT NULL, " +
+                        "'level' INTEGER NOT NULL, " +
+                        "'grid_id' TEXT NOT NULL, " +
+                        "'area_id' INTEGER NOT NULL);";
         db.execSQL(POINT_DATABASE_CREATE_STATES);
 
         /**
          * bearingはラジアン形式
          */
         String LINK_DATABASE_CREATE_STATES =
-                "create table if not exists " + LINK_TABLE + " ("
-                        + " id integer primary key"
-                        + ", node1_id integer not null"
-                        + ", node2_id integer not null"
-                        + ", distance real not null"
-                        + ", bearing real not null"
-                        + ", type integer not null"
-                        + ", pressure real not null"
-                        + ", area_id integer not null"
-                        + ")";
+                "CREATE TABLE IF NOT EXISTS "+ LINK_TABLE +" ( " +
+                        "'id' TEXT PRIMARY KEY, " +
+                        "'node1_id' TEXT NOT NULL, " +
+                        "'node2_id' TEXT NOT NULL, " +
+                        "'distance' TEXT NOT NULL, " +
+                        "'bearing' TEXT NOT NULL, " +
+                        "'type' INTEGER NOT NULL, " +
+                        "'pressure' DOUBLE NOT NULL, " +
+                        "'area_id' INTEGER NOT NULL);";
         db.execSQL(LINK_DATABASE_CREATE_STATES);
 
         String LINK_GRID_DATABASE_CREATE_STATES =
-                "create table if not exists " + LINK_GRID_TABLE + " ("
-                        + " link_id integer not null"
-                        + ", grid_id text not null"
-                        + ", area_id integer not null"
-                        + ")";
-
+                "CREATE TABLE IF NOT EXISTS " + LINK_GRID_TABLE + " ( " +
+                        "'link_id' TEXT NOT NULL, " +
+                        "'grid_id' TEXT NOT NULL, " +
+                        "'area_id' INTEGER NOT NULL);";
         db.execSQL(LINK_GRID_DATABASE_CREATE_STATES);
 
 
