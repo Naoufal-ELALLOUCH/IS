@@ -480,5 +480,9 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     public List<Link> getLinkList() {
         return linkList;
     }
+
+    public void removeOldTrajectory(){
+        rawTrajectory.getTrajectory().clear();
+    }
 }
 
