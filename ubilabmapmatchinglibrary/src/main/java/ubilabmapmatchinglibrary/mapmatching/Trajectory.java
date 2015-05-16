@@ -169,7 +169,11 @@ public class Trajectory {
 
     /*指定した歩数までの軌跡を消去する*/
     public void removeTrajectory(int count) {
-        for(int i = 0; i < count; i++) {
+        if (this.trajectory.size() <= count) {
+            this.trajectory.clear();
+            return;
+        }
+        for (int i = 0; i < count; i++) {
             this.trajectory.remove(0);
         }
     }
