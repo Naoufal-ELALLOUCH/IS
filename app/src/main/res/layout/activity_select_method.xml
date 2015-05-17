@@ -28,14 +28,14 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Applay"
+        android:text="Apply"
         android:id="@+id/method_applay_button"/>
 
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Download"
+        android:text="Import PSN"
         android:id="@+id/button_download"/>
 
     <Switch
@@ -56,34 +56,9 @@
     <Switch
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="動的歩幅補正"
-        android:id="@+id/straightStepAutoAdjustSwitch"
-        android:layout_gravity="center_horizontal"
-        android:checked="false" />
-
-    <Switch
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="常に動的歩幅補正"
-        android:id="@+id/straightStepAutoAdjustAlwaysSwitch"
-        android:layout_gravity="center_horizontal"
-        android:checked="false" />
-
-    <Switch
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
         android:text="生データ保存モード"
         android:id="@+id/RawDataMeasureSwitch"
         android:layout_gravity="center_horizontal"
         android:checked="false" />
-
-    <Switch
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="チェックポイントLatLng出力"
-        android:id="@+id/checkPointLatLngOutputSwitch"
-        android:layout_gravity="center_horizontal"
-        android:checked="false"
-        android:enabled="false" />
 
 </LinearLayout>

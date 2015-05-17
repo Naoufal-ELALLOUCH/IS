@@ -1,6 +1,7 @@
 package ubilabmapmatchinglibrary.mapmatching;
 
 import android.content.Context;
+import android.graphics.Color;
 
 import com.google.android.gms.maps.model.LatLng;
 
