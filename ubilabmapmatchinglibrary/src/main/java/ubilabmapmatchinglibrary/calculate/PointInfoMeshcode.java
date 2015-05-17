@@ -63,8 +63,8 @@ public class PointInfoMeshcode {
         return calcMeshCode(ilat, ilon, level);
     }
     public static String calcMeshCodeOld(double lat, double lon, int level){
-        int ilat = (int)(lat * 3600000.0);
-        int ilon = (int)(lon * 3600000.0);
+//        int ilat = (int)(lat * 3600000.0);
+//        int ilon = (int)(lon * 3600000.0);
         String meshcode = "";
 		/* 1?? */
         int p =  (int)((lat * 60.0)/40.0);
@@ -94,7 +94,7 @@ public class PointInfoMeshcode {
         double c = (b * 60.0) - ((double)r * 30.0);
         double h = (g * 60.0) - ((double)w * 45.0);
 
-        int times=1;
+//        int times=1;
         double denomy=15.0;
         double denomx=22.5;
         while (level > 0){

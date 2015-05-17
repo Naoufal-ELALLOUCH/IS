@@ -65,12 +65,12 @@ import ubilabmapmatchinglibrary.mapmatching.Point;
 import ubilabmapmatchinglibrary.mapmatching.SkeletonMatching;
 import ubilabmapmatchinglibrary.mapmatching.TrackPoint;
 import ubilabmapmatchinglibrary.mapmatching.Trajectory;
-import ubilabmapmatchinglibrary.mapmatching.TrajectoryTransedListener;
+import ubilabmapmatchinglibrary.mapmatching.TrajectoryTransformedListener;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.DatabaseHelper;
 import ubilabmapmatchinglibrary.pedestrianspacenetwork.Link;
 
 
-public class PDRMainActivity extends FloorMapActivity implements StepListener, TrajectoryTransedListener, SensorEventListener, OnClickListener , GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
+public class PDRMainActivity extends FloorMapActivity implements StepListener, TrajectoryTransformedListener, SensorEventListener, OnClickListener , GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
     public static final String DB_QUERY_FILE = "cc5f_network_sql.txt";
 //    public static final String DB_QUERY_FILE = "cc_psn.txt";
 
@@ -108,7 +108,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         READY,
         SETTING_START_POINT,
         SETTING_DIRECTION_POINT,
-        POSITIONING;
+        POSITIONING
     }
 
     private Status flag;
@@ -584,7 +584,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                             @Override
                             public void run() {
                                 long lastTimestamp = rawObjectArrayList.get(0).timestamp;
-                                long timestamp = 0;
+                                long timestamp;
 
                                 for (final RawObject object : rawObjectArrayList) {
                                     timestamp = object.timestamp;

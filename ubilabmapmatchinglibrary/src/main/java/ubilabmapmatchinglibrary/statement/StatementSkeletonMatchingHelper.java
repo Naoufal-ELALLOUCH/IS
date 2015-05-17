@@ -100,10 +100,9 @@ public class StatementSkeletonMatchingHelper {
         double distanceScore = calculateDistanceScore(calculateDistanceToLink(point, link));
 //       System.out.println("SCORE", "Direction:" +  direction + ", LinkBearing:" + link.getBearing() + ", directionDiff:" + (direction - link.getBearing()));
         double directionScore = calculateDirectionScore((Math.toRadians(direction - link.getBearing())));
-        double totalScore = distanceScore + directionScore;
 //       System.out.println("SCORE", "LinkID:" + link.getId() + ", TotalScore" + totalScore);
 //       System.out.println("SCORE", "--------------------------------------------------------------------");
-        return totalScore;
+        return distanceScore + directionScore;
     }
 
     /**
@@ -112,9 +111,8 @@ public class StatementSkeletonMatchingHelper {
      * @return
      */
     public static double calculateDistanceScore(double distance) {
-        double score = MU_D - A * Math.pow(distance, N_D);
 //       System.out.println("SCORE", "Distance:" + distance + ", DistanceScore:" + score);
-        return score;
+        return MU_D - A * Math.pow(distance, N_D);
     }
 
     /**
@@ -126,8 +124,7 @@ public class StatementSkeletonMatchingHelper {
      * @return
      */
     public static double calculateDistanceToLink(double x, double y, double constantA, double constantB) {
-        double distance = Math.abs(constantA * x - y + constantB) / Math.sqrt(constantA * constantA + 1);
-        return distance;
+        return Math.abs(constantA * x - y + constantB) / Math.sqrt(constantA * constantA + 1);
     }
 
     /**

@@ -2,7 +2,6 @@ package ubilabmapmatchinglibrary.mapmatching;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -53,17 +52,15 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     private static TrackPoint lastSkeletonMatchingTrackPoint = new TrackPoint();
 
     //マップマッチング後のTrackPoint
-    private static TrackPoint transedTrackPoint = new TrackPoint();
-    private static TrackPoint lastTransedTrackPoint = new TrackPoint();
+//    private static TrackPoint transedTrackPoint = new TrackPoint();
+    private static TrackPoint lastTransformedTrackPoint = new TrackPoint();
 
-    Trajectory transedTrajectory = new Trajectory();
+//    Trajectory transedTrajectory = new Trajectory();
 
     //直前のリンクのIdを格納
     private String lastLinkId;
 
     private String lastStraightLinkId = "null";
-
-    private TrackPoint newStartTrackPoint;
 
    //較正係数の組
     Point correctRate = new Point();
@@ -72,7 +69,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
     private List<Link> linkList = new ArrayList<>();
 
     private int turnCount = 0;
-    private int turndStepCount = 0;
+    private int turnedStepCount = 0;
     private double lastDirectionRate = 1.0;
     private double lastDistanceRate = 1.0;
 
@@ -100,8 +97,6 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
      * @return
      */
     public TrackPoint calculateCollisionDetectMatchingPosition(TrackPoint trackPoint) {
-
-//        try {
             rawTrajectory.add(trackPoint);
 
             TrackPoint smTrackPoint = mSkeletonMatching.calculateSkeletonMatchingPosition(trackPoint);
@@ -120,13 +115,13 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                     if (!lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲進途中
                         if (!lastStraightLinkId.equals(matchingLink.getId())) {
                             if (turnCount > 0) {
-                                rawTrajectory.removeTrajectory(turndStepCount);
-                                adjustStepNumberOfHighAccuracyPoints(turndStepCount);
+                                rawTrajectory.removeTrajectory(turnedStepCount);
+                                adjustStepNumberOfHighAccuracyPoints(turnedStepCount);
                                 linkList.remove(0);
                             }
 
                             turnCount++;
-                            turndStepCount = rawTrajectory.size() - 1;
+                            turnedStepCount = rawTrajectory.size() - 1;
                         } else {
                             passageFinishStepCount.remove(passageFinishStepCount.size() - 1);
                         }
@@ -154,19 +149,19 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                 boolean isCollision = false;
                 if (trackPoint.getIsStraight()) {
 
-                    if (!lastTransedTrackPoint.getIsStraight()) {
+                    if (!lastTransformedTrackPoint.getIsStraight()) {
                         if (!(isCollision = isCollisionDetectLinkWall(turningTrajectory, matchingLink))) {
                             if (linkList.size() > 1) {
                                 //isCollision = isCollisionDetectLinkWall(turningTrajectory, linkList.get(linkList.size() - 2));
                                 List<Link> turningLinkList = new ArrayList<>();
                                 turningLinkList.add(linkList.get(linkList.size() - 2));
                                 turningLinkList.add(linkList.get(linkList.size() - 1));
-                                List<List<LatLng>> wallinfo = mCollisionDetectMatchingHelper.getLinksWallInfo(turningLinkList);
-                                isCollision = mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(rawTrajectory, wallinfo);
+                                List<List<LatLng>> wallInfo = mCollisionDetectMatchingHelper.getLinksWallInfo(turningLinkList);
+                                isCollision = mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(rawTrajectory, wallInfo);
                             }
                         }
                     } else {
-                        isCollision = isCollisionDetectLinkWall(trackPoint.getLocation(), lastTransedTrackPoint.getLocation(), matchingLink);
+                        isCollision = isCollisionDetectLinkWall(trackPoint.getLocation(), lastTransformedTrackPoint.getLocation(), matchingLink);
                     }
                     turningTrajectory.clear();
                 } else {
@@ -187,7 +182,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         trackPoint.setDirection(matchingDirection);
                         trackPoint.polylineColor = Color.CYAN;
                         trackPoint.isSkeletonMatch = true;
-                        newStartTrackPoint = trackPoint; //new~は使ってない？
+//                        newStartTrackPoint = trackPoint; //new~は使ってない？
 
                         rawTrajectory.clear();
                         rawTrajectory.add(trackPoint);
@@ -195,7 +190,7 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         linkList.clear();
                         linkList.add(matchingLink);
 
-                        turndStepCount = 0;
+                        turnedStepCount = 0;
                         turnCount = 0;
                         highAccuracyPointList.clear();
 
@@ -225,13 +220,9 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
                         ////Log.v("CM", "{Rd,Rs} = {" + lastDirectionRate + ", " + lastDistanceRate + "}");
                     }
 
-                    for (TrajectoryTransedListener listener: mTrajectoryTransedListeners) {
+                    for (TrajectoryTransformedListener listener: mTrajectoryTransedListeners) {
                         listener.onTrajectoryTransed(new Point(lastDirectionRate, lastDistanceRate), rawTrajectory, trackPoint);
                     }
-//                    int SIZE = mTrajectoryTransedListeners.size();
-//                    for (int i = 0; i < SIZE; i++) {
-//                        mTrajectoryTransedListeners.get(i).onTrajectoryTransed(new Point(lastDirectionRate, lastDistanceRate), rawTrajectory, trackPoint);
-//                    }
                     mSkeletonMatching.setFirst();
 
                 }
@@ -243,15 +234,11 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
             }
 
             lastSkeletonMatchingTrackPoint.setTrackPoint(skeletonMatchingTrackPoint);
-            lastTransedTrackPoint.setTrackPoint(trackPoint);
+            lastTransformedTrackPoint.setTrackPoint(trackPoint);
 
             lastLinkId = matchingLink.getId();
 
             return trackPoint;
-//        } catch(Exception e) {
-//            Log.e("CM", "MapMatchig is Failed" + e);
-//            return null;
-//        }
     }
     public ArrayList<LatLng> originLatLngArray;
     public ArrayList<LatLng> adjustedLatLngArray;
@@ -283,11 +270,11 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
            while (intDistanceRate <= MAX_DISTANCE_RATE) {
                double distanceRate = (double)intDistanceRate / 100.0/ lastDistanceRate;
 
-               Trajectory transedTrajectory = new Trajectory();
-               transedTrajectory.addAll(trajectory);
+               Trajectory transformedTrajectory = new Trajectory();
+               transformedTrajectory.addAll(trajectory);
 
-               transedTrajectory.transTrack(directionRate, distanceRate);
-               if (!mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(transedTrajectory, linksWall)) {
+               transformedTrajectory.transTrack(directionRate, distanceRate);
+               if (!mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(transformedTrajectory, linksWall)) {
                    rateSet.add(new Point(directionRate , distanceRate));
                }
 
@@ -399,14 +386,13 @@ public class CollisionDetectMatching extends TrajectoryTransedDetector{
         double maxScore = 0;
         Point maxScoreRate =  new Point();
         for(Point rate : rateSet) {
-            Trajectory transedTrajectory = baseTrajectory;
-            transedTrajectory.transTrack(rate);
+            baseTrajectory.transTrack(rate);
             double score = 0;
             double totalScore = 0;
 
             int i = 0;
             for(int stepNumber : stepNumberList) {
-                score = mCollisionDetectMatchingHelper.calculateDistanceScore(Calculator2D.calculateDistance(transedTrajectory.get(stepNumber).getLocation(), highAccuracyPointsList.get(i)));
+                score = mCollisionDetectMatchingHelper.calculateDistanceScore(Calculator2D.calculateDistance(baseTrajectory.get(stepNumber).getLocation(), highAccuracyPointsList.get(i)));
                 if(totalScore == 0) {
                     totalScore = score;
                 } else {

@@ -111,7 +111,7 @@ public class Node {
         EV_IN, //2:EV内
         EV_OUT, //3:EV前
         STAIR, //4:階段(入口)
-        LANDING; // 5:階段踊り場
+        LANDING // 5:階段踊り場
     }
 
 

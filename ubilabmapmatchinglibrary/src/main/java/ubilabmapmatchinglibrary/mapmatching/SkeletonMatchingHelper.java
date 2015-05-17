@@ -104,10 +104,9 @@ public class SkeletonMatchingHelper {
         double distanceScore = calculateDistanceScore(calculateDistanceToLink(point, link));
 //       ////Log.v("SCORE", "Direction:" +  direction + ", LinkBearing:" + link.getBearing() + ", directionDiff:" + (direction - link.getBearing()));
         double directionScore = calculateDirectionScore((Math.toRadians(direction - link.getBearing())));
-        double totalScore = distanceScore + directionScore;
 //       ////Log.v("SCORE", "LinkID:" + link.getId() + ", TotalScore" + totalScore);
 //       ////Log.v("SCORE", "--------------------------------------------------------------------");
-        return totalScore;
+        return distanceScore + directionScore;
     }
 
     /**
@@ -116,9 +115,8 @@ public class SkeletonMatchingHelper {
      * @return
      */
     public static double calculateDistanceScore(double distance) {
-        double score = MU_D - A * Math.pow(distance, N_D);
 //       ////Log.v("SCORE", "Distance:" + distance + ", DistanceScore:" + score);
-        return score;
+        return MU_D - A * Math.pow(distance, N_D);
     }
 
     /**
@@ -130,8 +128,7 @@ public class SkeletonMatchingHelper {
      * @return
      */
     public static double calculateDistanceToLink(double x, double y, double constantA, double constantB) {
-        double distance = Math.abs(constantA * x - y + constantB) / Math.sqrt(constantA * constantA + 1);
-        return distance;
+        return Math.abs(constantA * x - y + constantB) / Math.sqrt(constantA * constantA + 1);
     }
 
     /**
@@ -172,9 +169,8 @@ public class SkeletonMatchingHelper {
      */
     public static double calculateDirectionScore(double direction) {
         double cos = Math.cos(direction);
-        double score =MU_ALPHA * Math.pow(cos, N_ALPHA);
         ////Log.v("SCORE", "Direction:" +  Math.toDegrees(direction) + ", DirectionCos:" + cos + ", DirectionScore:" + score);
-        return score;
+        return MU_ALPHA * Math.pow(cos, N_ALPHA);
     }
 
     /**

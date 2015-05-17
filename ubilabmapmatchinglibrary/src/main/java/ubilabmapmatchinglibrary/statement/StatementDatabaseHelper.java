@@ -36,7 +36,7 @@ public class StatementDatabaseHelper {
         Node node = null;
         try {
             rs = operationStatement.executeQuery(query);
-            rs.next();;
+            rs.next();
             node = new Node(rs.getString("id"), rs.getDouble("latitude"), rs.getDouble("longitude"), (int) rs.getDouble("level"), rs.getInt("type"), rs.getString("grid_id"));
             rs.close();
         } catch (Exception e){
@@ -56,8 +56,7 @@ public class StatementDatabaseHelper {
                 "select * from " + NODE_TABLE + " where id = " + id;
 
         try{
-            Node node = getNodeByQuery(GET_NODE_BY_ID);
-            return node;
+            return getNodeByQuery(GET_NODE_BY_ID);
         } catch (SQLException e) {
             return null;
         }
@@ -96,14 +95,8 @@ public class StatementDatabaseHelper {
                 "select * from " + WALL_POINT_TABLE + " where node_id = '" + nodeId + "' order by point_order";
 
         try{
-
-            List<WallPoint> pointsList = getPointsByQuery( GET_POINTS_BY_NODE_ID);
-            
-            return pointsList;
-
+            return getPointsByQuery( GET_POINTS_BY_NODE_ID);
         } catch (SQLException e) {
-
-            
             return null;
         }
     }
@@ -120,13 +113,8 @@ public class StatementDatabaseHelper {
                 "select * from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "' order by point_order";
 
         try{
-            List<WallPoint> pointsList = (getPointsByQuery( GET_POINTS_BY_GROUP_ID));
-            
-            return pointsList;
-
+            return getPointsByQuery( GET_POINTS_BY_GROUP_ID);
         } catch (SQLException e) {
-           ////Log.v("MM", "getPointsByGroupNumber" + e.toString());
-            
             return null;
         }
     }
@@ -164,12 +152,8 @@ public class StatementDatabaseHelper {
                 "select * from " + LINK_TABLE + " where id like '" + id + "'";
 
         try{
-            Link link = getLinkByQuery( GET_LINK_BY_ID);
-            
-            return link;
-
+            return getLinkByQuery(GET_LINK_BY_ID);
         } catch (SQLException e) {
-            
             return null;
         }
     }
@@ -224,12 +208,8 @@ public class StatementDatabaseHelper {
                 "select link_id from " + LINK_GRID_TABLE + " where grid_id like " + gridId;
 
         try{
-            List<String> linksIdList = getLinkIdListByQuery( GET_LINKS_ID_BY_GRID_ID);
-            
-            return linksIdList;
-
+            return getLinkIdListByQuery(GET_LINKS_ID_BY_GRID_ID);
         } catch (SQLException e) {
-            
             return null;
         }
     }
@@ -251,12 +231,8 @@ public class StatementDatabaseHelper {
                         +LINK_TABLE + " where (node1_id or node2_id) in (select id from " + NODE_TABLE + "where level = " + level +"))";
 
         try{
-            List<String> linksIdList = getLinkIdListByQuery( GET_LINKS_BY_GRID_ID_AND_LEVEL);
-            
-            return linksIdList;
-
+            return getLinkIdListByQuery( GET_LINKS_BY_GRID_ID_AND_LEVEL);
         } catch (SQLException e) {
-            
             return null;
         }
     }
@@ -279,12 +255,8 @@ public class StatementDatabaseHelper {
                         "and type = (" + Link.LinkType.PASSAGE.ordinal() + " or " + Link.LinkType.OPEN_SPACE.ordinal() + "))";
 
         try{
-            List<String> linksIdList = getLinkIdListByQuery( GET_LINKS_BY_GRID_ID_AND_LEVEL_AND_TYPE);
-            
-            return linksIdList;
-
+            return getLinkIdListByQuery(GET_LINKS_BY_GRID_ID_AND_LEVEL_AND_TYPE);
         } catch (SQLException e) {
-            
             return null;
         }
     }
@@ -306,11 +278,8 @@ public class StatementDatabaseHelper {
                 "select id from " + LINK_TABLE + " where node1_id = '" + node1Id + "' or node2_id = '" + node1Id + "' or node1_id = '" + node2Id + "' or node2_id = '" + node2Id + "'";
 
         try{
-            List<String> linksIdList = getLinkIdListByQuery(GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID);
-            
-            return linksIdList;
+            return getLinkIdListByQuery(GET_CONNECTING_LINK_ID_LIST_BY_LINK_ID);
         } catch (SQLException e) {
-            
             return null;
         }
     }
@@ -331,11 +300,8 @@ public class StatementDatabaseHelper {
                         "or node2_id in (select node_id from " + WALL_POINT_TABLE + " where \"group\" = '" + groupNumber + "'))";
 
         try{
-            List<String> linksIdList = getLinkIdListByQuery( GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID);
-            
-            return linksIdList;
+            return getLinkIdListByQuery( GET_CONNECTING_LINK_ID_LIST_BY_GROUP_ID);
         } catch (SQLException e) {
-            
             return null;
         }
     }
@@ -362,9 +328,6 @@ public class StatementDatabaseHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Node commonNode = getNodeById(commonNodeId);
-
-        return commonNode;
+        return getNodeById(commonNodeId);
     }
 }

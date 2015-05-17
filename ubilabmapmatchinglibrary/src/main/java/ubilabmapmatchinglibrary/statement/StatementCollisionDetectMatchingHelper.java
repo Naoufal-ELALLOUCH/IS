@@ -346,8 +346,7 @@ public class StatementCollisionDetectMatchingHelper extends StatementSkeletonMat
             LatLng point2 = pointList.get(nextPointId).getLatng();
 
             if (Calculator2D.isCrossed2Line(point1, point2, node1, node2)) {
-                WallPoint[] crossLinkPoint = {pointList.get(pointId), pointList.get(nextPointId)};
-                return crossLinkPoint;
+                return new WallPoint[]{pointList.get(pointId), pointList.get(nextPointId)};
             }
 
             nextPointId++;

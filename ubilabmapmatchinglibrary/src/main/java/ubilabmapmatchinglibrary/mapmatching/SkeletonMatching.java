@@ -103,15 +103,8 @@ public class SkeletonMatching {
 
                     lastTrackPoint.setTrackPoint(trackPoint);
 
-                    double matchedDirection = Calculator2D.calculateDirection(baseMatchedPoint, matchedPoint);
+//                    double matchedDirection = Calculator2D.calculateDirection(baseMatchedPoint, matchedPoint);
                     double matchedDistance = Calculator2D.calculateDistance(baseTrackPoint.getLocation(), matchedPoint);
-
-                   ////Log.v("SM", "MatchingLinkId:" + matchingLink.getId() + ", MatchedDirection" + matchedDirection);
-//               ////Log.v("SM", "BasePoint:" + baseTrackPoint.getLocation().latitude + ", " + baseTrackPoint.getLocation().longitude);
-//               ////Log.v("SM", "CorrectedPoint:" + correctedTrackPoint.getLocation().latitude + ", " + baseTrackPoint.getLocation().longitude);
-//               ////Log.v("SM", "TrackPoint:" + point.latitude + ", " + point.longitude);
-//               ////Log.v("SM", "MatchedPoint:" + matchedPoint.latitude + ", " + matchedPoint.longitude);
-                   ////Log.v("SM", "---------------------------");
 
                     baseTrackPoint.setTrackPoint(trackPoint.getTime(), matchedPoint, correctedTrackPoint.getDirection(), matchedDistance, trackPoint.getIsStraight(), matchingLink.getId());
                 } else { //曲進中は前回の座標(baseTrackPoint)を基準に座標を再計算する

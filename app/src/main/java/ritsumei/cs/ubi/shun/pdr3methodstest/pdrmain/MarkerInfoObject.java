@@ -46,8 +46,7 @@ public class MarkerInfoObject {
 	}
 	public void setMarker(Marker marker) {
 		this.marker = marker;
-		return;
-	}
+    }
 
 	public Marker getMarker() {
 		return this.marker;
@@ -56,8 +55,7 @@ public class MarkerInfoObject {
 	public void setColor(int color) {
 		this.icon = BitmapDescriptorFactory.defaultMarker(getMarkerColor(color));
 		this.polylineColor = getARGB(color);
-		return;
-	}
+    }
 
 	public int getColor() {
 		return this.color;

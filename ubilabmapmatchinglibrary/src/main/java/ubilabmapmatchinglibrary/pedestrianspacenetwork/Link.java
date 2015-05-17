@@ -121,7 +121,7 @@ public class Link {
         EV_DOOR,//3:EV内外(階層移動無)
         STAIR,//4:階段(階層移動有)
         LANDING,//5:階段前・踊り場同士(階層移動無)
-        SLOPE;//6:スロープ
+        SLOPE//6:スロープ
     }
 
     public static LinkType castToLinkType(int num) {
