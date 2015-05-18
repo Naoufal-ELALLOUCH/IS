@@ -70,6 +70,9 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             }
 
         } else { //通路リンクの壁
+            if(db.getPointsByNodeId(link.getNode1Id()).size() == 0 || db.getPointsByNodeId(link.getNode2Id()).size() == 0){
+                return linkWall;
+            }
             List<WallPoint> startPointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode1Id()).get(0).getGroupNumber());
             List<WallPoint> goalPointList = db.getPointsByGroupNumber(db.getPointsByNodeId(link.getNode2Id()).get(0).getGroupNumber());
             //List<WallPoint> goalPointList = db.getPointsByNodeId(link.getNode2Id());
