@@ -252,7 +252,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "CREATE TABLE IF NOT EXISTS "+ WALL_POINT_TABLE + " ( " +
                         " 'id' TEXT PRIMARY KEY, " +
                         "'node_id' TEXT, " +
-                        "'group' TEXT NOT NULL, " +
+                        "'group_id' TEXT NOT NULL, " +
                         "'point_order' INTEGER NOT NULL, " +
                         "'latitude' TEXT NOT NULL, " +
                         "'longitude' TEXT NOT NULL, " +
