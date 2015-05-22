@@ -367,6 +367,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         }
 
         if (pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
+            directionTextView.setText("PDR + MapMatch");
             collisionDetectMatchingPdrPositionCalculator.calculatePosition(
                     collisionDetectMatchingDirectionCalculator.getRadiansDirection(), //ラジアン形式な進行方向
 //                    pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), //歩幅
@@ -428,7 +429,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
             } else {
                 polylineColor = Color.YELLOW;
                 directionTextView.setText("Raw PDR_CM");
-                isCollisionDetectSucMatchingSuccess = false;
+//                isCollisionDetectSucMatchingSuccess = false;
                 moveMarker(collisionDetectMatchingMarkerId, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()));
                 location = new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng());
             }
