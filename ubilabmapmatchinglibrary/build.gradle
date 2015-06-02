@@ -37,7 +37,7 @@ dependencies {
 
 apply plugin: 'maven'
 
-version = '1.1.11' // バージョンをいい感じに書 いてください
+version = '1.1.12' // バージョンをいい感じに書 いてください
 group   = 'jp.ac.ritsumei.cs.ubi'
 archivesBaseName = 'ubilab-map-matching-library' // 書かなかったらプロジェクト名が使われるらしい
 
@@ -54,30 +54,32 @@ uploadArchives {
     }
 }
 
-android.libraryVariants.all { variant ->
-    if (variant.name == 'release') {
-        def javadocTaskName = "javadoc${variant.name.capitalize()}";
-        task(javadocTaskName, type: Javadoc) {
-            description "Generates Javadoc for ${variant.name}."
-            source = variant.javaCompile.source
-            destinationDir = reporting.file("${variant.name}-docs")
-            ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-            classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
-        }
-        task("javadocsJar${variant.name.capitalize()}", type: Jar) {
-            classifier = "javadoc"
-            from tasks[javadocTaskName].destinationDir
-        }
-        task("sourcesJar${variant.name.capitalize()}", type: Jar) {
-            classifier = "sources"
-            from variant.javaCompile.source
-        }
+task generateJar(type: Copy) {
+    group 'Build'
+    description 'blah blah...'
+    dependsOn assemble
+    from 'build/intermediates/bundles/release/classes.jar'
+    into 'build/libs'
+    rename('classes.jar', 'ubilab-map-matchinglibrary.jar')
+}
 
-        /* artifacts management.
-         * See: http://www.gradle.org/docs/current/userguide/artifact_management.html */
-        artifacts {
-            archives tasks["javadocsJar${variant.name.capitalize()}"]
-            archives tasks["sourcesJar${variant.name.capitalize()}"]
-        }
+// sources Jar
+task androidSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+}
+
+// Javadoc Jar
+android.libraryVariants.all { variant ->
+    task("javadoc${variant.name.capitalize()}", type: Javadoc) {
+        description "Generates Javadoc for $variant.name."
+        group 'Docs'
+        source = variant.javaCompile.source
+        ext.androidJar = files(plugins
+                .findPlugin("com.android.library")
+                .getBootClasspath())
+        classpath = files(variant.javaCompile.classpath.files) +
+                ext.androidJar
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
     }
 }
