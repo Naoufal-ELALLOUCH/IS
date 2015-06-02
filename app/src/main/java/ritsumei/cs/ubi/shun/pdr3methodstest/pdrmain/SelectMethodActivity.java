@@ -29,10 +29,7 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
     private Button applyButton;
     private Switch colorfulPolylineSwitch;
     private Switch wallLinkDrawSwitch;
-    private Switch straightStepAutoAdjustSwitch;
-    private Switch straightStepAutoAdjustAlwaysSwitch;
     private Switch rawDataMeasureSwitch;
-    private Switch checkPointLatLngOutputSwitch;
 
     public static final String METHOD_PDR_KEY = "methodPdr";
     public static final String METHOD_SM_KEY = "methodSm";
@@ -98,24 +95,6 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
             }
         });
 
-        straightStepAutoAdjustSwitch = (Switch) findViewById(R.id.straightStepAutoAdjustSwitch);
-        straightStepAutoAdjustSwitch.setChecked(pref.getBoolean(STRAIGHT_STEP_AUTO_ADJUST, false));
-        straightStepAutoAdjustSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                editor.putBoolean(STRAIGHT_STEP_AUTO_ADJUST, isChecked);
-            }
-        });
-
-        straightStepAutoAdjustAlwaysSwitch = (Switch) findViewById(R.id.straightStepAutoAdjustAlwaysSwitch);
-        straightStepAutoAdjustAlwaysSwitch.setChecked(pref.getBoolean(STRAIGHT_STEP_AUTO_ADJUST_ALWAYS, false));
-        straightStepAutoAdjustAlwaysSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                editor.putBoolean(STRAIGHT_STEP_AUTO_ADJUST_ALWAYS, isChecked);
-            }
-        });
-
         rawDataMeasureSwitch = (Switch) findViewById(R.id.RawDataMeasureSwitch);
         rawDataMeasureSwitch.setChecked(pref.getBoolean(RAW_DATA_MEASURE, false));
         rawDataMeasureSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -124,16 +103,6 @@ public class SelectMethodActivity extends Activity implements OnClickListener{
                 editor.putBoolean(RAW_DATA_MEASURE, isChecked);
             }
         });
-
-        checkPointLatLngOutputSwitch = (Switch) findViewById(R.id.checkPointLatLngOutputSwitch);
-        checkPointLatLngOutputSwitch.setChecked(pref.getBoolean(CHECK_POINT_LAT_LNG_OUTPUT, false));
-       checkPointLatLngOutputSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-           @Override
-           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               editor.putBoolean(CHECK_POINT_LAT_LNG_OUTPUT, isChecked);
-           }
-       });
-
         downloadButton = (Button) findViewById(R.id.button_download);
         downloadButton.setOnClickListener(new View.OnClickListener() {
             @Override

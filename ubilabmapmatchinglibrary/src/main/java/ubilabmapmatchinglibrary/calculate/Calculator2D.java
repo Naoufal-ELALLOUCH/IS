@@ -94,8 +94,7 @@ public class Calculator2D {
 	    double b1 = cLng - bLng;
 	    double b2 = cLat - bLat;
 	    double cos = (a1 * b1 + a2 * b2) / (Math.sqrt(a1 * a1 + a2 * a2) * Math.sqrt(b1 * b1 + b2 * b2));
-	    double angle = Math.toDegrees((Math.acos(cos)));
-	    return angle;
+	    return Math.toDegrees((Math.acos(cos)));
 	}
 	
 	/**
@@ -110,12 +109,12 @@ public class Calculator2D {
 	 * @param dY DのY座標
 	 * @return 交差していたらtrue,していなかったらfalse
 	 */
-	public static boolean isCrossed2Line(double aX, double aY, double bX, double bY, double cX, double cY, double dX, double dY) {		
+	private static boolean isCrossed2Line(double aX, double aY, double bX, double bY, double cX, double cY, double dX, double dY) {
 		double ta = ((cX - dX) * (aY - cY)) + ((cY - dY) * (cX - aX));
 		double tb = ((cX - dX) * (bY - cY)) + ((cY - dY) * (cX - bX));
 		double tc = ((aX - bX) * (cY - aY)) + ((aY - bY) * (aX - cX));
 		double td = ((aX - bX) * (dY - aY)) + ((aY - bY) * (aX - dX));
-		
+
 		if((ta * tb) < 0 && (tc * td) < 0) {
 			return true;
 		} else {
@@ -183,9 +182,8 @@ public class Calculator2D {
 
         double x = pointA.x + f1 * t1;
         double y = pointA.y + g1 * t1;
-		
-        PointF crossPoint = new PointF((float)x, (float)y);
-        return crossPoint;
+
+        return new PointF((float)x, (float)y);
 
 	}
 	
@@ -214,9 +212,8 @@ public class Calculator2D {
 
         double lng = pointA.longitude + f1 * t1;
         double lat = pointA.latitude + g1 * t1;
-		
-        LatLng crossPoint = new LatLng(lat, lng);
-        return crossPoint;
+
+        return new LatLng(lat, lng);
 
 	}
 

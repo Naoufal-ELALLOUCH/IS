@@ -6,9 +6,9 @@ import java.util.ArrayList;
  * Created by shun on 2014/12/17.
  */
 public class TrajectoryTransedDetector {
-    protected ArrayList<TrajectoryTransedListener> mTrajectoryTransedListeners = new ArrayList<TrajectoryTransedListener>();
+    protected ArrayList<TrajectoryTransformedListener> mTrajectoryTransedListeners = new ArrayList<TrajectoryTransformedListener>();
 
-    public void addListener(TrajectoryTransedListener trajectoryTransedListener) {
+    public void addListener(TrajectoryTransformedListener trajectoryTransedListener) {
         mTrajectoryTransedListeners.add(trajectoryTransedListener);
     }
 

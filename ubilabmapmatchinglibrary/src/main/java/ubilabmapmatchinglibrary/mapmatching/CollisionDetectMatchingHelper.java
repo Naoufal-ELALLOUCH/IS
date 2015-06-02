@@ -83,10 +83,6 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             WallPoint[] linkStartPoints = getCrossLinkPoints(link, startPointList);
             WallPoint[] linkGoalPoints = getCrossLinkPoints(link, goalPointList);
 
-            if (linkStartPoints[1] == null) {
-//                Log.v("hogehoge", "piyopiyo");
-            }
-
             if (!Calculator2D.isCrossed2Line(linkStartPoints[0].getLatng(), linkGoalPoints[0].getLatng(), linkStartPoints[1].getLatng(), linkGoalPoints[1].getLatng())) {
                 oneSideWall.add(linkStartPoints[0].getLatng());
                 oneSideWall.add(linkGoalPoints[0].getLatng());
@@ -170,11 +166,6 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
      * @return
      */
     public List<List<LatLng>> getLinksWallInfo(List<Link> linkList) {
-        for (Link link : linkList) {
-//            Log.v("CM", "getWallLink linkId:" + link.getId());
-        }
-//        Log.v("CM", "Link Size : " + linkList.size());
-
         int linkSize = linkList.size();
         if (linkSize == 0) {
             return null;
@@ -209,9 +200,6 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             } else if (linkSize < 3) {
                 linksWallInfo.addAll(getLinksWallInfo(passageLinkList));
                 return linksWallInfo;
-            }
-            for (Link link : passageLinkList) {
-//                Log.v("CM", "passagesLinkList linkId:" + link.getId());
             }
             List<Node> nodeList = getNodeListByLinkList(passageLinkList);
             //リンクの左側の壁を表すリスト
@@ -289,8 +277,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             LatLng point2 = pointList.get(nextPointId).getLatng();
 
             if (Calculator2D.isCrossed2Line(point1, point2, node1, node2)) {
-                WallPoint[] crossLinkPoint = {pointList.get(pointId), pointList.get(nextPointId)};
-                return crossLinkPoint;
+                return new WallPoint[]{pointList.get(pointId), pointList.get(nextPointId)};
             }
 
             nextPointId++;

@@ -35,12 +35,10 @@ public class Trajectory {
 
     public void add(TrackPoint point) {
         trajectory.add(point);
-        return;
     }
 
     public void addAll(Trajectory trajectory) {
         this.trajectory.addAll(trajectory.getTrajectory());
-        return;
     }
 
     public void clear() {
@@ -57,7 +55,6 @@ public class Trajectory {
 
     public void remove(int index) {
         trajectory.remove(index);
-        return;
     }
 
     /**
@@ -79,15 +76,15 @@ public class Trajectory {
     public boolean transTrack(double directionTransRate, double distanceTransRate) {
 
         Trajectory transTrajectory = new Trajectory();
-        LatLng point = null;
+        LatLng point;
 
         LatLng lastPoint = null;
         double lastDirection = 0;
 
 
-        long time = 0;
-        double direction = 0;
-        double distance = 0;
+        long time;
+        double direction;
+        double distance;
 
         for (int i = 0; i < trajectory.size(); i++) {
             TrackPoint rawTrack = trajectory.get(i);
@@ -169,7 +166,11 @@ public class Trajectory {
 
     /*指定した歩数までの軌跡を消去する*/
     public void removeTrajectory(int count) {
-        for(int i = 0; i < count; i++) {
+        if (this.trajectory.size() <= count) {
+            this.trajectory.clear();
+            return;
+        }
+        for (int i = 0; i < count; i++) {
             this.trajectory.remove(0);
         }
     }

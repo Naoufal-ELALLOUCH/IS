@@ -4,7 +4,7 @@ package ubilabmapmatchinglibrary.mapmatching;
 /**
  * Created by shun on 2014/12/17.
  */
-public interface TrajectoryTransedListener {
+public interface TrajectoryTransformedListener {
     /**
      * 軌跡が変換されたときに呼ばれる
      * @param rate 変換後の較正係数の組

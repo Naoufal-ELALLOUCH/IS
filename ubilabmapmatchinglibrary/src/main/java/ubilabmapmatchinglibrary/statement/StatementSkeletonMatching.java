@@ -109,7 +109,7 @@ public class StatementSkeletonMatching {
             isLastStraight = isStraight;
             return baseTrackPoint;
         } catch (Exception e) {
-            System.out.println("SM" + "SkeletonMatchig is Failed");
+            System.out.println("SM" + "Skeleton Matching is Failed");
             e.printStackTrace();
             return  null;
         }

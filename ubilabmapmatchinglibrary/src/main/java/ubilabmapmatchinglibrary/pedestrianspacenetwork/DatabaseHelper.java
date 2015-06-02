@@ -29,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "pedestrian_space_network.db";
     public static final int DATABASE_VERSION = 1;
 
-    private List<String> queryList = new ArrayList<>();
+//    private List<String> queryList = new ArrayList<>();
     public Context context;
     private static DatabaseHelper sSingleton = null;
 //
@@ -48,7 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context, List<String> queryList) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
-        this.queryList = queryList;
+//        this.queryList = queryList;
     }
 
     /**
@@ -252,7 +252,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "CREATE TABLE IF NOT EXISTS "+ WALL_POINT_TABLE + " ( " +
                         " 'id' TEXT PRIMARY KEY, " +
                         "'node_id' TEXT, " +
-                        "'group' TEXT NOT NULL, " +
+                        "'group_id' TEXT NOT NULL, " +
                         "'point_order' INTEGER NOT NULL, " +
                         "'latitude' TEXT NOT NULL, " +
                         "'longitude' TEXT NOT NULL, " +
@@ -651,10 +651,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLException e) {
             db.close();
         }
-
-        Node commonNode = getNodeById(commonNodeId);
-
-        return commonNode;
+        return getNodeById(commonNodeId);
     }
 
 }

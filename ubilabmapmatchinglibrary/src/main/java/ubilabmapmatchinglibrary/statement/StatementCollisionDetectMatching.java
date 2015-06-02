@@ -46,10 +46,10 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
     private static TrackPoint lastSkeletonMatchingTrackPoint = new TrackPoint();
 
     //マップマッチング後のTrackPoint
-    private static TrackPoint transedTrackPoint = new TrackPoint();
-    private static TrackPoint lastTransedTrackPoint = new TrackPoint();
+//    private static TrackPoint transedTrackPoint = new TrackPoint();
+    private static TrackPoint lastTransformedTrackPoint = new TrackPoint();
 
-    Trajectory transedTrajectory = new Trajectory();
+//    Trajectory transedTrajectory = new Trajectory();
 
     //直前のリンクのIdを格納
     private String lastLinkId;
@@ -65,7 +65,7 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
     private List<Link> linkList = new ArrayList<>();
 
     private int turnCount = 0;
-    private int turndStepCount = 0;
+    private int turnedStepCount = 0;
     private double lastDirectionRate = 1.0;
     private double lastDistanceRate = 1.0;
 
@@ -104,13 +104,13 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
                     if (!lastSkeletonMatchingTrackPoint.getIsStraight()) { //曲り終わり
                         if (!lastStraightLinkId.equals(matchingLink.getId())) {
                             if (turnCount > 0) {
-                                rawTrajectory.removeTrajectory(turndStepCount);
-                                adjustStepNumberOfHighAccuracyPoints(turndStepCount);
+                                rawTrajectory.removeTrajectory(turnedStepCount);
+                                adjustStepNumberOfHighAccuracyPoints(turnedStepCount);
                                 linkList.remove(0);
                             }
 
                             turnCount++;
-                            turndStepCount = rawTrajectory.size() - 1;
+                            turnedStepCount = rawTrajectory.size() - 1;
                         } else {
                             passageFinishStepCount.remove(passageFinishStepCount.size() - 1);
                         }
@@ -138,7 +138,7 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
                 boolean isCollision = false;
                 if (trackPoint.getIsStraight()) {
 
-                    if (!lastTransedTrackPoint.getIsStraight()) {
+                    if (!lastTransformedTrackPoint.getIsStraight()) {
                         if (!(isCollision = isCollisionDetectLinkWall(turningTrajectory, matchingLink))) {
                             if (linkList.size() > 1) {
                                 //isCollision = isCollisionDetectLinkWall(turningTrajectory, linkList.get(linkList.size() - 2));
@@ -150,7 +150,7 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
                             }
                         }
                     } else {
-                        isCollision = isCollisionDetectLinkWall(trackPoint.getLocation(), lastTransedTrackPoint.getLocation(), matchingLink);
+                        isCollision = isCollisionDetectLinkWall(trackPoint.getLocation(), lastTransformedTrackPoint.getLocation(), matchingLink);
                     }
                     turningTrajectory.clear();
                 } else {
@@ -177,7 +177,7 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
                         linkList.clear();
                         linkList.add(matchingLink);
 
-                        turndStepCount = 0;
+                        turnedStepCount = 0;
                         turnCount = 0;
                         highAccuracyPointList.clear();
 
@@ -212,13 +212,13 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
             }
 
             lastSkeletonMatchingTrackPoint.setTrackPoint(skeletonMatchingTrackPoint);
-            lastTransedTrackPoint.setTrackPoint(trackPoint);
+            lastTransformedTrackPoint.setTrackPoint(trackPoint);
 
             lastLinkId = matchingLink.getId();
 
             return trackPoint;
         } catch(Exception e) {
-           System.out.println("MapMatchig is Failed");
+           System.out.println("Map Matching is Failed");
            e.printStackTrace();
             return null;
         }
@@ -240,11 +240,11 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
             while (intDistanceRate <= MAX_DISTANCE_RATE) {
                 double distanceRate = (double)intDistanceRate / 100.0/ lastDistanceRate;
 
-                Trajectory transedTrajectory = new Trajectory();
-                transedTrajectory.addAll(trajectory);
+                Trajectory transformedTrajectory = new Trajectory();
+                transformedTrajectory.addAll(trajectory);
 
-                transedTrajectory.transTrack(directionRate, distanceRate);
-                if (!mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(transedTrajectory, linksWall)) {
+                transformedTrajectory.transTrack(directionRate, distanceRate);
+                if (!mCollisionDetectMatchingHelper.detectCollisionWithWallAndTrajectory(transformedTrajectory, linksWall)) {
                     rateSet.add(new Point(directionRate , distanceRate));
                 }
 
@@ -356,14 +356,13 @@ public class StatementCollisionDetectMatching extends TrajectoryTransedDetector 
         double maxScore = 0;
         Point maxScoreRate =  new Point();
         for(Point rate : rateSet) {
-            Trajectory transedTrajectory = baseTrajectory;
-            transedTrajectory.transTrack(rate);
+            baseTrajectory.transTrack(rate);
             double score = 0;
             double totalScore = 0;
 
             int i = 0;
             for(int stepNumber : stepNumberList) {
-                score = mCollisionDetectMatchingHelper.calculateDistanceScore(Calculator2D.calculateDistance(transedTrajectory.get(stepNumber).getLocation(), highAccuracyPointsList.get(i)));
+                score = mCollisionDetectMatchingHelper.calculateDistanceScore(Calculator2D.calculateDistance(baseTrajectory.get(stepNumber).getLocation(), highAccuracyPointsList.get(i)));
                 if(totalScore == 0) {
                     totalScore = score;
                 } else {

@@ -15,7 +15,7 @@
     <LinearLayout
         android:id="@+id/ButtonLinearLayout"
         android:layout_width="wrap_content"
-        android:layout_height="84dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
         android:baselineAligned="false"
@@ -24,39 +24,32 @@
 
         <Button
             android:id="@+id/startButton"
-            android:layout_width="48dp"
+            android:layout_width="64dp"
             android:layout_height="wrap_content"
-            android:text="ST" />
+            android:text="START" />
 
         <Button
             android:id="@+id/resetButton"
-            android:layout_width="48dp"
+            android:layout_width="64dp"
             android:layout_height="wrap_content"
-            android:text="RS" />
+            android:text="STOP" />
 
         <Button
             android:id="@+id/setupButton"
-            android:layout_width="48dp"
+            android:layout_width="64dp"
             android:layout_height="wrap_content"
-            android:text="SU" />
+            android:text="SETUP" />
 
         <Button
-            android:layout_width="48dp"
+            android:layout_width="64dp"
             android:layout_height="wrap_content"
             android:text="SIM"
             android:id="@+id/simulationModeButton" />
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="48dp"
-            android:layout_height="wrap_content"
-            android:text="T"
-            android:id="@+id/timeButton" />
-
         <TextView
             android:id="@+id/directionText"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:text="hoge"
             android:textColor="@color/bright_foreground_disabled_material_light"
             android:textAppearance="?android:attr/textAppearanceMedium" />

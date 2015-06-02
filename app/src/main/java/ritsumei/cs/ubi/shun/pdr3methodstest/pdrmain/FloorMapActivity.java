@@ -75,8 +75,8 @@ public class FloorMapActivity extends FragmentActivity {
 	protected void floorMapOverlay() {
 		BitmapDescriptor floormap = BitmapDescriptorFactory.fromResource(R.drawable.floormap_cc5f);
 
-        BitmapDescriptor floormap3 = BitmapDescriptorFactory.fromResource(R.drawable.nizyuubashi_1);
-        BitmapDescriptor floormap4 = BitmapDescriptorFactory.fromResource(R.drawable.nizyuubashi_5);
+//        BitmapDescriptor floormap3 = BitmapDescriptorFactory.fromResource(R.drawable.nizyuubashi_1);
+//        BitmapDescriptor floormap4 = BitmapDescriptorFactory.fromResource(R.drawable.nizyuubashi_5);
 
 		GroundOverlayOptions options = new GroundOverlayOptions();
 		options.image(floormap);
@@ -140,7 +140,7 @@ public class FloorMapActivity extends FragmentActivity {
 	public void createMarker(int id, LatLng point, int markerColor) {
 		MarkerOptions options = new MarkerOptions();
 		options.position(point);
-		BitmapDescriptor icon = null;
+		BitmapDescriptor icon;
 
 		icon = BitmapDescriptorFactory.defaultMarker(MarkerInfoObject.getMarkerColor(markerColor));
 		options.icon(icon);
