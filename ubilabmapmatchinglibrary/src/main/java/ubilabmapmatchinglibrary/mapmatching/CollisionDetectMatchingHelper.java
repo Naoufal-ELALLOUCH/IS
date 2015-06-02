@@ -83,6 +83,9 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
             WallPoint[] linkStartPoints = getCrossLinkPoints(link, startPointList);
             WallPoint[] linkGoalPoints = getCrossLinkPoints(link, goalPointList);
 
+            if(linkStartPoints == null || linkGoalPoints == null){
+                return linkWall;
+            }
             if (!Calculator2D.isCrossed2Line(linkStartPoints[0].getLatng(), linkGoalPoints[0].getLatng(), linkStartPoints[1].getLatng(), linkGoalPoints[1].getLatng())) {
                 oneSideWall.add(linkStartPoints[0].getLatng());
                 oneSideWall.add(linkGoalPoints[0].getLatng());
@@ -132,6 +135,9 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
         WallPoint[] firstLinkGoalPoints = getCrossLinkPoints(firstLink, commonPointList);
         WallPoint[] nextLinkStartPoints = getCrossLinkPoints(nextLink, commonPointList);
         WallPoint[] nextLinkGoalPoints = getCrossLinkPoints(nextLink, goalPointList);
+        if(firstLinkStartPoints == null || firstLinkGoalPoints == null || nextLinkStartPoints == null || nextLinkGoalPoints == null){
+            return wallInfo;
+        }
 
         if (firstLink.getType() == Link.LinkType.OPEN_SPACE || nextLink.getType() == Link.LinkType.OPEN_SPACE) {
             wallInfo.addAll(getLinkWallInfo(firstLink));
@@ -216,6 +222,9 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                 if (lastLink == null) {
                     List<WallPoint> startPointList = db.getPointsByNodeId(nodeList.get(0).getId());
                     WallPoint[] firstLinkStartPoints = getCrossLinkPoints(link, startPointList);
+                    if(firstLinkStartPoints == null){
+                        return linksWallInfo;
+                    }
                     leftSideWall.add(firstLinkStartPoints[1].getLatng());
                     rightSideWall.add(firstLinkStartPoints[0].getLatng());
                 } else {
@@ -223,7 +232,7 @@ public class CollisionDetectMatchingHelper extends SkeletonMatchingHelper {
                     WallPoint[] firstLinkGoalPoints = getCrossLinkPoints(lastLink, commonPointList);
                     WallPoint[] nextLinkStartPoints = getCrossLinkPoints(link, commonPointList);
 
-                    if (firstLinkGoalPoints.length == 0 || nextLinkStartPoints.length == 0) {
+                    if (firstLinkGoalPoints == null || nextLinkStartPoints == null) {
                         return linksWallInfo;
                     }
 
