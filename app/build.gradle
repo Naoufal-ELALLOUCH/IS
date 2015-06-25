@@ -19,29 +19,13 @@ android {
     }
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        url "http://sub-www.ubi.cs.ritsumei.ac.jp/archiva/repository/internal/"
-        credentials {
-            username laboratoryMavenUser
-            password laboratoryMavenPassword
-        }
-    }
-    maven {
-        url "http://sub-www.ubi.cs.ritsumei.ac.jp/archiva/repository/snapshots/"
-        credentials {
-            username laboratoryMavenUser
-            password laboratoryMavenPassword
-        }
-    }
-}
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.google.android.gms:play-services'
-    compile 'jp.ac.ritsumei.cs.ubi:ubilab-pdr-library:1.0.4'
+   // compile 'jp.ac.ritsumei.cs.ubi:ubilab-pdr-library:1.0.4'
     compile  project(':ubilabmapmatchinglibrary')
     compile 'com.parse.bolts:bolts-android:1.1.4'
 }
