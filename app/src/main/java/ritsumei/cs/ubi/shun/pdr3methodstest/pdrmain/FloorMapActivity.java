@@ -140,10 +140,20 @@ public class FloorMapActivity extends FragmentActivity {
 	public void createMarker(int id, LatLng point, int markerColor) {
 		MarkerOptions options = new MarkerOptions();
 		options.position(point);
-		BitmapDescriptor icon;
+		BitmapDescriptor icon1,icon2,icon3,icon4;
 
-		icon = BitmapDescriptorFactory.defaultMarker(MarkerInfoObject.getMarkerColor(markerColor));
-		options.icon(icon);
+		icon1 = BitmapDescriptorFactory.defaultMarker(MarkerInfoObject.getMarkerColor(markerColor));
+		icon2 = BitmapDescriptorFactory.fromResource(R.drawable.start);
+		icon3 = BitmapDescriptorFactory.fromResource(R.drawable.arrival);
+		icon4 = BitmapDescriptorFactory.fromResource(R.drawable.navigation);
+
+		if(markerColor == MarkerInfoObject.BLUE)
+		options.icon(icon2);
+		else if(markerColor == MarkerInfoObject.GREEN)
+			options.icon(icon3);
+		else
+		options.icon(icon4);
+
 
 		int index = searchIndex(id);
 
@@ -162,6 +172,9 @@ public class FloorMapActivity extends FragmentActivity {
 	}
 
 	public void moveMarkerWithPolyline(int id, LatLng point, int color) {
+		BitmapDescriptor icon4;
+		icon4 = BitmapDescriptorFactory.fromResource(R.drawable.navigation);
+
 		int index = searchIndex(id);
 
 		markerList.get(index).addPoint(point);
@@ -171,11 +184,14 @@ public class FloorMapActivity extends FragmentActivity {
 
 		markerList.get(index).getMarker().remove();
 
-		markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(markerList.get(index).getIcon())));
+		markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)));
 	}
 
     public void moveMarkerWithPolylineColorColorful(int id, LatLng point, int color) {
-        int index = searchIndex(id);
+		BitmapDescriptor icon4;
+		icon4 = BitmapDescriptorFactory.fromResource(R.drawable.navigation);
+
+		int index = searchIndex(id);
         markerList.get(index).addPoint(point);
         markerList.get(index).addPolylineColor(color);
 
@@ -183,15 +199,18 @@ public class FloorMapActivity extends FragmentActivity {
         drawPolylineAllPointsColorful(id);
 
         markerList.get(index).getMarker().remove();
-        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(markerList.get(index).getIcon())));
+        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)));
     }
 
     public void moveMarker(int id, LatLng point) {
-        int index = searchIndex(id);
+		BitmapDescriptor icon4;
+		icon4 = BitmapDescriptorFactory.fromResource(R.drawable.navigation);
+
+		int index = searchIndex(id);
 
         markerList.get(index).getMarker().remove();
 
-        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(markerList.get(index).getIcon())));
+        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)));
     }
 
     public void addPolylinePoint(int id, LatLng point) {
