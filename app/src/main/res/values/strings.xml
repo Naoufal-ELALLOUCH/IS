@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">UbicompNavi</string>
+    <string name="app_name">UbiCompNavi</string>
     <string name="action_settings">Settings</string>
     <string name="view_initial_pdr_text_start_position">初期位置</string>
     <string name="view_initial_pdr_text_latitude">Latitude: </string>
@@ -9,7 +9,7 @@
     <string name="view_initial_pdr_text_select_from_map">地図から設定</string>
     <string name="view_initial_pdr_text_direction">方向(向かいたい方向の緯度経度)</string>
 
-    <string name="title_activity_first">FirstActivity</string>
+    <string name="title_activity_first">UbiCompNavi</string>
     <string name="dummy_button">BEGIN</string>
     <string name="dummy_content">UbicompNavi \n UBICOMP-2015@OSAKA</string>
 </resources>
