@@ -694,7 +694,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 //                }
             }
 
-//            alertDialog.setTitle("注意");
+//            alertDialog.setTitle("注意");ObserverManager
 //            alertDialog.setMessage("これまでの移動をリセットしますか?");
 //            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 //                public void onClick(DialogInterface dialog, int which) {

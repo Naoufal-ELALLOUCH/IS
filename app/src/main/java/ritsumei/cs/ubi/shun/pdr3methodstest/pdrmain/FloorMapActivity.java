@@ -13,6 +13,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -177,6 +178,23 @@ public class FloorMapActivity extends FragmentActivity {
 
 		int index = searchIndex(id);
 
+		LatLng lastPoint = markerList.get(index).getLastPoint();
+		Location L1 = new Location("starting point");
+		L1.setLatitude(lastPoint.latitude);
+		L1.setLatitude(lastPoint.longitude);
+
+		Location L2 = new Location("ending point");
+		L2.setLatitude(point.latitude);
+		L2.setLatitude(point.longitude);
+
+		float bearing = L1.bearingTo(L2) ;
+
+		CameraPosition cameraPosition = CameraPosition.builder()
+				.target(point)
+				.zoom(21)
+				.bearing(bearing)
+				.build();
+
 		markerList.get(index).addPoint(point);
 
 		removePolyline(id);
@@ -184,7 +202,13 @@ public class FloorMapActivity extends FragmentActivity {
 
 		markerList.get(index).getMarker().remove();
 
-		markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)));
+		markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)
+						.flat(true)
+						.rotation(bearing)
+		));
+
+		map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+				2000, null);
 	}
 
     public void moveMarkerWithPolylineColorColorful(int id, LatLng point, int color) {
@@ -192,6 +216,24 @@ public class FloorMapActivity extends FragmentActivity {
 		icon4 = BitmapDescriptorFactory.fromResource(R.drawable.navigation);
 
 		int index = searchIndex(id);
+
+		LatLng lastPoint = markerList.get(index).getLastPoint();
+		Location L1 = new Location("starting point");
+		L1.setLatitude(lastPoint.latitude);
+		L1.setLatitude(lastPoint.longitude);
+
+		Location L2 = new Location("ending point");
+		L2.setLatitude(point.latitude);
+		L2.setLatitude(point.longitude);
+
+		float bearing = L1.bearingTo(L2) ;
+
+		CameraPosition cameraPosition = CameraPosition.builder()
+				.target(point)
+				.zoom(21)
+				.bearing(bearing)
+				.build();
+
         markerList.get(index).addPoint(point);
         markerList.get(index).addPolylineColor(color);
 
@@ -199,7 +241,13 @@ public class FloorMapActivity extends FragmentActivity {
         drawPolylineAllPointsColorful(id);
 
         markerList.get(index).getMarker().remove();
-        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)));
+        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)
+						.flat(true)
+						.rotation(bearing)
+		));
+
+		map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+				2000, null);
     }
 
     public void moveMarker(int id, LatLng point) {
@@ -208,9 +256,33 @@ public class FloorMapActivity extends FragmentActivity {
 
 		int index = searchIndex(id);
 
-        markerList.get(index).getMarker().remove();
+		LatLng lastPoint = markerList.get(index).getLastPoint();
+		Location L1 = new Location("starting point");
+		L1.setLatitude(lastPoint.latitude);
+		L1.setLatitude(lastPoint.longitude);
 
-        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)));
+		Location L2 = new Location("ending point");
+		L2.setLatitude(point.latitude);
+		L2.setLatitude(point.longitude);
+
+		float bearing = L1.bearingTo(L2) ;
+
+		CameraPosition cameraPosition = CameraPosition.builder()
+				.target(point)
+				.zoom(21)
+				.bearing(bearing)
+				.build();
+
+		markerList.get(index).getMarker().remove();
+
+        markerList.get(index).setMarker(map.addMarker(new MarkerOptions().position(point).icon(icon4)
+						.flat(true)
+						.rotation(bearing)
+
+		));
+
+		map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+				2000, null);
     }
 
     public void addPolylinePoint(int id, LatLng point) {
