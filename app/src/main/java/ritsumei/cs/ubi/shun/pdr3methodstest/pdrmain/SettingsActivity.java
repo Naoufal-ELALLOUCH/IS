@@ -161,7 +161,7 @@ public class SettingsActivity extends Activity implements OnClickListener, Senso
 		if (v == stepCalibration) {
 			startAccSensor();
 	        AlertDlgBldr.setTitle("");
-	        AlertDlgBldr.setMessage("20歩歩いてください。");
+	        AlertDlgBldr.setMessage("");//歩歩いてください。
 	        AlertDlgBldr.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
         		@Override
         		public void onClick(DialogInterface dialog, int which) {
@@ -174,7 +174,7 @@ public class SettingsActivity extends Activity implements OnClickListener, Senso
 		} else if (v == gyroCalibration) {
 			startGyroSensor();
 			AlertDlgBldr.setTitle("");
-			AlertDlgBldr.setMessage("端末を平坦な場所に5秒間放置してください。");
+			AlertDlgBldr.setMessage("");//端末を平坦な場所に5秒間放置してください。
 			AlertDlgBldr.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					gyroOffsetCalculator.finishCalibration();

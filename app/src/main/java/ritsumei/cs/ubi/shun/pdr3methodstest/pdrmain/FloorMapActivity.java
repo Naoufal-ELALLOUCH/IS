@@ -301,7 +301,7 @@ public class FloorMapActivity extends FragmentActivity {
 		PolylineOptions po = new PolylineOptions()
 	    .addAll(markerList.get(i).getPoints())
 		.color(color)
-		.width(3.0f);
+		.width(9.0f);
 
 		markerList.get(i).setPolyline(map.addPolyline(po));
 	}
@@ -317,7 +317,7 @@ public class FloorMapActivity extends FragmentActivity {
         PolylineOptions po = new PolylineOptions()
                 .addAll(markerList.get(i).getPoints())
                 .color(color)
-                .width(3.0f);
+                .width(9.0f);
 
         markerList.get(i).setPolyline(map.addPolyline(po));
     }
@@ -336,7 +336,7 @@ public class FloorMapActivity extends FragmentActivity {
         PolylineOptions po = new PolylineOptions()
                 .addAll(markerList.get(i).getPoints())
                 .color(Color.RED)
-                .width(3.0f);
+                .width(9.0f);
         markerList.get(i).setPolyline(map.addPolyline(po));
 
 
@@ -364,7 +364,7 @@ public class FloorMapActivity extends FragmentActivity {
 		PolylineOptions po = new PolylineOptions()
 	    .add(point1, point2)
 		.color(color)
-		.width(3.0f);
+		.width(9.0f);
 
 		markerList.get(index).setPolyline(map.addPolyline(po));
 	}

@@ -26,31 +26,21 @@
             android:id="@+id/startButton"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
-            android:text="START" />
+            android:background="@drawable/begin" />
 
-        <Button
-            android:id="@+id/resetButton"
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:text="STOP" />
 
         <Button
             android:id="@+id/setupButton"
             android:layout_width="64dp"
             android:layout_height="wrap_content"
-            android:text="SETUP" />
+            android:background="@drawable/itinerary" />
 
-        <Button
-            android:layout_width="64dp"
-            android:layout_height="wrap_content"
-            android:text="SIM"
-            android:id="@+id/simulationModeButton" />
 
         <TextView
             android:id="@+id/directionText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="hoge"
+            android:text=""
             android:textColor="@color/bright_foreground_disabled_material_light"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 

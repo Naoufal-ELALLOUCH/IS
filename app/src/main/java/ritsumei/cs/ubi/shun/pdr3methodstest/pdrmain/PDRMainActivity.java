@@ -85,14 +85,14 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
     private EditText mDirectionLongitudeEditText;
 
     private Button startButton;
-    private Button resetButton;
+    //  private Button resetButton;
     private Button setupButton;
 //    private Button resultButton;
     private Button timeButton;
-    private Button simulationModeButton;
+    // private Button simulationModeButton;
     private Button selectStartPinButton;
     private Button selectDirectionPinButton;
-    private TextView directionTextView;
+    // private TextView directionTextView;
 
     private boolean isStart = false;
 
@@ -154,17 +154,17 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         startButton = (Button)findViewById(R.id.startButton);
         startButton.setOnClickListener(this);
 
-        resetButton = (Button)findViewById(R.id.resetButton);
-        resetButton.setOnClickListener(this);
+        //  resetButton = (Button)findViewById(R.id.resetButton);
+        //  resetButton.setOnClickListener(this);
 
         setupButton = (Button)findViewById(R.id.setupButton);
         setupButton.setOnClickListener(this);
 
-        simulationModeButton = (Button)findViewById(R.id.simulationModeButton);
-        simulationModeButton.setOnClickListener(this);
+        //  simulationModeButton = (Button)findViewById(R.id.simulationModeButton);
+        //   simulationModeButton.setOnClickListener(this);
 
-        directionTextView = (TextView)findViewById(R.id.directionText);
-        directionTextView.setText("ready");
+        //   directionTextView = (TextView)findViewById(R.id.directionText);
+        //   directionTextView.setText("ready");
 
         map.setOnMapClickListener(this);
         map.setOnMarkerClickListener(this);
@@ -357,17 +357,17 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 
         if (pref.getBoolean(SelectMethodActivity.METHOD_PDR_KEY, false)) {
             calculatePDR(time);
-            directionTextView.setText("Raw PDR");
+            // directionTextView.setText("Raw PDR");
             return;
         }
         if (pref.getBoolean(SelectMethodActivity.METHOD_SM_KEY, false)) {
             calculateSkeletonMatch(time);
-            directionTextView.setText("Skeleton Match");
+            // directionTextView.setText("Skeleton Match");
             return;
         }
 
         if (pref.getBoolean(SelectMethodActivity.METHOD_CM_KEY, false)) {
-            directionTextView.setText("PDR + MapMatch");
+            // directionTextView.setText("PDR + MapMatch");
             collisionDetectMatchingPdrPositionCalculator.calculatePosition(
                     collisionDetectMatchingDirectionCalculator.getRadiansDirection(), //ラジアン形式な進行方向
 //                    pref.getFloat(SettingsActivity.STEP_LENGTH_KEY, 75.0f), //歩幅
@@ -428,7 +428,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
 //                    directionTextView.setText("" + df.format(collisionDetectMatchingTrackPoint.getDirection()) + "°, linkId:" + collisionDetectMatchingTrackPoint.getLinkId());
             } else {
                 polylineColor = Color.YELLOW;
-                directionTextView.setText("Raw PDR_CM");
+                //  directionTextView.setText("Raw PDR_CM");
 //                isCollisionDetectSucMatchingSuccess = false;
                 moveMarker(collisionDetectMatchingMarkerId, new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng()));
                 location = new LatLng(collisionDetectMatchingPdrPositionCalculator.getLat(), collisionDetectMatchingPdrPositionCalculator.getLng());
@@ -626,140 +626,7 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                 stopSensor();
                 startButton.setText("Start");
             }
-        } else if (v.getId() == R.id.resetButton) {
-
-//            List<Link> linkList = new ArrayList<>();
-//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(314));
-//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(316));
-//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(306));
-//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(177));
-//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(179));
-//            linkList.add(mCollisionDetectMatching.mCollisionDetectMatchingHelper.db.getLinkById(181));
-//
-//            List<List<LatLng>> wallInfo = mCollisionDetectMatching.mCollisionDetectMatchingHelper.getLinksWallInfo(linkList);
-//
-//            for(List<LatLng> wall : wallInfo) {
-//                PolylineOptions po = new PolylineOptions()
-//                        .color(Color.BLUE)
-//                        .width(3)
-//                        .addAll(wall);
-//                Polyline polyline = map.addPolyline(po);
-//            }
-//
-//
-//            for(Link link : linkList) {
-//                PolylineOptions po = new PolylineOptions()
-//                        .width(3)
-//                        .color(Color.RED)
-//                        .add(db.getNodeById(link.getNode1Id()).getLatLng())
-//                        .add(db.getNodeById(link.getNode2Id()).getLatLng());
-//                Polyline polyline = map.addPolyline(po);
-//            }
-
-            /**
-             * 軌跡、現在地をリセットする
-             */
-            if (isStart) {
-                stopSensor();
-                if (isRawDataMeasure) {
-                    for (String string : accRawData) {
-                        printWriter.println(string);
-                    }
-                    printWriter.println("#");
-
-                    for (String string : gyroRawData) {
-                        printWriter.println(string);
-                    }
-                    printWriter.println("#");
-                    printWriter.close();
-                    Toast.makeText(getApplicationContext(), "RawData保存完了", Toast.LENGTH_SHORT).show();
-                }
-                Toast.makeText(getApplicationContext(), "停止", Toast.LENGTH_SHORT).show();
-
-                for (LatLng latLng : this.latLngArrayList) {
-                    Log.v("LatLng", latLng.latitude + "," + latLng.longitude);
-                }
-//                if(pref.getBoolean(SelectMethodActivity.CHECK_POINT_LAT_LNG_OUTPUT, false)) {
-//                    String name = "/CheckPoint_" + new Date().toString() + ".txt";
-//                    try {
-//                        this.checkPointLatLngPrintWriter = new PrintWriter(new BufferedWriter(new FileWriter(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + name)));
-//                        for (int i = 0; i < checkPointStepCount.size(); i++) {
-//                            checkPointLatLngPrintWriter.println(i + "," + checkPointStepCount.get(i));
-//                        }
-//                        checkPointLatLngPrintWriter.close();
-//                        Toast.makeText(getApplicationContext(), "CheckPoint保存完了", Toast.LENGTH_SHORT).show();
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-            }
-
-//            alertDialog.setTitle("注意");ObserverManager
-//            alertDialog.setMessage("これまでの移動をリセットしますか?");
-//            alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                public void onClick(DialogInterface dialog, int which) {
-//                    map.clear();
-//                    markerList.clear();// = new ArrayList();
-//                    setMap();
-//                    flag = Status.READY;
-//
-//                    if(isStart){
-//                        //Log.v("PDR","Stop");
-//                        startButton.setText("Start");
-//                        isStart = false;
-//                    }
-//                }
-//            });
-//            alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//
-//                public void onClick(DialogInterface dialog, int which) {
-//                    if(isStart){
-//                        //Log.v("PDR","Stop");
-//                        startButton.setText("Start");
-//                        isStart = false;
-//                        startSensor();
-//                    }
-//                }
-//            });
-//
-//            // ダイアログの作成と表示
-//            alertDialog.create();
-//            alertDialog.show();
-
-        } else if (v.getId() == R.id.simulationModeButton) {
-            ListView fileListView = new ListView(this);
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
-
-            final AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .setTitle("シミュレーションデータの読み込み")
-                    .setMessage("ファイルを選択してください。")
-                    .setView(fileListView)
-                    .setPositiveButton("キャンセル", null)
-                    .show();
-            String saveRootPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
-            File[] files = new File(saveRootPath).listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    adapter.add(file.getName());
-                }
-                fileListView.setAdapter(adapter);
-                fileListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        ListView listView = (ListView) parent;
-                        String selectedFileName = (String) listView.getItemAtPosition(position);
-
-                        if (loadRawData(selectedFileName)) {
-                            Toast.makeText(getApplicationContext(), "読み込み完了", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getApplicationContext(), "読み込み失敗", Toast.LENGTH_SHORT).show();
-                        }
-                        dialog.dismiss();
-                    }
-                });
-            }
-        } else if(v.getId() == R.id.select_start_from_map_button) {
+        }  else if(v.getId() == R.id.select_start_from_map_button) {
             mInitializePDRDialog.dismiss();
             flag = Status.SETTING_START_POINT;
         } else if(v.getId() == R.id.select_direction_from_map_button) {
