@@ -94,6 +94,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
     private Button selectDirectionPinButton;
     // private TextView directionTextView;
 
+    public TextView tvHeading;
+
     private boolean isStart = false;
 
     private final int startMarkerId = 0;
@@ -170,6 +172,8 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
         map.setOnMarkerClickListener(this);
 
         manager = (SensorManager)getSystemService(SENSOR_SERVICE);
+
+        tvHeading = (TextView) findViewById(R.id.tvHeading);
 
         alertDialog = new AlertDialog.Builder(this);
 
@@ -771,6 +775,14 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                     collisionDetectMatchingDirectionCalculator.calculateDirection(event.values, event.timestamp);
                 }
             }
+
+            else if (event.sensor.getType() == Sensor.TYPE_ORIENTATION){
+                // get the angle around the z-axis rotated
+                float degree = Math.round(event.values[0]);
+                orDegrees = degree;
+            //    tvHeading.setText("Heading: " + Float.toString(degree) + " degrees PDRMAINACTIVBITY");
+
+            }
         }
     }
 
@@ -789,6 +801,11 @@ public class PDRMainActivity extends FloorMapActivity implements StepListener, T
                 this,
                 manager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
                 SensorManager.SENSOR_DELAY_FASTEST);
+
+        manager.registerListener(
+                this,
+                manager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+                SensorManager.SENSOR_DELAY_GAME);
     }
 
     public void stopSensor() {

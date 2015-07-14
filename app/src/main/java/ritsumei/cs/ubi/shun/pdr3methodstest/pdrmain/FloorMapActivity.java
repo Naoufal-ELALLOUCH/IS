@@ -1,10 +1,15 @@
 package ritsumei.cs.ubi.shun.pdr3methodstest.pdrmain;
 
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -30,12 +35,16 @@ import ritsumei.cs.ubi.shun.pdr3methodstest.R;
 import ubilabmapmatchinglibrary.mapmatching.Trajectory;
 
 
-public class FloorMapActivity extends FragmentActivity {
+public class FloorMapActivity extends FragmentActivity implements SensorEventListener {
 	public GoogleMap map;
 	public List<MarkerInfoObject> markerList;
 
     public TreeMap<String, LatLng> trajectoryMap = new TreeMap<>();
     public TreeMap<String, Integer> polylineColorMap = new TreeMap<>();
+
+	private SensorManager mSensorManager;
+	public TextView tvHeading;
+	public float orDegrees;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +54,50 @@ public class FloorMapActivity extends FragmentActivity {
 
 		markerList = new ArrayList<MarkerInfoObject>();
 
+		tvHeading = (TextView) findViewById(R.id.tvHeading);
+
+
+		// initialize your android device sensor capabilities
+		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+
 		setMap();
 	}
+
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		// for the system's orientation sensor registered listeners
+		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),
+				SensorManager.SENSOR_DELAY_GAME);
+
+
+	}
+
+	@Override
+	protected void onPause() {
+		//super.onPause();
+
+		// to stop the listener and save battery
+		//mSensorManager.unregisterListener(this);
+
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// get the angle around the z-axis rotated
+			float degree = Math.round(event.values[0]);
+			tvHeading.setText("Heading: " + Float.toString(degree) + " degrees FLRMAPACTIVITY");
+
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+	}
+
 
 
 
@@ -173,6 +224,9 @@ public class FloorMapActivity extends FragmentActivity {
 	}
 
 	public void moveMarkerWithPolyline(int id, LatLng point, int color) {
+		tvHeading.setText("Heading: " + Float.toString(orDegrees) + " degrees FFFFF");
+
+
 		BitmapDescriptor icon4;
 		icon4 = BitmapDescriptorFactory.fromResource(R.drawable.navigation);
 
@@ -187,8 +241,8 @@ public class FloorMapActivity extends FragmentActivity {
 		L2.setLatitude(point.latitude);
 		L2.setLatitude(point.longitude);
 
-		float bearing = L1.bearingTo(L2) ;
-
+		//float bearing = L1.bearingTo(L2) ;
+		float bearing = orDegrees;
 		CameraPosition cameraPosition = CameraPosition.builder()
 				.target(point)
 				.zoom(21)
@@ -226,7 +280,8 @@ public class FloorMapActivity extends FragmentActivity {
 		L2.setLatitude(point.latitude);
 		L2.setLatitude(point.longitude);
 
-		float bearing = L1.bearingTo(L2) ;
+		//float bearing = L1.bearingTo(L2) ;
+		float bearing = orDegrees;
 
 		CameraPosition cameraPosition = CameraPosition.builder()
 				.target(point)
@@ -265,7 +320,8 @@ public class FloorMapActivity extends FragmentActivity {
 		L2.setLatitude(point.latitude);
 		L2.setLatitude(point.longitude);
 
-		float bearing = L1.bearingTo(L2) ;
+		//float bearing = L1.bearingTo(L2) ;
+		float bearing = orDegrees;
 
 		CameraPosition cameraPosition = CameraPosition.builder()
 				.target(point)

@@ -12,6 +12,15 @@
         android:layout_alignParentLeft="true"
         layout="@layout/include_map" />
 
+    <TextView
+        android:id="@+id/tvHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
+        android:layout_marginTop="20dp"
+        android:text="No Orientation DATA" />
+
     <LinearLayout
         android:id="@+id/ButtonLinearLayout"
         android:layout_width="wrap_content"
